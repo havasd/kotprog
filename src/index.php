@@ -12,7 +12,7 @@
         <nav class="navigation-bar dark">
 		    <nav class="navigation-bar-content">
 		    	<div class="element">
-		            <a class="dropdown-toggle">Fényképalbum</a>
+		            <a class="dropdown-toggle" href="#">Fényképalbum</a>
 		            <ul class="dropdown-menu" data-role="dropdown">
 		                <li><a id="search">Keresés</a></li>
 		                <li class="divider"></li>
@@ -27,21 +27,21 @@
 		    	session_start();
 		    	if (isset($_SESSION['sid']) && $_SESSION['sid'] == session_id()){
 		    		echo "<div id=\"pics\" class=\"element\">
-				            <a class=\"dropdown-toggle\">Képek</a>
+				            <a class=\"dropdown-toggle\" href=\"#\">Képek</a>
 				            <ul class=\"dropdown-menu\" data-role=\"dropdown\">
 				                <li><a>Feltöltés</a></li>
 				                <li class=\"divider\"></li>
 				                <li><a target=\"change\">Módosítás</a></li>	                
 				            </ul>
 			        	</div>
-				    	<item id=\"albums\" class=\"element\">Albumok</item>
-				    	<item id=\"logout\" class=\"element place-right\">Kijelentkezés</item>
-				    	<item id=\"userdata\" class=\"element place-right\">Személyes adatok</item>";
+				    	<button id=\"albums\" class=\"element\">Albumok</button>
+				    	<button id=\"logout\" class=\"element place-right\">Kijelentkezés</button>
+				    	<button id=\"userdata\" class=\"element place-right\">Személyes adatok</button>";
 		    		
 		    	} else {
-				    echo "<item id=\"stats\" class=\"element\">Statisztika</item>
-		    			 <item id=\"login\" class=\"element place-right\">Bejelentkezés</item>
-		    			 <item id=\"register\" class=\"element place-right\">Regisztráció</item>";
+				    echo "<button id=\"stats\" class=\"element\">Statisztika</button>
+		    			 <button id=\"login\" class=\"element place-right\">Bejelentkezés</button>
+		    			 <button id=\"register\" class=\"element place-right\">Regisztráció</button>";
 		    	}
 		    	?>
 		    </nav>
