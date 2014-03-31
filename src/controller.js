@@ -43,3 +43,13 @@ $(document).on("click", "#logout", function(){
 	return false;
 });
 
+//regisztráció form betöltése
+$(document).on("click", "#register", function(){
+	$("#content-header").html("Regisztráció");
+	$("#content").load("register.html");
+});
+
+//regisztráció
+$(document).on("click", "#submit_reg", function(){
+	
+});
