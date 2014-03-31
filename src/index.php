@@ -22,19 +22,28 @@
 		            </ul>
 		        </div>
 		    	<item class="element-divider"></item>
-		    	<div id="pics" class="element">
-		            <a class="dropdown-toggle" href="#">Képek</a>
-		            <ul class="dropdown-menu" data-role="dropdown">
-		                <li><a>Feltöltés</a></li>
-		                <li class="divider"></li>
-		                <li><a target="change">Módosítás</a></li>	                
-		            </ul>
-		        </div>
-		    	<item id="albums" class="element">Albumok</item>
-		    	<item id="stats" class="element">Statisztika</item>
-		    	<item id="login" class="element place-right">Bejelentkezés</item>
-		    	<item id="logout" class="element place-right">Kijelentkezés</item>
-		    	<item id="userdata" class="element place-right">Személyes adatok</item>
+		    	
+		    	<?php
+		    	session_start();
+		    	if (isset($_SESSION['sid']) && $_SESSION['sid'] == session_id()){
+		    		echo "<div id=\"pics\" class=\"element\">
+				            <a class=\"dropdown-toggle\">Képek</a>
+				            <ul class=\"dropdown-menu\" data-role=\"dropdown\">
+				                <li><a>Feltöltés</a></li>
+				                <li class=\"divider\"></li>
+				                <li><a target=\"change\">Módosítás</a></li>	                
+				            </ul>
+			        	</div>
+				    	<item id=\"albums\" class=\"element\">Albumok</item>
+				    	<item id=\"logout\" class=\"element place-right\">Kijelentkezés</item>
+				    	<item id=\"userdata\" class=\"element place-right\">Személyes adatok</item>";
+		    		
+		    	} else {
+				    echo "<item id=\"stats\" class=\"element\">Statisztika</item>
+		    			 <item id=\"login\" class=\"element place-right\">Bejelentkezés</item>
+		    			 <item id=\"register\" class=\"element place-right\">Regisztráció</item>";
+		    	}
+		    	?>
 		    </nav>
 		</nav>
 

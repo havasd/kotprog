@@ -1,10 +1,3 @@
-$(document).ready(function(){
-	$("#logout").hide();
-	$("#userdata").hide();
-	$("#pics").hide();
-	$("#albums").hide();
-});
-
 //bejelelentkezés form betöltése
 $(document).on("click", "#login", function(){
 	$("#content-header").html("Bejelelentkezés");
@@ -22,22 +15,31 @@ $(document).on("click", "#submit_login", function(){
 		data: "username="+username+"&password="+password,
 		success: function(data){
 			if (data.login == 'true'){
-				$("#content").empty();
-				$("#login").hide();
-				$("#logout").show();
-				$("#userdata").show();
-				$("#pics").show();
-				$("#albums").show();
-				$("#content-header").html("Sikeres bejelentkezés");
-				$("#content").html("te kis buzi");
+				window.location.reload();
 			} else {
-				$("#content-header").html("Valamit elbasztál! Let's try again!");
+				$("#content-header").html("Sikertelen bejelentkezés!");
 			}
 		}
 	});
 	//very important magic, így nem töltődik újra az oldal
+	//de mégse kell
 	return false;
+
 });
 
-
+//kijelentkezés
+$(document).on("click", "#logout", function(){
+	jQuery.ajax({
+		dataType: "json",
+		url: "logout.php",
+		success: function(data){
+			if (data.logout == 'true'){
+				window.location.reload();
+			} else {
+				$("#content-header").html("Sikertelen kijelentkezés !");
+			}
+		}
+	});
+	return false;
+});
 
