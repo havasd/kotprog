@@ -1,4 +1,10 @@
 //bejelelentkezés form betöltése
+$(document).ready(function(){
+	$("#content-header").html("Legfrissebb képek");
+	$("#content").load("home.php");
+	$(".button-set").buttongroup();
+});
+
 $(document).on("click", "#login", function(){
 	$("#content-header").html("Bejelelentkezés");
 	$("#content").load("login.html");
@@ -47,9 +53,37 @@ $(document).on("click", "#logout", function(){
 $(document).on("click", "#register", function(){
 	$("#content-header").html("Regisztráció");
 	$("#content").load("register.html");
+
 });
 
 //regisztráció
 $(document).on("click", "#submit_reg", function(){
 	
+});
+
+//main
+$(document).on("click", "#home", function(){
+	$("#content-header").html("Legfrissebb képek");
+	$("#content").load("home.php");
+});
+
+$(document).on('click', ".tile", function(){
+	var image = $(this).find("img").attr('src');
+	$.Dialog({
+		height: 600,
+		width: 1000,
+        overlay: true,
+        shadow: true,
+        flat: true,
+        icon: '',
+        title: '',
+        content: '',
+        onShow: function(_dialog){
+            var content = _dialog.children('.content');
+            $.post( "picture_zoom.php", { img: image})
+			 .done(function(data) {
+				content.html(data);
+			});
+        }
+    });
 });
