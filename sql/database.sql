@@ -243,3 +243,39 @@
 	  REFERENCES  "FELHASZNALOK" ("ID") ON DELETE CASCADE ENABLE;
   ALTER TABLE  "KEPEK" ADD CONSTRAINT "KEPEK_FK_K" FOREIGN KEY ("KAT_ID")
 	  REFERENCES  "KATEGORIAK" ("ID") ON DELETE SET NULL ENABLE;
+
+--------------------------------------------------------
+--  Auto Increment Sequences
+--------------------------------------------------------
+
+  CREATE SEQUENCE album_seq;
+  CREATE SEQUENCE login_seq;
+  CREATE SEQUENCE user_seq;
+  CREATE SEQUENCE comment_seq;
+  CREATE SEQUENCE category_seq;
+  CREATE SEQUENCE image_seq;
+  CREATE SEQUENCE city_seq;
+
+--------------------------------------------------------
+--  REGISTER PROCEDURE
+--------------------------------------------------------
+create or replace PROCEDURE register
+(username IN varchar2, password IN varchar2, name IN varchar2, email IN varchar2, country IN varchar2, city IN varchar2)
+IS
+ varos_id number := 0;
+ user_id number := 0;
+BEGIN
+  BEGIN
+    SELECT ID INTO varos_id FROM VAROSOK WHERE orszag=country and varos=city;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+        varos_id := 0;
+  END;
+  IF varos_id = 0 THEN
+    varos_id := city_seq.nextval;
+    INSERT INTO VAROSOK VALUES(varos_id, city, country);
+  END IF;
+  user_id := user_seq.nextval;
+  INSERT INTO FELHASZNALOK VALUES(user_id,name,email,CURRENT_DATE,CURRENT_DATE,varos_id,null);
+  INSERT INTO BEJELENTKEZESI_ADATOK VALUES(username,password,user_id);
+END;

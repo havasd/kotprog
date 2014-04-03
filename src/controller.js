@@ -58,8 +58,14 @@ $(document).on("click", "#register", function(){
 
 //regisztráció
 $(document).on("click", "#submit_reg", function(){
-	
+		var form = $("#registration").serialize();
+		$.post( "register.php", form)
+		 .done(function(data) {
+				console.log(data);
+		});
+		return false;
 });
+
 
 //main
 $(document).on("click", "#home", function(){

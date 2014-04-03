@@ -1,35 +1,29 @@
-		<form id="registration_form" width="400">
-		    <fieldset>
+		<style>
+		#registration input {
+			width: 30em;
+		}
+		</style>
+		<form id="registration">
 			    <label>Felhasználónév :</label>
-		            <div class="input-control text" data-role="input-control">
-		                <input id="username" type="text" autofocus>
-		                <button class="btn-clear" tabindex="-1"></button>
-		        	</div></br>
+			    <input name="username" type="text">
+		            
 		        <label>Jelszó :</label>
-			        <div class="input-control password" data-role="input-control">
-		                <input id="password" type="password">
-		                <button class="btn-reveal" tabindex="-1"></button>
-		            </div></br>
+		        <input name="password" type="password">
+			        
+		        <label>Jelszó megerősítése:</label>
+		        <input name="password_2" type="password">
+			        
 		        <label>Név :</label>
-		        	<div class="input-control text" data-role="input-control">
-		                <input id="name" type="text">
-		                <button class="btn-clear" tabindex="-1"></button>
-		        	</div></br>
+		        <input name="name" type="text">
+		        	
 		        <label>E-mail cím :</label>
-		        	<div class="input-control text" data-role="input-control">
-		                <input id="email" type="text">
-		                <button class="btn-clear" tabindex="-1"></button>
-		        	</div></br>
+		        <input name="email" type="text">
+		        	
 		        <label>Ország :</label>
-		        	<div class="input-control text" data-role="input-control">
-		                <input id="country" type="text">
-		                <button class="btn-clear" tabindex="-1"></button>
-		        	</div></br>
+		        <input name="country" type="text">
+		        	
 		        <label>Város :</label>
-		        	<div class="input-control text" data-role="input-control">
-		                <input id="city" type="text">
-		                <button class="btn-clear" tabindex="-1"></button>
-		        	</div></br>
+		        <input name="city" type="text">
+		        <br>
 		        <button id="submit_reg">Regisztráció</button>
-		    </fieldset>
 		</form>
