@@ -1,31 +1,49 @@
 <?php
-class DBConnection {
-	private $con;
-	private $stmt;
-
-	public function DBConnection(){
-		$this->con = oci_connect('admin', 'admin', 'localhost/XE','AL32UTF8');	
+header('Content-Type: application/json; charset=utf-8');
+include 'DBConnection.php';
+if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&       strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') 
+{
+	$dbconn = new DBConnection();
+	$results = Array();
+	// form check
+	$username_pattern = '/^[a-zA-ZáéiíoóöőuúüűÁÉIÍOÓÖŐUÚÜŰ0-9_]{5,20}$/';
+	$password_pattern = '/^[a-zA-ZáéiíoóöőuúüűÁÉIÍOÓÖŐUÚÜŰ0-9_]{8,20}$/';
+	$varchar64_pattern = '/^[a-zA-ZáéiíoóöőuúüűÁÉIÍOÓÖŐUÚÜŰ0-9_ ]{1,64}$/';
+	if (!preg_match($username_pattern, $_POST['username'])){
+		$results['username'] = "regex mismatch";
 	}
-
-	public function register($user){
-		$query='begin register(:usr,:pwd,:name,:mail,:country,:city); end;';
-		$this->stmt = oci_parse($this->con, $query);
-		oci_bind_by_name($this->stmt, ':usr', $user['username']);
-		oci_bind_by_name($this->stmt, ':pwd', $user['password']);
-		oci_bind_by_name($this->stmt, ':name', $user['name']);
-		oci_bind_by_name($this->stmt, ':mail', $user['email']);
-		oci_bind_by_name($this->stmt, ':country', $user['country']);
-		oci_bind_by_name($this->stmt, ':city', $user['city']);
-		oci_execute($this->stmt);
+	if ($dbconn->isUsernameTaken($_POST['username'])){
+		$results['username'] = "taken username";
 	}
-
-	public function verifyUser($username,$password){
-
+	if ($_POST['password'] != $_POST['password_2']){
+		$results['password'] = "different passwords";
+	} 
+	else if (!preg_match($password_pattern, $_POST['password'])){
+		$results['password'] = "regex mismatch";
 	}
+	if (!preg_match($varchar64_pattern, $_POST['name'])){
+		$results['name'] = "regex mismatch";
+	}
+	if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+    	$results['email'] = "regex mismatch";
+	}
+	if (!preg_match($varchar64_pattern, $_POST['country'])){
+		$results['country'] = "regex_mismatch";
+	}
+	if (!preg_match($varchar64_pattern, $_POST['city'])){
+		$results['city'] = "regex_mismatch";
+	}
+	if (empty($results)){
+		$results['register'] = "true";
+		$dbconn->register($_POST);
+	}
+	else {
+		$results['register'] = "false";	
+	}
+	echo (json_encode($results));
 }
-
-$dbconn=new DBConnection();
-$dbconn->register($_POST);
-echo (json_encode(array("reg" =>"true")));
+else {
+	echo (json_encode(array("ajax" =>"false")));
+}
 exit();
 ?>

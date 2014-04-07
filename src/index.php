@@ -26,7 +26,7 @@
 		        </div>
 		    	<?php
 		    	session_start();
-		    	if (isset($_SESSION['sid']) && $_SESSION['sid'] == session_id()){
+		    	if (isset($'_SESSION['uid])){
 		    		echo "<div id=\"pics\" class=\"element\">
 				            <a class=\"dropdown-toggle\" href=\"#\">Saját Képek</a>
 				            <ul class=\"dropdown-menu\" data-role=\"dropdown\">

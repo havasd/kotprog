@@ -12,20 +12,39 @@ $(document).on("click", "#login", function(){
 
 //bejelentkezés
 $(document).on("click", "#submit_login", function(){
-	username=$("#username").val();
-	password=$("#password").val();
+	var username = $("#login2_username").val();
+	var password = $("#login2_pwd").val();
+	alert(username+"   "+password);
 	jQuery.ajax({
 		type: "POST",
 		dataType: "json",
 		url: "login.php",
 		data: "username="+username+"&password="+password,
 		success: function(data){
+			alert(data.login);
 			if (data.login == 'true'){
 				window.location.reload();
 			} else {
 				$("#content-header").html("Sikertelen bejelentkezés!");
 			}
-		}
+		},
+		error: function(jqXHR, exception) {
+            if (jqXHR.status === 0) {
+                alert('Not connect.\n Verify Network.');
+            } else if (jqXHR.status == 404) {
+                alert('Requested page not found. [404]');
+            } else if (jqXHR.status == 500) {
+                alert('Internal Server Error [500].');
+            } else if (exception === 'parsererror') {
+                alert(jqXHR.responseText);
+            } else if (exception === 'timeout') {
+                alert('Time out error.');
+            } else if (exception === 'abort') {
+                alert('Ajax request aborted.');
+            } else {
+                alert('Uncaught Error.\n' + jqXHR.responseText);
+            }
+        }
 	});
 	//very important magic, így nem töltődik újra az oldal
 	//de mégse kell
@@ -53,17 +72,68 @@ $(document).on("click", "#logout", function(){
 $(document).on("click", "#register", function(){
 	$("#content-header").html("Regisztráció");
 	$("#content").load("register.html");
-
 });
 
 //regisztráció
 $(document).on("click", "#submit_reg", function(){
-		var form = $("#registration").serialize();
-		$.post( "register.php", form)
-		 .done(function(data) {
-				console.log(data);
-		});
-		return false;
+	$("#reg_error").empty();
+	var form = $("#registration").serialize();
+	jQuery.ajax({
+		type: "POST",
+		dataType: "json",
+		url: "register.php",
+		data: form,
+		success: function(result){
+			console.log(result);
+			if (result.register == "true"){
+				$("#content").html("Sikeres regisztráció !");
+			}
+			else {
+				if (result.username == "regex mismatch"){
+					$("#reg_error").append("Nem megfelelő felhasználónév!<br>");
+				}
+				if (result.username == "taken username"){
+					$("#reg_error").append("Foglalt felhasználónév! Válassz másikat !<br>");
+				}
+				if (result.password == "different passwords"){
+					$("#reg_error").append("Nem egyezik meg a két jelszó !<br>");
+				}
+				if (result.password == "regex mismatch"){
+					$("#reg_error").append("Nem megengedett karakterek használata a jelszóban !<br>");
+				}
+				if (result.name == "regex mismatch"){
+					$("#reg_error").append("Nem megengedett karakterek használata a névben !<br>");
+				}  
+				if (result.email == "regex mismatch"){
+					$("#reg_error").append("Nem megfelelő az email cím !<br>");
+				}
+				if (result.country == "regex mismatch"){
+					$("#reg_error").append("Nem megengedett karakterek használata az országnévben !<br>");
+				}  
+				if (result.city == "regex mismatch"){
+					$("#reg_error").append("Nem megengedett karakterek használata a városnévben !<br>");
+				}  
+			}	
+		},
+		error: function(jqXHR, exception) {
+            if (jqXHR.status === 0) {
+                alert('Not connect.\n Verify Network.');
+            } else if (jqXHR.status == 404) {
+                alert('Requested page not found. [404]');
+            } else if (jqXHR.status == 500) {
+                alert('Internal Server Error [500].');
+            } else if (exception === 'parsererror') {
+                alert(jqXHR.responseText);
+            } else if (exception === 'timeout') {
+                alert('Time out error.');
+            } else if (exception === 'abort') {
+                alert('Ajax request aborted.');
+            } else {
+                alert('Uncaught Error.\n' + jqXHR.responseText);
+            }
+        }
+	});
+	return false;
 });
 
 
