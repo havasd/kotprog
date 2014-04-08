@@ -20,13 +20,13 @@ class DBConnection {
 	}
 
 	public function isUsernameTaken($username){
-		$tmp = 0;
-		$query = "SELECT COUNT(FELHASZNALONEV) INTO :tmp FROM BEJELENTKEZESI_ADATOK WHERE FELHASZNALONEV =:nev";
+		$query = "SELECT COUNT(FELHASZNALONEV) FROM BEJELENTKEZESI_ADATOK WHERE FELHASZNALONEV =:nev";
 		$this->stmt = oci_parse($this->con, $query);
 		oci_bind_by_name($this->stmt, ":nev", $username);
-		oci_bind_by_name($this->statement, ":tmp", $tmp);
+		oci_define_by_name($this->stmt, 'COUNT(FELHASZNALONEV)', $count);
 		oci_execute($this->stmt);
-		if ($tmp > 0){
+		oci_fetch($this->stmt);
+		if ($count > 0){
 			return true;
 		} else {
 			return false;
@@ -42,6 +42,10 @@ class DBConnection {
 		oci_bind_by_name($this->stmt, ":uid", $user_id,32);
 		oci_execute($this->stmt);
 		return $user_id;
+	}
+	public function close(){
+		oci_close($this->con);
+		$this->stmt = "";
 	}
 }
 ?>

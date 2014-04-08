@@ -1,8 +1,6 @@
 //bejelelentkezés form betöltése
 $(document).ready(function(){
-	$("#content-header").html("Legfrissebb képek");
-	$("#content").load("home.php");
-	$(".button-set").buttongroup();
+	
 });
 
 $(document).on("click", "#login", function(){
@@ -14,14 +12,12 @@ $(document).on("click", "#login", function(){
 $(document).on("click", "#submit_login", function(){
 	var username = $("#login2_username").val();
 	var password = $("#login2_pwd").val();
-	alert(username+"   "+password);
 	jQuery.ajax({
 		type: "POST",
 		dataType: "json",
 		url: "login.php",
 		data: "username="+username+"&password="+password,
 		success: function(data){
-			alert(data.login);
 			if (data.login == 'true'){
 				window.location.reload();
 			} else {
@@ -143,6 +139,7 @@ $(document).on("click", "#home", function(){
 	$("#content").load("home.php");
 });
 
+//image zoom
 $(document).on('click', ".tile", function(){
 	var image = $(this).find("img").attr('src');
 	$.Dialog({

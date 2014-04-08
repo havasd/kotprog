@@ -1,3 +1,6 @@
+<?php
+include 'UserClass.php';
+?>
 <!DOCTYPE html>
 <meta charset="utf-8">
 <html>
@@ -26,22 +29,14 @@
 		        </div>
 		    	<?php
 		    	session_start();
-		    	if (isset($'_SESSION['uid])){
-		    		echo "<div id=\"pics\" class=\"element\">
-				            <a class=\"dropdown-toggle\" href=\"#\">Saját Képek</a>
-				            <ul class=\"dropdown-menu\" data-role=\"dropdown\">
-				                <li><a>Feltöltés</a></li>
-				                <li class=\"divider\"></li>
-				                <li><a target=\"change\">Módosítás</a></li>	                
-				            </ul>
-			        	</div>
-				    	<button id=\"albums\" class=\"element\">Saját albumok</button>
-				    	<button id=\"logout\" class=\"element place-right\">Kijelentkezés</button>
-				    	<button id=\"userdata\" class=\"element place-right\">Személyes adatok</button>";
+		    	if (isset($_SESSION['userObject'])){
+		    		echo "	<button id=\"logout\" class=\"element place-right\">Kijelentkezés</button>
+				    		<button id=\"userdata\" class=\"element place-right\">Személyes adatok</button>
+				    		<button id=\"mypictures\" class=\"element place-right\">Saját fotók</button>";
 		    		
 		    	} else {
-				    echo "<button id=\"login\" class=\"element place-right\">Bejelentkezés</button>
-		    			 <button id=\"register\" class=\"element place-right\">Regisztráció</button>";
+				    echo "	<button id=\"login\" class=\"element place-right\">Bejelentkezés</button>
+		    			 	<button id=\"register\" class=\"element place-right\">Regisztráció</button>";
 		    	}
 		    	?>
 		    </nav>
@@ -50,7 +45,11 @@
 
 		<div class="panel">
 		    <div id="content-header"class="panel-header">
-		        
+		        <?php
+		        if(isset($_SESSION['userObject'])){
+		        	echo "Üdv ".$_SESSION['userObject']->getName()." !\n";
+		        }
+		        ?>
 		    </div>
 		    <div id="content" class="panel-content">
 		        
