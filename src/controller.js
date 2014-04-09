@@ -3,7 +3,7 @@ $(document).ready(function(){
 	
 });
 
-$(document).on("click", "#login", function(){
+$(document).on("click", "#login_btn", function(){
 	$("#content-header").html("Bejelelentkezés");
 	$("#content").load("login.html");
 });
@@ -49,7 +49,7 @@ $(document).on("click", "#submit_login", function(){
 });
 
 //kijelentkezés
-$(document).on("click", "#logout", function(){
+$(document).on("click", "#logout_btn", function(){
 	jQuery.ajax({
 		dataType: "json",
 		url: "logout.php",
@@ -65,7 +65,7 @@ $(document).on("click", "#logout", function(){
 });
 
 //regisztráció form betöltése
-$(document).on("click", "#register", function(){
+$(document).on("click", "#register_btn", function(){
 	$("#content-header").html("Regisztráció");
 	$("#content").load("register.html");
 });
@@ -134,7 +134,7 @@ $(document).on("click", "#submit_reg", function(){
 
 
 //main
-$(document).on("click", "#home", function(){
+$(document).on("click", "#home_btn", function(){
 	$("#content-header").html("Legfrissebb képek");
 	$("#content").load("home.php");
 });

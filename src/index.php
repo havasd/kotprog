@@ -14,11 +14,11 @@ include 'UserClass.php';
     <body class="metro">
         <nav class="navigation-bar dark">
 		    <nav class="navigation-bar-content">
-		    	<button id="home" class="element">Képnézegető</button>
+		    	<button id="home_btn" class="element">Képnézegető</button>
 		    	<item class="element-divider"></item>
-		    	<button id="cities" class="element">Városok arcai</button>
-		    	<button id="favourite_destinations" class="element">Legnépszerűbb úticélok</button>
-		    	<button id="stats" class="element">Statisztikák</button>
+		    	<button id="cities-btn" class="element">Városok arcai</button>
+		    	<button id="favourite_destinations_btn" class="element">Legnépszerűbb úticélok</button>
+		    	<button id="stats_btn" class="element">Statisztikák</button>
 		    	<div class="element input-element">
 		            <form>
 		                <div class="input-control text">
@@ -30,13 +30,13 @@ include 'UserClass.php';
 		    	<?php
 		    	session_start();
 		    	if (isset($_SESSION['userObject'])){
-		    		echo "	<button id=\"logout\" class=\"element place-right\">Kijelentkezés</button>
-				    		<button id=\"userdata\" class=\"element place-right\">Személyes adatok</button>
-				    		<button id=\"mypictures\" class=\"element place-right\">Saját fotók</button>";
+		    		echo "	<button id=\"logout_btn\" class=\"element place-right\">Kijelentkezés</button>
+				    		<button id=\"userdata_btn\" class=\"element place-right\">Személyes adatok</button>
+				    		<button id=\"mypictures_btn\" class=\"element place-right\">Saját fotók</button>";
 		    		
 		    	} else {
-				    echo "	<button id=\"login\" class=\"element place-right\">Bejelentkezés</button>
-		    			 	<button id=\"register\" class=\"element place-right\">Regisztráció</button>";
+				    echo "	<button id=\"login_btn\" class=\"element place-right\">Bejelentkezés</button>
+		    			 	<button id=\"register_btn\" class=\"element place-right\">Regisztráció</button>";
 		    	}
 		    	?>
 		    </nav>
