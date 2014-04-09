@@ -140,7 +140,7 @@ $(document).on("click", "#home_btn", function(){
 });
 
 //image zoom
-$(document).on('click', ".tile", function(){
+$(document).on("click", ".tile", function(){
 	var image = $(this).find("img").attr('src');
 	$.Dialog({
 		height: 600,
@@ -159,4 +159,10 @@ $(document).on('click', ".tile", function(){
 			});
         }
     });
+});
+
+//személyes adatok
+$(document).on("click", "#userdata_btn",function(){
+		$("#content-header").html("Személyes adatok");
+		$("#content").load("userdata.php");
 });

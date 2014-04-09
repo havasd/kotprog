@@ -279,3 +279,21 @@ BEGIN
   INSERT INTO FELHASZNALOK VALUES(user_id,name,email,CURRENT_DATE,CURRENT_DATE,varos_id,null);
   INSERT INTO BEJELENTKEZESI_ADATOK VALUES(username,password,user_id);
 END;
+--------------------------------------------------------
+--  User verifier PROCEDURE
+--------------------------------------------------------
+create or replace PROCEDURE verifyUser
+(username IN VARCHAR2, password IN VARCHAR2, user_id OUT NUMBER)
+IS
+tmp number:=0;
+BEGIN
+  BEGIN
+    SELECT FELH_ID INTO tmp FROM BEJELENTKEZESI_ADATOK WHERE FELHASZNALONEV = username AND JELSZO = password;
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+      tmp := 0;
+  END;
+  IF tmp > 0 THEN
+    UPDATE FELHASZNALOK SET UTOLSO_BEJ = CURRENT_DATE WHERE ID = tmp;
+  END IF;
+  user_id := tmp;
+END;

@@ -33,18 +33,8 @@ if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&       strtolower($_SERVER['HTTP_
 	if (!preg_match($varchar64_pattern, $_POST['city'])){
 		$results['city'] = "regex_mismatch";
 	}
-	if ($_FILES["avatar"]["error"] > 0)
-	  {
-	  echo "Error: " . $_FILES["avatar"]["error"] . "<br>";
-	  }
-	else
-	  {
-	  echo "Upload: " . $_FILES["avatar"]["name"] . "<br>";
-	  echo "Type: " . $_FILES["avatar"]["type"] . "<br>";
-	  echo "Size: " . ($_FILES["avatar"]["size"] / 1024) . " kB<br>";
-	  echo "Stored in: " . $_FILES["avatar"]["tmp_name"];
-	  }
-	 
+	if(isset($_POST['avatar'])){$results['avatar'] = "valami post van";}
+
 	if (empty($results)){
 		$results['register'] = "true";
 		$dbconn->register($_POST);
