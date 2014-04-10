@@ -5,10 +5,16 @@ include 'UserClass.php';
 <meta charset="utf-8">
 <html>
     <head>
-        <link rel="stylesheet" href="../ext/metroui/css/metro-bootstrap.css">
-        <script src="../ext/metroui/js/jquery/jquery.min.js"></script>
-        <script src="../ext/metroui/js/jquery/jquery.widget.min.js"></script>
-        <script src="../ext/metroui/min/metro.min.js"></script>
+        <link href="css/metro-bootstrap.css" rel="stylesheet" >
+        <link href="css/metro-bootstrap-responsive.css" rel="stylesheet">
+	    <link href="css/iconFont.css" rel="stylesheet">
+
+        <script src="js/jquery/jquery.min.js"></script>
+	    <script src="js/jquery/jquery.widget.min.js"></script>
+	    <script src="js/jquery/jquery.mousewheel.js"></script>
+    	<script src="js/prettify/prettify.js"></script>
+
+		<script src="js/load-metro.js"></script>
         <script src="controller.js"></script>
     </head>
     <body class="metro">

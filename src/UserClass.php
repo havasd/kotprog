@@ -17,7 +17,7 @@ class User {
 		$query='SELECT NEV,EMAIL,VAROS,ORSZAG 
 				FROM FELHASZNALOK, VAROSOK 
 				WHERE FELHASZNALOK.VAROS_ID = VAROSOK.ID 
-				AND FELHASZNALOK.ID = '.$uid;
+				AND FELHASZNALOK.ID =' . $uid;
 		$this->stmt = oci_parse($this->con,$query);
 		oci_execute($this->stmt);
 		oci_fetch_all($this->stmt, $result);

@@ -166,3 +166,11 @@ $(document).on("click", "#userdata_btn",function(){
 		$("#content-header").html("Személyes adatok");
 		$("#content").load("userdata.php");
 });
+
+// sajat kepek
+$(document).on("click", "#mypictures_btn", function(){
+    $("#content-header").html("Saját képek");
+    $("#content").load("mypictures.php");
+    alert( "You have " + $("#anyad").size() + " books overdue." );
+    $("[data-role=tab-control]").tabcontrol();
+});

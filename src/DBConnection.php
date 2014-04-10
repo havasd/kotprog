@@ -39,7 +39,7 @@ class DBConnection {
 		$this->stmt = oci_parse($this->con, $query);
 		oci_bind_by_name($this->stmt, ":usr", $username);
 		oci_bind_by_name($this->stmt, ":pwd", $password);
-		oci_bind_by_name($this->stmt, ":uid", $user_id,32);
+		oci_bind_by_name($this->stmt, ":uid", $user_id);
 		oci_execute($this->stmt);
 		return $user_id;
 	}
