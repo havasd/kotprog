@@ -14,7 +14,7 @@ include 'UserClass.php';
 	    <script src="js/jquery/jquery.mousewheel.js"></script>
     	<script src="js/prettify/prettify.js"></script>
 
-		<script src="js/load-metro.js"></script>
+		<script src="js/metro.min.js"></script>
         <script src="controller.js"></script>
     </head>
     <body class="metro">
@@ -49,8 +49,8 @@ include 'UserClass.php';
 		</nav>
 
 
-		<div class="panel">
-		    <div id="content-header"class="panel-header">
+		<div id="main_p" class="panel">
+		    <div id="content-header" class="panel-header">
 		        <?php
 		        if(isset($_SESSION['userObject'])){
 		        	echo "Üdv ".$_SESSION['userObject']->getName()." !\n";
