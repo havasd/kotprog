@@ -25,7 +25,9 @@ class Album {
     }
 
     public function toString(){
-        return 'Album id: ' . $this->m_id . ' name: ' . $this->m_name . ' description: ' . $this->m_desc . ' createdate: ' $this->m_createdate;
+        return 'Album id: ' . $this->m_id . 
+        ' name: ' . $this->m_name . 
+        ' description: ' . $this->m_desc . ' createdate: ' . $this->m_createdate;
     }
 }
 ?>
