@@ -4,7 +4,7 @@ class DBConnection {
 	private $stmt;
 
 	public function DBConnection(){
-		$this->con = oci_connect('admin', 'admin', 'localhost/XE','AL32UTF8');	
+		$this->con = oci_connect('havas', '123456', 'localhost/XE','AL32UTF8');	
 	}
 
 	public function register($user){

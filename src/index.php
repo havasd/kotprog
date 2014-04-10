@@ -53,7 +53,7 @@ include 'UserClass.php';
 		    <div id="content-header" class="panel-header">
 		        <?php
 		        if(isset($_SESSION['userObject'])){
-		        	echo "Üdv ".$_SESSION['userObject']->getName()." !\n";
+		        	echo "Üdv ".$_SESSION['userObject']->toString()." !\n";
 		        }
 		        ?>
 		    </div>

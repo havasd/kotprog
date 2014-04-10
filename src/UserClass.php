@@ -1,46 +1,72 @@
 <?php
 class User {
-	private $con;
-	private $stmt;
-	private $name;
-	private $email;
-	private $country;
-	private $city;
+	private $m_con;
+	private $m_id;
+	private $m_stmt;
+	private $m_name;
+	private $m_email;
+	private $m_country;
+	private $m_city;
+	private $m_albums;
 	//private $avatar;
 
 	public function User($uid){
-		$this->con  = oci_connect('admin', 'admin', 'localhost/XE','AL32UTF8');
-		if (!$this->con) {
+		$this->m_con  = oci_connect('havas', '123456', 'localhost/XE','AL32UTF8');
+		if (!$this->m_con) {
 		    $e = oci_error();
 		    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 		}
-		$query='SELECT NEV,EMAIL,VAROS,ORSZAG 
+		$this->m_id = $uid;
+		$this->m_albums = array();
+		$this->load();
+	}
+
+	private function load(){
+		$query = 'SELECT NEV,EMAIL,VAROS,ORSZAG 
 				FROM FELHASZNALOK, VAROSOK 
 				WHERE FELHASZNALOK.VAROS_ID = VAROSOK.ID 
-				AND FELHASZNALOK.ID =' . $uid;
-		$this->stmt = oci_parse($this->con,$query);
-		oci_execute($this->stmt);
-		oci_fetch_all($this->stmt, $result);
-		$this->name = $result["NEV"][0];
-		$this->email = $result["EMAIL"][0];
-		$this->country = $result["VAROS"][0];
-		$this->city = $result["ORSZAG"][0];
+				AND FELHASZNALOK.ID =' . $this->m_id;
+		$this->m_stmt = oci_parse($this->m_con, $query);
+		oci_execute($this->m_stmt);
+		oci_fetch_all($this->m_stmt, $result);
+		$this->m_name = $result["NEV"][0];
+		$this->m_email = $result["EMAIL"][0];
+		$this->m_country = $result["VAROS"][0];
+		$this->m_city = $result["ORSZAG"][0];
+	}
+
+	private function loadAlbums(){
+		$query = 'SELECT ID, NEV, LEIRAS, LETREHOZAS_IDEJE FROM ALBUMOK WHERE FELH_ID=' . $id;
+		$this->m_stmt = oci_parse($this->m_conn, $query);
+		oci_execute($this->m_stmt);
+
+		while ($row = oci_fetch_array($this->stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+			$id = $row["ID"];
+		}
 	}
 
 	public function getName(){
-		return $this->name;
+		return $this->m_name;
 	}
 
 	public function getEmail(){
-		return $this->email;
+		return $this->m_email;
 	}
 
 	public function getCountry(){
-		return $this->country;
+		return $this->m_country;
 	}
 
 	public function getCity(){
-		return $this->city;
+		return $this->m_city;
+	}
+
+	public function toString(){
+		return "User: id: " . $this->m_id . 
+		" name: " . $this->m_name . 
+		" email: " . $this->m_email . 
+		" country: " . $this->m_country . 
+		" city: " . $this->m_city;
 	}
 
 }
