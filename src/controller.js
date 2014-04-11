@@ -216,5 +216,62 @@ $(document).on("submit","#avatar",function(){
 
 // sajat kepek
 $(document).on("click", "#mypictures_btn", function(){
-    $("#main_p").load("mypictures.php");
+    $("#content-header").load("mypictures.php", "header=1");
+    $("#content").load("mypictures.php", "header=0");
+});
+
+// uj album
+$(document).on("click", "#btn_new_album", function(){
+    $.Dialog({
+        height: 250,
+        width: 300,
+        overlay: true,
+        shadow: true,
+        flat: true,
+        icon: '',
+        title: 'Új album létrehozása',
+        content: '',
+        onShow: function(_dialog){
+            var content = _dialog.children('.content');
+            $(content).load("NewAlbumPage.php");
+        }
+   });
+});
+
+$(document).on("submit", "#f_new_album", function(){
+    event.stopPropagation(); // Stop stuff happening
+    event.preventDefault(); // Totally stop stuff happening
+    var form = $("#f_new_album").serialize();
+    jQuery.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "NewAlbumPage.php",
+        data:  form,
+        success: function(result){
+            if (result.create == "true"){
+                    $.Dialog.close();
+                    $.Notify.show("Album sikeresen létrehozva.");
+                    $("#content-header").load("mypictures.php", "header=1");
+                    $("#content").load("mypictures.php", "header=0");
+            }
+        },
+        error: function(jqXHR, exception) {
+            if (jqXHR.status === 0) {
+                alert('Not connect.\n Verify Network.');
+            } else if (jqXHR.status == 404) {
+                alert('Requested page not found. [404]');
+            } else if (jqXHR.status == 500) {
+                alert('Internal Server Error [500].');
+            } else if (exception === 'parsererror') {
+                alert(jqXHR.responseText);
+            } else if (exception === 'timeout') {
+                alert('Time out error.');
+            } else if (exception === 'abort') {
+                alert('Ajax request aborted.');
+            } else {
+                alert('Uncaught Error.\n' + jqXHR.responseText);
+            }
+        }
+    });
+    return false;
 });

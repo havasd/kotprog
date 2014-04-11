@@ -1,10 +1,12 @@
 <?php
+require_once('dbstrings.php');
+
 class DBConnection {
 	private $con;
 	private $stmt;
 
 	public function DBConnection(){
-		$this->con = oci_connect('admin', 'admin', 'localhost/XE','AL32UTF8');	
+		$this->con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');	
 	}
 
 	public function register($user){

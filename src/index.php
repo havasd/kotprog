@@ -1,5 +1,5 @@
 <?php
-include 'UserClass.php';
+require_once 'UserClass.php';
 ?>
 <!DOCTYPE html>
 <meta charset="utf-8">
@@ -49,16 +49,20 @@ include 'UserClass.php';
 		</nav>
 
 
-		<div id="main_p" class="panel">
+		<div class="panel">
 		    <div id="content-header" class="panel-header">
 		        <?php
 		        if(isset($_SESSION['userObject'])){
-		        	echo "Üdv ".$_SESSION['userObject']->toString()." !\n";
+		        	echo "Üdv ".$_SESSION['userObject']->getName()." !\n";
 		        }
 		        ?>
 		    </div>
 		    <div id="content" class="panel-content">
-		        
+		        <?php
+		        if(isset($_SESSION['userObject'])){
+		        	echo $_SESSION['userObject']->toString();
+		        }
+		        ?>
 		    </div>
 		</div>
     </body>

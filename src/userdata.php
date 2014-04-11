@@ -1,6 +1,6 @@
 <?php
 //user data modification
-include 'UserClass.php';
+require_once 'UserClass.php';
 session_start();
 ?>
 <div id="#userdata">
