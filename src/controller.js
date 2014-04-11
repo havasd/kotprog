@@ -167,6 +167,53 @@ $(document).on("click", "#userdata_btn",function(){
 		$("#content").load("userdata.php");
 });
 
+//avatar
+$(document).on("change","#avatar_file",function(){
+	files = event.target.files;
+});
+
+// Add events
+$(document).on("submit","#avatar",function(){
+	event.stopPropagation(); // Stop stuff happening
+    event.preventDefault(); // Totally stop stuff happening
+    var data = new FormData();
+    $.each(files, function(key,value)
+        	{
+				data.append(key, value);
+			});
+	$.ajax({
+        url: 'avatar_upload.php',
+        type: 'POST',
+        data: data,
+        cache: false,
+        dataType: 'json',
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        success: function(data, textStatus, jqXHR)
+        {
+        	//console.log(data);
+        	$("#content").empty().load("userdata.php");
+        },
+		error: function(jqXHR, exception) {
+            if (jqXHR.status === 0) {
+                alert('Not connect.\n Verify Network.');
+            } else if (jqXHR.status == 404) {
+                alert('Requested page not found. [404]');
+            } else if (jqXHR.status == 500) {
+                alert('Internal Server Error [500].');
+            } else if (exception === 'parsererror') {
+                alert(jqXHR.responseText);
+            } else if (exception === 'timeout') {
+                alert('Time out error.');
+            } else if (exception === 'abort') {
+                alert('Ajax request aborted.');
+            } else {
+                alert('Uncaught Error.\n' + jqXHR.responseText);
+            }
+        }
+    });
+});
+
 // sajat kepek
 $(document).on("click", "#mypictures_btn", function(){
     $("#main_p").load("mypictures.php");

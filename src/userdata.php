@@ -2,7 +2,6 @@
 //user data modification
 include 'UserClass.php';
 session_start();
-
 ?>
 <div id="#userdata">
 	<form id="password_change">
@@ -32,10 +31,14 @@ session_start();
 	    <br>
 	    <button id="personaldata_change_submit">Adatok módosítása</button>
 	</form>
-	    <div id="avatar">
-	    	<label>Avatar :</label>
-	    	<input type="file" id="avatar_upload">
-	    	<br>
-	    	<button id="avatar_upload_btn">Avatar feltöltése/módosítása</button>
-	    </div>
+	<?php
+			
+			$tag = '<img src="data:image/jpeg;base64,' . $_SESSION['userObject']->getAvatar() .
+	          '" width="250" height="250" /><br>';
+	   		echo $tag;
+		?>
+	<form id="avatar" action="avatar_upload.php" method="POST">
+      	<input type="file" name="avatar_file" id="avatar_file"/><br>
+      	<input type="submit" id="avatar_submit_btn">
+    </form>
 </div>

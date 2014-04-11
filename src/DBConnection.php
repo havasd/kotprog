@@ -4,7 +4,7 @@ class DBConnection {
 	private $stmt;
 
 	public function DBConnection(){
-		$this->con = oci_connect('havas', '123456', 'localhost/XE','AL32UTF8');	
+		$this->con = oci_connect('admin', 'admin', 'localhost/XE','AL32UTF8');	
 	}
 
 	public function register($user){
@@ -33,13 +33,14 @@ class DBConnection {
 		}
 	}
 
+	//kimeneti változókra a 4. paramétert rátegyed
 	public function verifyUser($username,$password){
 		$user_id = 0;
 		$query = 'begin verifyUser(:usr, :pwd, :uid); end;';
 		$this->stmt = oci_parse($this->con, $query);
 		oci_bind_by_name($this->stmt, ":usr", $username);
 		oci_bind_by_name($this->stmt, ":pwd", $password);
-		oci_bind_by_name($this->stmt, ":uid", $user_id);
+		oci_bind_by_name($this->stmt, ":uid", $user_id,32);
 		oci_execute($this->stmt);
 		return $user_id;
 	}
