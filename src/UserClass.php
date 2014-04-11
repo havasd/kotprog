@@ -1,4 +1,6 @@
 <?php
+include('AlbumClass.php');
+
 class User {
 	private $m_con;
 	private $m_id;
@@ -19,6 +21,7 @@ class User {
 		$this->m_id = $uid;
 		$this->m_albums = array();
 		$this->load();
+		$this->loadAlbums();
 		$this->m_avatar = $this->getAvatar();
 	}
 
@@ -37,11 +40,10 @@ class User {
 	}
 
 	private function loadAlbums(){
-		$query = 'SELECT ID, NEV, LEIRAS, LETREHOZAS_IDEJE FROM ALBUMOK WHERE FELH_ID=' . $id;
+		$query = 'SELECT ID, NEV, LEIRAS, LETREHOZAS_IDEJE FROM ALBUMOK WHERE FELH_ID=' . $this->m_id;
 		$this->m_stmt = oci_parse($this->m_con, $query);
 		oci_execute($this->m_stmt);
-
-		while ($row = oci_fetch_array($this->stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+		while ($row = oci_fetch_array($this->m_stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
 			$id = $row["ID"];
 		}
 	}
