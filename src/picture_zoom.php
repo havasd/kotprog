@@ -3,20 +3,20 @@
 }
 #picture{
 	position: relative;
-	top:-40px;
-	left:0px;
+	top: -40px;
+	left: 0px;
 	height: 600px;
 	width: 700px;
-	display:-moz-box; 
-			-moz-box-pack:center; 
-			-moz-box-align:center; 
+	display:-moz-box;
+			-moz-box-pack:center;
+			-moz-box-align:center;
 
-	display:-webkit-box; 
-			-webkit-box-pack:center; 
-			-webkit-box-align:center; 
+	display:-webkit-box;
+			-webkit-box-pack:center;
+			-webkit-box-align:center;
 
 	display:box; 
-			box-pack:center; 
+			box-pack:center;
 			box-align:center;
 }
 #picture img{

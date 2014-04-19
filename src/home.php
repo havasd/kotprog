@@ -20,7 +20,7 @@
 			   		if ( $i >= 15){
 			   			break;
 			   		}
-					echo "<div class=\"tile double\">
+					echo "<div class=\"tile double picture\">
 							    <div class=\"tile-content image\">
 							        <img class=\"tile_image\" src=\"".$file."\">
 							    </div>

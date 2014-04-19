@@ -137,6 +137,10 @@ class User {
 		return $this->m_albums;
 	}
 
+	public function getAlbumById($id){
+		return $this->m_albums[$id];
+	}
+	
 	private function addAlbum($album) {
 		$this->m_albums[$album->getId()] = $album;
 	}

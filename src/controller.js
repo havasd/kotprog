@@ -140,7 +140,7 @@ $(document).on("click", "#home_btn", function(){
 });
 
 //image zoom
-$(document).on("click", ".tile", function(){
+$(document).on("click", ".picture", function(){
 	var image = $(this).find("img").attr('src');
 	$.Dialog({
 		height: 600,
@@ -214,13 +214,19 @@ $(document).on("submit","#avatar",function(){
     });
 });
 
-// sajat kepek
+/*
+--------------------------------------------------------------
+--------------------- Saját képek begin ----------------------
+--------------------------------------------------------------
+*/
+
+// clicks
 $(document).on("click", "#mypictures_btn", function(){
     $("#content-header").load("mypictures.php", "header=1");
     $("#content").load("mypictures.php", "header=0");
 });
 
-// uj album
+// uj album click
 $(document).on("click", "#btn_new_album", function(){
     $.Dialog({
         height: 250,
@@ -235,9 +241,23 @@ $(document).on("click", "#btn_new_album", function(){
             var content = _dialog.children('.content');
             $(content).load("NewAlbumPage.php");
         }
-   });
+    });
 });
 
+// back button when usr in an album
+$(document).on("click", "#btn_album_back", function(){
+    $("#content-header").load("mypictures.php", "header=1");
+    $("#content").load("mypictures.php", "header=0"); 
+});
+
+// album navigation
+$(document).on("click", ".album", function(){
+    $(this).trigger('mouseleave');
+    $("#content-header").load("mypictures.php", "header=1&alb=" + ($(this).attr('id')));
+    $("#content").load("mypictures.php", "header=0&alb=" + ($(this).attr('id'))); 
+});
+
+// form album create
 $(document).on("submit", "#f_new_album", function(){
     event.stopPropagation(); // Stop stuff happening
     event.preventDefault(); // Totally stop stuff happening
@@ -275,3 +295,9 @@ $(document).on("submit", "#f_new_album", function(){
     });
     return false;
 });
+
+/*
+--------------------------------------------------------------
+--------------------- Saját képek end ------------------------
+--------------------------------------------------------------
+*/
