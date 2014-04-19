@@ -1,6 +1,6 @@
 <?php
-class Album {
-
+class Album
+{
     private $m_id;
     private $m_name;
     private $m_desc;

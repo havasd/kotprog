@@ -2,7 +2,8 @@
 require_once('dbstrings.php');
 require_once('AlbumClass.php');
 
-class User {
+class User
+{
 	private $m_id;
 	private $m_name;
 	private $m_email;
@@ -62,7 +63,7 @@ class User {
 		    $e = oci_error();
 		    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 		}
-		$query = 'SELECT ID, NEV, LEIRAS, LETREHOZAS_IDEJE FROM ALBUMOK WHERE FELH_ID=' . $this->m_id;
+		$query = 'SELECT ID, NEV, LEIRAS, TO_CHAR(LETREHOZAS_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS LETREHOZAS_IDEJE FROM ALBUMOK WHERE FELH_ID=' . $this->m_id;
 		$stmt = oci_parse($con, $query);
 		oci_execute($stmt);
 		while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -140,7 +141,7 @@ class User {
 	public function getAlbumById($id){
 		return $this->m_albums[$id];
 	}
-	
+
 	private function addAlbum($album) {
 		$this->m_albums[$album->getId()] = $album;
 	}

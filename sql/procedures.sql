@@ -47,9 +47,9 @@ END;
 create or replace PROCEDURE create_album
 (name IN varchar2, description IN varchar2, user_id IN number, id OUT number, create_time OUT DATE)
 IS
-c_time DATE := CURRENT_DATE;
+  c_time DATE := SYSDATE;
 BEGIN
   id := album_seq.nextval;
-  create_time := c_time;
-  INSERT INTO ALBUMOK (ID, NEV, LEIRAS, LETREHOZAS_IDEJE, FELH_ID) VALUES (id, name, description, create_time, user_id);
+  create_time := TO_CHAR(c_time, 'YYYY/MM/DD HH24:MI:SS');
+  INSERT INTO ALBUMOK (ID, NEV, LEIRAS, LETREHOZAS_IDEJE, FELH_ID) VALUES (id, name, description, c_time, user_id);
 END;
