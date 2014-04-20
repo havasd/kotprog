@@ -45,11 +45,25 @@ END;
 --  Album creator PROCEDURE
 --------------------------------------------------------
 create or replace PROCEDURE create_album
-(name IN varchar2, description IN varchar2, user_id IN number, id OUT number, create_time OUT DATE)
+(name IN varchar2, description IN varchar2, user_id IN number, id OUT number, create_time OUT varchar2)
 IS
   c_time DATE := SYSDATE;
 BEGIN
   id := album_seq.nextval;
   create_time := TO_CHAR(c_time, 'YYYY/MM/DD HH24:MI:SS');
   INSERT INTO ALBUMOK (ID, NEV, LEIRAS, LETREHOZAS_IDEJE, FELH_ID) VALUES (id, name, description, c_time, user_id);
+END;
+
+--------------------------------------------------------
+--  Album creator PROCEDURE
+--------------------------------------------------------
+create or replace PROCEDURE upload_picture
+(user_id IN number, album_id IN NUMBER, cat_id IN NUMBER, description IN varchar2, place IN varchar2, pic OUT BLOB, id OUT number, create_time OUT STRING)
+IS
+  c_time DATE := SYSDATE;
+BEGIN
+  id := image_seq.nextval;
+  create_time := TO_CHAR(c_time, 'YYYY/MM/DD HH24:MI:SS');
+  INSERT INTO KEPEK (ID, LEIRAS, FELTOLTES_IDEJE, HELYSZIN, KEPFAJL, ALBUM_ID, FELH_ID, KAT_ID) VALUES (id, description, c_time, place, EMPTY_BLOB(), album_id, user_id, cat_id)
+  RETURN KEPFAJL INTO pic;
 END;

@@ -40,11 +40,22 @@
         global $usr;
         // main page
         if (!$albumid) {
+            echo '<div class="grid" style="margin-left: 30px; margin-right: 30px">
+                    <div class="row">';
+
+            $pics = $usr->getPictures();
+            if (count($pics)) {
+                foreach ($pics as $key => $val) {
+                    echo '<div id="pic_' . $key . '" class="tile double picture">
+                            <div class="tile-content image">
+                                <img class="tile_image" src="data:image/jpeg;base64,' . $val . '">
+                            </div>
+                          </div>';
+                }
+            }
+
             $albums = $usr->getAlbums();
-            // TODO: get pictures without album
             if (count($albums)) {
-                echo '<div class="grid" style="margin-left: 30px; margin-right: 30px">
-                        <div class="row">';
                 foreach ($albums as $val) {  
                     echo '<div id="alb_' . $val->getId() . '" class="tile double album" data-hint="' . $val->getCreateDate() . '|' . $val->getDescription(). '"data-hint-position="bottom">
                             <div class="tile-content image">
@@ -56,12 +67,12 @@
                             </div>
                           </div>';
                 }
-                echo '</div></div>';
             } else {
                 echo '<div class="notice marker-on-top bg-dark fg-white" style="width:30em; text-align:center">
                         Üres a fényképalbum.
                       </div>';
             }
+            echo '</div></div>';
         } else { // load pictures from albums
             $album = $usr->getAlbumById($albumid);
             if ($album->getNumOfPics()) { // load pictures from album

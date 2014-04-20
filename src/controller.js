@@ -226,7 +226,7 @@ $(document).on("click", "#mypictures_btn", function(){
     $("#content").load("mypictures.php", "header=0");
 });
 
-// uj album click
+// new album click
 $(document).on("click", "#btn_new_album", function(){
     $.Dialog({
         height: 250,
@@ -244,17 +244,89 @@ $(document).on("click", "#btn_new_album", function(){
     });
 });
 
+// picture upload click
+$(document).on("click", "#btn_new_picture", function(){
+    $.Dialog({
+        height: 300,
+        width: 300,
+        overlay: true,
+        shadow: true,
+        flat: true,
+        icon: '',
+        title: 'Új képek feltöltése',
+        content: '',
+        onShow: function(_dialog){
+            var content = _dialog.children('.content');
+            $(content).load("pictureupload.php");
+        }
+    });
+});
+
+//avatar
+$(document).on("change", "#in_file_picture", function(){
+    files = event.target.files;
+});
+
+// Add events
+$(document).on("submit", "#f_new_pictures", function(){
+    event.stopPropagation(); // Stop stuff happening
+    event.preventDefault(); // Totally stop stuff happening
+    var data = new FormData();
+    $.each(files, function(key, value){
+        data.append(key, value);
+    });
+
+    $.ajax({
+        url: 'pictureupload.php',
+        type: 'POST',
+        data: data,
+        cache: false,
+        dataType: 'json',
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        success: function(data, textStatus, jqXHR)
+        {
+            if (data.create == "true"){
+                    $.Dialog.close();
+                    $.Notify.show("Fényképek feltöltése sikeres.");
+                    $("#content-header").load("mypictures.php", "header=1");
+                    $("#content").load("mypictures.php", "header=0");
+            } else {
+                $.Notify.show("Fénykép feltöltése sikertelen.");
+            }
+            
+        },
+        error: function(jqXHR, exception) {
+            if (jqXHR.status === 0) {
+                alert('Not connect.\n Verify Network.');
+            } else if (jqXHR.status == 404) {
+                alert('Requested page not found. [404]');
+            } else if (jqXHR.status == 500) {
+                alert('Internal Server Error [500].');
+            } else if (exception === 'parsererror') {
+                alert(jqXHR.responseText);
+            } else if (exception === 'timeout') {
+                alert('Time out error.');
+            } else if (exception === 'abort') {
+                alert('Ajax request aborted.');
+            } else {
+                alert('Uncaught Error.\n' + jqXHR.responseText);
+            }
+        }
+    });
+});
+
 // back button when usr in an album
 $(document).on("click", "#btn_album_back", function(){
     $("#content-header").load("mypictures.php", "header=1");
-    $("#content").load("mypictures.php", "header=0"); 
+    $("#content").load("mypictures.php", "header=0");
 });
 
 // album navigation
 $(document).on("click", ".album", function(){
     $(this).trigger('mouseleave');
     $("#content-header").load("mypictures.php", "header=1&alb=" + ($(this).attr('id')));
-    $("#content").load("mypictures.php", "header=0&alb=" + ($(this).attr('id'))); 
+    $("#content").load("mypictures.php", "header=0&alb=" + ($(this).attr('id')));
 });
 
 // form album create
