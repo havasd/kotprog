@@ -1,11 +1,11 @@
-//bejelelentkezés form betöltése
 $(document).ready(function(){
 	
 });
 
+//bejelelentkezés form betöltése
 $(document).on("click", "#login_btn", function(){
 	$("#content-header").html("Bejelelentkezés");
-	$("#content").load("login.html");
+	$("#content").load("login.php");
 });
 
 //bejelentkezés
@@ -16,7 +16,7 @@ $(document).on("click", "#submit_login", function(){
 		type: "POST",
 		dataType: "json",
 		url: "login.php",
-		data: "username="+username+"&password="+password,
+		data: "username=" + username + "&password=" + password,
 		success: function(data){
 			if (data.login == 'true'){
 				window.location.reload();
@@ -67,7 +67,7 @@ $(document).on("click", "#logout_btn", function(){
 //regisztráció form betöltése
 $(document).on("click", "#register_btn", function(){
 	$("#content-header").html("Regisztráció");
-	$("#content").load("register.html");
+	$("#content").load("register.php");
 });
 
 //regisztráció
@@ -83,8 +83,7 @@ $(document).on("click", "#submit_reg", function(){
 			console.log(result);
 			if (result.register == "true"){
 				$("#content").html("Sikeres regisztráció !");
-			}
-			else {
+			} else {
 				if (result.username == "regex mismatch"){
 					$("#reg_error").append("Nem megfelelő felhasználónév!<br>");
 				}
@@ -163,8 +162,8 @@ $(document).on("click", ".picture", function(){
 
 //személyes adatok
 $(document).on("click", "#userdata_btn",function(){
-		$("#content-header").html("Személyes adatok");
-		$("#content").load("userdata.php");
+	$("#content-header").html("Személyes adatok");
+	$("#content").load("userdata.php");
 });
 
 //avatar

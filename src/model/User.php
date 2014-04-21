@@ -132,9 +132,6 @@
 			$query = "INSERT INTO KEPEK (ID, LEIRAS, FELTOLTES_IDEJE, HELYSZIN, KEPFAJL, ALBUM_ID, FELH_ID, KAT_ID)
 					  VALUES (image_seq.nextval, :descr, SYSDATE, :place, EMPTY_BLOB(), :albid, :user_id, :cid)
 					  RETURNING KEPFAJL INTO :myblob";
-			/*$query = "INSERT INTO KEPEK (ID, KEPFAJL, FELH_ID)
-					  VALUES (image_seq.nextval, EMPTY_BLOB(), :user_id)
-					  RETURNING KEPFAJL INTO :myblob";*/
 
 			$stmt = oci_parse($con, $query);
 			$dlob = oci_new_descriptor($con, OCI_D_LOB);
