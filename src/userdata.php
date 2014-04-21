@@ -1,6 +1,6 @@
 <?php
 //user data modification
-require_once 'UserClass.php';
+require_once('model/User.php');
 session_start();
 ?>
 <div id="#userdata">
@@ -18,16 +18,16 @@ session_start();
 	</form>
     <form id="personaldata_change"> 
 	    <label>Név :</label>
-	    <input name="name_new" type="text" placeholder="<?php echo $_SESSION['userObject']->getName() ;?>">
+	    <input name="name_new" type="text" value="<?php echo $_SESSION['userObject']->getName() ;?>">
 	    	
 	    <label>E-mail cím :</label>
-	    <input name="email_new" type="text" placeholder="<?php echo $_SESSION['userObject']->getEmail() ;?>">
+	    <input name="email_new" type="text" value="<?php echo $_SESSION['userObject']->getEmail() ;?>">
 	    	
 	    <label>Ország :</label>
-	    <input name="country_new" type="text" placeholder="<?php echo $_SESSION['userObject']->getCountry() ;?>">
+	    <input name="country_new" type="text" value="<?php echo $_SESSION['userObject']->getCountry() ;?>">
 	    	
 	    <label>Város :</label>
-	    <input name="city_new" type="text" placeholder="<?php echo $_SESSION['userObject']->getCity() ;?>">
+	    <input name="city_new" type="text" value="<?php echo $_SESSION['userObject']->getCity() ;?>">
 	    <br>
 	    <button id="personaldata_change_submit">Adatok módosítása</button>
 	</form>

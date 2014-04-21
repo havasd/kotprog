@@ -1,6 +1,6 @@
 <?php
 require_once 'DBConnection.php';
-require_once 'UserClass.php';
+require_once 'model/User.php';
 	//header('Content-Type: application/json; charset=utf-8');
 	if(isset($_POST['username']) && isset($_POST['password'])){
 		

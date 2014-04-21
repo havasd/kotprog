@@ -1,5 +1,5 @@
 <?php
-require_once 'UserClass.php';
+require_once 'model/User.php';
 ?>
 <!DOCTYPE html>
 <meta charset="utf-8">

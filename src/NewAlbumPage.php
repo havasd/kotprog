@@ -1,5 +1,5 @@
 <?php
-    require_once('UserClass.php');
+    require_once('model/User.php');
     session_start();
     $user = $_SESSION['userObject'];
     if (isset($user)) {

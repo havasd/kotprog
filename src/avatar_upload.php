@@ -1,5 +1,5 @@
 <?php
-require_once 'UserClass.php';
+require_once('model/User.php');
 header('Content-Type: application/json; charset=utf-8');
 session_start();
 if(isset($_FILES[0]) && $_SESSION['userObject']){

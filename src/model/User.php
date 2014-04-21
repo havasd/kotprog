@@ -1,6 +1,6 @@
 <?php
 	require_once('dbstrings.php');
-	require_once('AlbumClass.php');
+	require_once('Album.php');
 
 	class User
 	{
