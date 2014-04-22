@@ -6,7 +6,7 @@
         public function getUserById($id){
 
         }
-        
+
         public function addUser($user){
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'begin register(:usr,:pwd,:name,:mail,:country,:city); end;';

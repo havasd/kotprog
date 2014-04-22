@@ -1,10 +1,10 @@
 <?php
 	header('Content-Type: application/json; charset=utf-8');
-	require_once('controller/Controller.php');
+	require_once('dal/DaoDB.php');
 
 
 	if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' and isset($_POST['username'])){
-		$controller = new Controller();
+		$controller = new DaoDB();
 		$results = Array();
 		// form check
 		$username_pattern = '/^[a-zA-ZáéiíoóöőuúüűÁÉIÍOÓÖŐUÚÜŰ0-9_]{5,20}$/';
