@@ -9,13 +9,12 @@
         $albumok = $controller->getAlbums();
         if (isset($_FILES[0]) && isset($_POST)) {
             $controller = new DaoDB();
-            $title = $_POST['file_title'];
             $place = $_POST['file_place'];
             $desc = $_POST['file_desc'];
             $album_id = $_POST['file_album'];
             $blob = base64_encode(file_get_contents($_FILES[0]['tmp_name']));
             //uploadPicture($blob,$title,$place,$desc,$albid)
-            if ($controller->uploadPicture($blob,$title, $place,$desc,$album_id))
+            if ($controller->uploadPicture($blob,$place,$desc,$album_id))
                 echo json_encode(array('create' => 'true'));
             else
                 echo json_encode(array('create' => 'false'));

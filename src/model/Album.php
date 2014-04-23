@@ -15,6 +15,9 @@
             $this->m_createdate = $_createdate;
         }
 
+        public function getId(){
+            return $this->m_id;
+        }
         public function incNumOfPics(){
             $this->m_numofpics += 1;
         }
@@ -23,8 +26,8 @@
             $this->m_numofpics -= 1;
         }
 
-        public function getId(){
-            return $this->m_id;
+        public function setNumOfPics($num){
+            $this->m_numofpics = $num;
         }
         
         public function getNumOfPics(){

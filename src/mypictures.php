@@ -51,6 +51,7 @@
             $albums = $controller->getAlbums();
             if (count($albums)) {
                 foreach ($albums as $val) {
+                    
                     echo '<div id="alb_' . $val->getId() . '" class="tile double album" data-hint="' . $val->getCreateDate() . '|' . $val->getDescription(). '"data-hint-position="bottom">
                             <div class="tile-content image">
                                 <img class="tile_image" src="">

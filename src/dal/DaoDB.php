@@ -214,15 +214,16 @@
                 $albumok[$id] = new Album($id, $name, $desc, $date);
                 
             }
-            /*foreach ($albumok as $key => $value) {
+            
+            foreach ($albumok as $key => $value) {
                 $query = 'SELECT COUNT(*) FROM KEPEK WHERE ALBUM_ID = '.$value->getId();
                 $stmt = oci_parse($con, $query);
                 oci_execute($stmt);
-                $numofpics[0] = oci_fetch_array($stmt);
-                for ($i = 0 ; $i < $numofpics; $i++){
-                    $value->incNumOfPics();
+                if (($numofpics = oci_fetch_array($stmt)) > 0){
+                    $value->setNumOfPics($numofpics["COUNT(*)"]);
                 }
-            }*/
+                
+            }
             oci_close($con);
             return $albumok;
         }
