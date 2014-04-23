@@ -130,15 +130,14 @@
             $stmt = oci_parse($con, $query);
             oci_execute($stmt);   
             $pics = array();
-            $i = 0;
-            while ($row = oci_fetch_array($stmt, OCI_BOTH)) {
+            while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
                 if (is_object($row['KEPFAJL'])) {
                     $id = $row['ID'];
                     $desc = $row['LEIRAS'];
                     $place = $row['HELYSZIN'];
                     $time = $row['FELTOLTES_IDEJE'];
                     $blob = $row['KEPFAJL']->load();
-                    $pics[$i] = new Picture($id, null , $desc, $time, $place, $blob);
+                    $pics[$id] = new Picture($id, null , $desc, $time, $place, $blob);
                     $row['KEPFAJL']->free();
                 }
             }
