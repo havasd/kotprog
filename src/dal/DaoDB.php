@@ -6,6 +6,7 @@
 
     class DaoDB
     {
+        //User($id,$name,$email,$country,$city)
         public function getUserById($id){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             if (!$con) {
@@ -19,12 +20,7 @@
             $stmt = oci_parse($con, $query);
             oci_execute($stmt);
             oci_fetch_all($stmt, $result);
-            $user = new User();
-            $user->setId($id);
-            $user->setName($result["NEV"][0]);
-            $user->setEmail($result["EMAIL"][0]);
-            $user->setCity($result["VAROS"][0]);
-            $user->setCountry($result["ORSZAG"][0]);
+            $user = new User($id,$result["NEV"][0],$result["EMAIL"][0],$result["ORSZAG"][0],$result["VAROS"][0]);
 
             //avatar
             $query = 'SELECT AVATAR FROM FELHASZNALOK WHERE ID = :id';
@@ -113,12 +109,13 @@
             }
         }
 
-        //Picture($id, $category, $desc, $time, $place, $data)
+        //Picture($id, $category, $desc, $time, $place, $data,$owner)
         public function getPictures($album_id){
             if (!$album_id){
-                $query = 'SELECT ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID, FELTOLTES_IDEJE
-                FROM KEPEK 
-                WHERE FELH_ID = ' . $_SESSION['userObject']->getId().' 
+                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID, FELTOLTES_IDEJE
+                FROM FELHASZNALOK, KEPEK
+                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
+                AND FELH_ID = ' . $_SESSION['userObject']->getId().' 
                 AND ALBUM_ID IS NULL';
             } else {
                 $query = 'SELECT ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID, FELTOLTES_IDEJE
@@ -132,12 +129,13 @@
             $pics = array();
             while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
                 if (is_object($row['KEPFAJL'])) {
+                    $owner = $row['NEV'];
                     $id = $row['ID'];
                     $desc = $row['LEIRAS'];
                     $place = $row['HELYSZIN'];
                     $time = $row['FELTOLTES_IDEJE'];
                     $blob = $row['KEPFAJL']->load();
-                    $pics[$id] = new Picture($id, null , $desc, $time, $place, $blob);
+                    $pics[$id] = new Picture($id, null , $desc, $time, $place, $blob, $owner);
                     $row['KEPFAJL']->free();
                 }
             }
@@ -145,6 +143,35 @@
             oci_close($con);
             return $pics;
         }
+
+        public function getPictureById($picture_id){
+             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            if (!$con) {
+                $e = oci_error();
+                trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+            }
+           $query = 'SELECT NEV, LEIRAS, HELYSZIN, KEPFAJL, FELTOLTES_IDEJE
+                FROM FELHASZNALOK, KEPEK
+                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
+                AND KEPEK.ID = '. $picture_id;
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
+                if (is_object($row['KEPFAJL'])) {
+                    $owner = $row['NEV'];
+                    $desc = $row['LEIRAS'];
+                    $place = $row['HELYSZIN'];
+                    $time = $row['FELTOLTES_IDEJE'];
+                    $blob = $row['KEPFAJL']->load();
+                    $pic = new Picture($picture_id, null , $desc, $time, $place, $blob, $owner);
+                    $row['KEPFAJL']->free();
+                }
+            }
+            $stmt = null;
+            oci_close($con);
+            return $pic;
+        }
+
 
         public function createAlbum($name, $desc){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');

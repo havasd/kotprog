@@ -140,7 +140,7 @@ $(document).on("click", "#home_btn", function(){
 
 //image zoom
 $(document).on("click", ".picture", function(){
-	var image = $(this).find("img").attr('src');
+    var image_id = $(this).attr('id').substr(4);
 	$.Dialog({
 		height: 600,
 		width: 1000,
@@ -152,7 +152,7 @@ $(document).on("click", ".picture", function(){
         content: '',
         onShow: function(_dialog){
             var content = _dialog.children('.content');
-            $.post( "picture_zoom.php", { img: image})
+            $.post( "picture_zoom.php", 'img_id='+image_id)
 			 .done(function(data) {
 				content.html(data);
 			});

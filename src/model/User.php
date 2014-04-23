@@ -11,48 +11,33 @@
 		private $m_city;
 		private $m_avatar;
 
-		public function User(){
-
+		public function User($id,$name,$email,$country,$city){
+			$this->m_id = $id;
+			$this->m_name = $name;
+			$this->m_email = $email;
+			$this->m_country = $country;
+			$this->m_city = $city;
+			$this->m_avatar = null;
 		}
 
 		public function getId(){
 			return $this->m_id;
 		}
 
-		public function setId($id){
-			$this->m_id = $id;
-		}
-
 		public function getName(){
 			return $this->m_name;
-		}
-
-		public function setName($name){
-			$this->m_name = $name;
 		}
 
 		public function getEmail(){
 			return $this->m_email;
 		}
 
-		public function setEmail($email){
-			$this->m_email = $email;
-		}
-
 		public function getCountry(){
 			return $this->m_country;
 		}
 
-		public function setCountry($country){
-			$this->m_country = $country;
-		}
-
 		public function getCity(){
 			return $this->m_city;
-		}
-
-		public function setCity($city){
-			$this->m_city = $city;
 		}
 
 		public function toString(){

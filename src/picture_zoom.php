@@ -35,29 +35,28 @@
 	top:-600px;
 	left: 710px;
 }
-</style>
-<div id="picture_zoom">
-	<div id="picture">
-		<?php
 
-			if(isset($_POST['img'])){
-				echo "<img src=\"".$_POST['img']."\">";
-			}
-			else {
-				echo "post error";
-			}
-		?>
-	</div>
-	<div id="info">
+</style>
+
+<?php
+	require_once('model/Picture.php');
+	require_once('dal/DaoDB.php');
+	$controller = new DaoDB();
+	$picture = $controller->getPictureById($_POST['img_id']);
+	echo '<div id="picture_zoom">
+		  <div id="picture">';
+	echo '<img src="data:image/jpeg;base64,'.$picture->getPictureBinary().'">';
+	echo '</div>';
+
+	echo '<div id="info">
 		<div id="picture_data" class="panel">
 		    <div id="picture_title" class="panel-header bg-lightBlue fg-white">
-		        Eiffel-torony
+		        '.$picture->getPlace().'
 		    </div>
 		    <div id="picture_info" class="panel-content">
-		        Készült: 2013.04.20<br>
-		        Készítette: x y<br>
-		        Helyszín: Párizs, Eiffel-torony<br>
-		        Feltöltés ideje: 2014.04.01 22:26
+		        Készítette: '.$picture->getOwner().'<br>
+		        Helyszín: '.$picture->getPlace().'<br>
+		        Feltöltés ideje: '.$picture->getUploadTime().'
 		    </div>
 		</div>
 		<div class="panel">
@@ -76,6 +75,7 @@
 				    <span class="score-hint"></span>
 				</div>
 			</div>
+			
 		<div id="comments_panel" class="panel">
 		    <div id="comments_title" class="panel-header bg-lightBlue fg-white">
 		        Hozzászólások
@@ -114,5 +114,10 @@
         	</div></br>
         	<button>Elküldés</button>
 		</div>
-	</div>
+	</div>'
+
+
+?>
+	
+	
 </div>
