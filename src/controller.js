@@ -166,12 +166,12 @@ $(document).on("click", "#userdata_btn",function(){
 	$("#content").load("userdata.php");
 });
 
-//avatar
+//avatar prepare
 $(document).on("change","#avatar_file",function(){
 	files = event.target.files;
 });
 
-// Add events
+// avatar submit
 $(document).on("submit","#avatar",function(){
 	event.stopPropagation(); // Stop stuff happening
     event.preventDefault(); // Totally stop stuff happening
@@ -218,7 +218,6 @@ $(document).on("submit","#avatar",function(){
 --------------------- Saját képek begin ----------------------
 --------------------------------------------------------------
 */
-
 // clicks
 $(document).on("click", "#mypictures_btn", function(){
     $("#content-header").load("mypictures.php", "header=1");
@@ -246,7 +245,7 @@ $(document).on("click", "#btn_new_album", function(){
 // picture upload click
 $(document).on("click", "#btn_new_picture", function(){
     $.Dialog({
-        height: 300,
+        height: 450,
         width: 300,
         overlay: true,
         shadow: true,
@@ -261,12 +260,12 @@ $(document).on("click", "#btn_new_picture", function(){
     });
 });
 
-//avatar
+//picture upload prepare
 $(document).on("change", "#in_file_picture", function(){
     files = event.target.files;
 });
 
-// Add events
+// picture upload
 $(document).on("submit", "#f_new_pictures", function(){
     event.stopPropagation(); // Stop stuff happening
     event.preventDefault(); // Totally stop stuff happening
@@ -274,7 +273,8 @@ $(document).on("submit", "#f_new_pictures", function(){
     $.each(files, function(key, value){
         data.append(key, value);
     });
-
+    data.append('file_desc', $("#in_file_desc").val());
+    data.append('file_place', $("#in_file_place").val());
     $.ajax({
         url: 'pictureupload.php',
         type: 'POST',
@@ -366,7 +366,6 @@ $(document).on("submit", "#f_new_album", function(){
     });
     return false;
 });
-
 /*
 --------------------------------------------------------------
 --------------------- Saját képek end ------------------------
