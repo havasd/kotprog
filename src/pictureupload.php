@@ -6,7 +6,7 @@
     $usr = $_SESSION['userObject'];
     if (isset($usr)) {
         $controller = new DaoDB();
-        $albumok = $controller->getAlbums();
+        $albumok = $controller->getAlbumsByUser();
         if (isset($_FILES[0]) && isset($_POST)) {
             $controller = new DaoDB();
             $place = $_POST['file_place'];

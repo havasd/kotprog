@@ -43,12 +43,13 @@
 
     function generateContent($albumid){
         global $controller;
+        global $usr;
         // main page
         if (!$albumid) {
             echo '<div class="grid" style="margin-left: 30px; margin-right: 30px">
                     <div class="row">';
 
-            $albums = $controller->getAlbums();
+            $albums = $controller->getAlbumsByUser();
             if (count($albums)) {
                 foreach ($albums as $val) {
                     
@@ -70,7 +71,7 @@
             echo '</div>
                   <div class="row">';
 
-            $pics = $controller->getPictures(null);
+            $pics = $controller->getPicturesByUser(null);
             if (count($pics)) {
                 foreach ($pics as $val) {
                     
@@ -84,8 +85,10 @@
             echo '</div>
                   </div>';
         } else { // load pictures from albums
-            $pics = $controller->getPictures($albumid);
+            $pics = $controller->getPicturesByUser($albumid);
             if (count($pics)) {
+                echo '<div class="grid" style="margin-left: 30px; margin-right: 30px">
+                    <div class="row">';
                 foreach ($pics as $key => $val) {
                     
                     echo '<div id="pic_' . $val->getId() . '" class="tile double picture">
@@ -94,6 +97,8 @@
                             </div>
                           </div>';
                 }
+                echo '</div>
+                  </div>';
             } else { // empty album
                 echo '<div class="notice marker-on-top bg-dark fg-white" style="width:30em; text-align:center">
                         Nincsenek képek ebben az albumban.

@@ -7,23 +7,16 @@
         private $m_numofpics;
         private $m_createdate;
 
-        public function Album($_id, $_name, $_desc, $_createdate){
+        public function Album($_id, $_name, $_desc, $_createdate, $_numofpics = 0){
             $this->m_id = $_id;
             $this->m_name = $_name;
             $this->m_desc = $_desc;
-            $this->m_numofpics = 0;
+            $this->m_numofpics = $_numofpics;
             $this->m_createdate = $_createdate;
         }
 
         public function getId(){
             return $this->m_id;
-        }
-        public function incNumOfPics(){
-            $this->m_numofpics += 1;
-        }
-
-        public function decNumOfPics(){
-            $this->m_numofpics -= 1;
         }
 
         public function setNumOfPics($num){
