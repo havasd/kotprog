@@ -83,22 +83,16 @@
             echo '</div>
                   </div>';
         } else { // load pictures from albums
-            $album = $controller->getAlbumById($albumid);
-            if ($album->getNumOfPics()) { // load pictures from album
-                echo '<div class="grid" style="margin-left: 30px; margin-right: 30px">
-                        <div class="row">';
-                foreach ($album as $val) {  
-                    echo '<div id="alb_' . $val->getId() . '" class="tile double album" data-hint="' . $val->getCreateDate() . '|' . $val->getDescription(). '"data-hint-position="bottom">
+            $pics = $controller->getPictures($albumid);
+            if (count($pics)) {
+                foreach ($pics as $key => $val) {
+                    
+                    echo '<div id="pic_' . $val->getId() . '" class="tile double picture">
                             <div class="tile-content image">
-                                <img class="tile_image" src="apache_pb.png">
-                            </div>
-                            <div class="brand bg-dark">
-                                <span class="label fg-grey">' . $val->getName() . '</span>
-                                <span class="badge">' . $val->getNumOfPics() . ' </span>
+                                <img class="tile_image" src="data:image/jpeg;base64,'. $val->getPictureBinary() . '">
                             </div>
                           </div>';
                 }
-                echo '</div></div>';
             } else { // empty album
                 echo '<div class="notice marker-on-top bg-dark fg-white" style="width:30em; text-align:center">
                         Nincsenek képek ebben az albumban.

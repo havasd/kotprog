@@ -51,12 +51,12 @@
 	echo '<div id="info">
 		<div id="picture_data" class="panel">
 		    <div id="picture_title" class="panel-header bg-lightBlue fg-white">
-		        '.$picture->getPlace().'
+		        Helyszín:'.$picture->getPlace().'
 		    </div>
 		    <div id="picture_info" class="panel-content">
 		        Készítette: '.$picture->getOwner().'<br>
-		        Helyszín: '.$picture->getPlace().'<br>
-		        Feltöltés ideje: '.$picture->getUploadTime().'
+		        Feltöltés ideje: '.$picture->getUploadTime().'<br>
+		        Leírás: '.$picture->getDescription().'<br>
 		    </div>
 		</div>
 		<div class="panel">
@@ -75,7 +75,7 @@
 				    <span class="score-hint"></span>
 				</div>
 			</div>
-			
+
 		<div id="comments_panel" class="panel">
 		    <div id="comments_title" class="panel-header bg-lightBlue fg-white">
 		        Hozzászólások

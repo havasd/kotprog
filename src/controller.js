@@ -275,6 +275,7 @@ $(document).on("submit", "#f_new_pictures", function(){
     });
     data.append('file_desc', $("#in_file_desc").val());
     data.append('file_place', $("#in_file_place").val());
+    data.append('file_album', $("#in_file_album").val());
     $.ajax({
         url: 'pictureupload.php',
         type: 'POST',

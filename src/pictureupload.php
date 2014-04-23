@@ -1,5 +1,6 @@
 <?php
     require_once('model/User.php');
+    require_once('model/Album.php');
     require_once('dal/DaoDB.php');
     session_start();
     $usr = $_SESSION['userObject'];
@@ -8,10 +9,13 @@
         $albumok = $controller->getAlbums();
         if (isset($_FILES[0]) && isset($_POST)) {
             $controller = new DaoDB();
+            $title = $_POST['file_title'];
             $place = $_POST['file_place'];
             $desc = $_POST['file_desc'];
+            $album_id = $_POST['file_album'];
             $blob = base64_encode(file_get_contents($_FILES[0]['tmp_name']));
-            if ($controller->uploadPicture($blob,$place,$desc,null))
+            //uploadPicture($blob,$title,$place,$desc,$albid)
+            if ($controller->uploadPicture($blob,$title, $place,$desc,$album_id))
                 echo json_encode(array('create' => 'true'));
             else
                 echo json_encode(array('create' => 'false'));
@@ -32,7 +36,12 @@
                         </div>
                         <div class="row">
                         <label>Album</label>
-                        
+                        <select name="file_album" id="in_file_album">
+                            <option value="null">Főalbum</option>';
+                        foreach ($albumok as $key => $value) {
+                            echo '<option value="'.$value->getId().'">'.$value->getName().'</option>';             
+                        }
+                        echo '</select>
                         <div class="row">
                             <input type="submit" id="btn_upload_picture" value="Feltöltés">
                         </div>
@@ -40,12 +49,4 @@
                 </form>';
         }
     }
-/*
-<select name="file_album" id="in_file_album">';
-foreach ($albumok as $album) {
-    echo '<option value="'.$album->getId().'">'.$album->getName.'</option>';             
-}
-
-echo '</select> </div>
-*/
 ?>

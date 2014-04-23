@@ -82,9 +82,12 @@
         }
 
         public function uploadPicture($blob,$place,$desc,$albid){
+            if ($albid == "null"){
+                $albid = null;
+            }
             $cid = null;
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = "INSERT INTO KEPEK (ID, LEIRAS, FELTOLTES_IDEJE, HELYSZIN, KEPFAJL, ALBUM_ID, FELH_ID, KAT_ID)
+            $query = "INSERT INTO KEPEK (ID,  LEIRAS, FELTOLTES_IDEJE, HELYSZIN, KEPFAJL, ALBUM_ID, FELH_ID, KAT_ID)
                       VALUES (image_seq.nextval, :descr, SYSDATE, :place, EMPTY_BLOB(), :albid, :user_id, :cid)
                       RETURNING KEPFAJL INTO :myblob";
 
@@ -109,7 +112,7 @@
             }
         }
 
-        //Picture($id, $category, $desc, $time, $place, $data,$owner)
+        //Picture($id, $category, $desc, $time, $place, $data, $owner)
         public function getPictures($album_id){
             if (!$album_id){
                 $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID, FELTOLTES_IDEJE
@@ -118,9 +121,10 @@
                 AND FELH_ID = ' . $_SESSION['userObject']->getId().' 
                 AND ALBUM_ID IS NULL';
             } else {
-                $query = 'SELECT ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID, FELTOLTES_IDEJE
-                FROM KEPEK 
-                WHERE FELH_ID = ' . $_SESSION['userObject']->getId().'
+                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID, FELTOLTES_IDEJE
+                FROM FELHASZNALOK, KEPEK
+                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
+                AND FELH_ID = ' . $_SESSION['userObject']->getId().' 
                 AND ALBUM_ID = ' . $album_id;
             }
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
@@ -163,7 +167,7 @@
                     $place = $row['HELYSZIN'];
                     $time = $row['FELTOLTES_IDEJE'];
                     $blob = $row['KEPFAJL']->load();
-                    $pic = new Picture($picture_id, null , $desc, $time, $place, $blob, $owner);
+                    $pic = new Picture($picture_id,null,$desc,$time,$place,$blob,$owner);
                     $row['KEPFAJL']->free();
                 }
             }
@@ -199,17 +203,26 @@
             }
             $query = 'SELECT ID, NEV, LEIRAS, TO_CHAR(LETREHOZAS_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS LETREHOZAS_IDEJE FROM ALBUMOK WHERE FELH_ID=' . $_SESSION['userObject']->getId();
             $stmt = oci_parse($con, $query);
-            oci_execute($stmt);
-            $i = 0;
+            $lines = oci_execute($stmt);
             $albumok = array();
-            while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            while ($row = oci_fetch_array($stmt,OCI_ASSOC + OCI_RETURN_NULLS)) {
+                
                 $id = $row["ID"];
                 $name = $row["NEV"];
                 $desc = $row["LEIRAS"];
                 $date = $row["LETREHOZAS_IDEJE"];
-                $albumok[$i] = new Album($id, $name, $desc, $date);
-                $i++;
+                $albumok[$id] = new Album($id, $name, $desc, $date);
+                
             }
+            /*foreach ($albumok as $key => $value) {
+                $query = 'SELECT COUNT(*) FROM KEPEK WHERE ALBUM_ID = '.$value->getId();
+                $stmt = oci_parse($con, $query);
+                oci_execute($stmt);
+                $numofpics[0] = oci_fetch_array($stmt);
+                for ($i = 0 ; $i < $numofpics; $i++){
+                    $value->incNumOfPics();
+                }
+            }*/
             oci_close($con);
             return $albumok;
         }
@@ -227,7 +240,6 @@
                       AND ID = '.$album_id;
             $stmt = oci_parse($con, $query);
             oci_execute($stmt);
-            $i = 0;
             $album = null;
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
                 $id = $album_id;
@@ -235,8 +247,14 @@
                 $desc = $row["LEIRAS"];
                 $date = $row["LETREHOZAS_IDEJE"];
                 $album = new Album($id, $name, $desc, $date);
-                $i++;
             }
+            /*$query = 'SELECT COUNT(*) INTO :numofpics FROM KEPEK WHERE ALBUM_ID = '.$id;
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $numofpics = oci_fetch($stmt);
+            for ($i = 0 ; $i < $numofpics; $i++){
+                $album->incNumOfPics();
+            }*/
             oci_close($con);
             return $album;
         }
