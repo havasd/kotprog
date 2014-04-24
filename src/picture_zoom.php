@@ -163,10 +163,5 @@
         	</div></br>
         	<button>Elküldés</button>
 		</div>
-	</div>'
-
-
+	</div>';
 ?>
-	
-	
-</div>
