@@ -8,8 +8,9 @@
         private $m_place;
         private $m_data;
         private $m_owner;
+        private $m_rating;
 
-        public function Picture($id, $category, $desc, $time, $place, $data, $owner) {
+        public function Picture($id, $category, $desc, $time, $place, $data, $owner, $rating) {
             $this->m_id = $id;
             $this->m_category = $category;
             $this->m_desc = $desc;
@@ -17,6 +18,7 @@
             $this->m_place = $place;
             $this->m_data = $data;
             $this->m_owner = $owner;
+            $this->m_rating = $rating;
         }
 
         public function getId() {
@@ -44,6 +46,10 @@
 
         public function getOwner(){
             return $this->m_owner;
+        }
+
+        public function getRating(){
+            return $this->m_rating;
         }
     }
 ?>

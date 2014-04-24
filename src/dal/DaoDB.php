@@ -115,13 +115,17 @@
         //Picture($id, $category, $desc, $time, $place, $data, $owner)
         public function getPicturesByUser($album_id){
             if (!$album_id){
-                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID, FELTOLTES_IDEJE
+                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
+                TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
+                (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = KEPEK.ID) AS RATE
                 FROM FELHASZNALOK, KEPEK
                 WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
                 AND FELH_ID = ' . $_SESSION['userObject']->getId().' 
                 AND ALBUM_ID IS NULL';
             } else {
-                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID, FELTOLTES_IDEJE
+                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
+                TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
+                (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = KEPEK.ID) AS RATE
                 FROM FELHASZNALOK, KEPEK
                 WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
                 AND FELH_ID = ' . $_SESSION['userObject']->getId().' 
@@ -129,7 +133,7 @@
             }
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $stmt = oci_parse($con, $query);
-            oci_execute($stmt);   
+            oci_execute($stmt);
             $pics = array();
             while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
                 if (is_object($row['KEPFAJL'])) {
@@ -139,7 +143,8 @@
                     $place = $row['HELYSZIN'];
                     $time = $row['FELTOLTES_IDEJE'];
                     $blob = $row['KEPFAJL']->load();
-                    $pics[$id] = new Picture($id, null , $desc, $time, $place, $blob, $owner);
+                    $rating = (is_null($row['RATE']) ? 0 : $row['RATE']);
+                    $pics[$id] = new Picture($id, null , $desc, $time, $place, $blob, $owner, $rating);
                     $row['KEPFAJL']->free();
                 }
             }
@@ -154,22 +159,25 @@
                 $e = oci_error();
                 trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
             }
-           $query = 'SELECT NEV, LEIRAS, HELYSZIN, KEPFAJL, FELTOLTES_IDEJE
+           $query = 'SELECT NEV, LEIRAS, HELYSZIN, KEPFAJL, 
+                TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
+                (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = :pid) AS RATE
                 FROM FELHASZNALOK, KEPEK
                 WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
-                AND KEPEK.ID = '. $picture_id;
+                AND KEPEK.ID = :pid';
             $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':pid', $picture_id);
             oci_execute($stmt);
-            while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
-                if (is_object($row['KEPFAJL'])) {
+            $row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS);
+            if (is_object($row['KEPFAJL'])) {
                     $owner = $row['NEV'];
                     $desc = $row['LEIRAS'];
                     $place = $row['HELYSZIN'];
                     $time = $row['FELTOLTES_IDEJE'];
                     $blob = $row['KEPFAJL']->load();
-                    $pic = new Picture($picture_id,null,$desc,$time,$place,$blob,$owner);
+                    $rating = (is_null($row['RATE']) ? 0 : $row['RATE']);
+                    $pic = new Picture($picture_id, null, $desc, $time, $place, $blob, $owner, $rating);
                     $row['KEPFAJL']->free();
-                }
             }
             $stmt = null;
             oci_close($con);
@@ -232,14 +240,13 @@
             $stmt = oci_parse($con, $query);
             oci_execute($stmt);
             $album = null;
-            while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-                $id = $album_id;
-                $name = $row["NEV"];
-                $desc = $row["LEIRAS"];
-                $date = $row["LETREHOZAS_IDEJE"];
-                $numofpics = $row["NUMPICS"];
-                $album = new Album($id, $name, $desc, $date, $numofpics);
-            }
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $id = $album_id;
+            $name = $row["NEV"];
+            $desc = $row["LEIRAS"];
+            $date = $row["LETREHOZAS_IDEJE"];
+            $numofpics = $row["NUMPICS"];
+            $album = new Album($id, $name, $desc, $date, $numofpics);
             oci_close($con);
             return $album;
         }
@@ -264,6 +271,28 @@
                 oci_close($con);
                 return false;
             }
+        }
+
+        public function ratePicture($pic_id, $rate){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'DELETE FROM ERTEKELESEK WHERE KEP_ID=:kepid AND FELH_ID=:felhid';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':felhid', $_SESSION['userObject']->getId());
+            oci_bind_by_name($stmt, ':kepid', $pic_id);
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+            $query = 'INSERT INTO ERTEKELESEK (FELH_ID, KEP_ID, ERTEKELES) VALUES (:felhid, :kepid, :rating)';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':felhid', $_SESSION['userObject']->getId());
+            oci_bind_by_name($stmt, ':kepid', $pic_id);
+            oci_bind_by_name($stmt, ':rating', $rate);
+            $succed = oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+            if ($succed)
+                oci_commit($con);
+            else
+                oci_rollback($con);
+
+            oci_close($con);
+            return $succed;
         }
     }
 ?>

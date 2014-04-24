@@ -43,7 +43,6 @@
 
     function generateContent($albumid){
         global $controller;
-        global $usr;
         // main page
         if (!$albumid) {
             echo '<div class="grid" style="margin-left: 30px; margin-right: 30px">

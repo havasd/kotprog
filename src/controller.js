@@ -138,6 +138,12 @@ $(document).on("click", "#home_btn", function(){
 	$("#content").load("home.php");
 });
 
+/*
+--------------------------------------------------------------
+--------------------- Image zoom begin -----------------------
+--------------------------------------------------------------
+*/
+
 //image zoom
 $(document).on("click", ".picture", function(){
     var image_id = $(this).attr('id').substr(4);
@@ -159,6 +165,12 @@ $(document).on("click", ".picture", function(){
         }
     });
 });
+
+/*
+--------------------------------------------------------------
+--------------------- Image zoom end  -------------------------
+--------------------------------------------------------------
+*/
 
 //személyes adatok
 $(document).on("click", "#userdata_btn",function(){
