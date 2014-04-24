@@ -51,12 +51,28 @@
             $albums = $controller->getAlbumsByUser();
             if (count($albums)) {
                 foreach ($albums as $val) {
-                    
-                    echo '<div id="alb_' . $val->getId() . '" class="tile double album" data-hint="' . $val->getCreateDate() . '|' . $val->getDescription(). '"data-hint-position="bottom">
-                            <div class="tile-content image">
-                                <img class="tile_image" src="">
-                            </div>
-                            <div class="brand bg-dark">
+                    echo '<div id="alb_' . $val->getId() . '" class="tile double live album" data-role="live-tile" data-effect="slideLeftRight" 
+                                data-hint="' . $val->getCreateDate() . '|' . $val->getDescription(). '"data-hint-position="bottom">';
+
+                    $pics = $controller->getPicturesByUser($val->getId());
+                    $sides = array('250px', '-250px', '0', '250px');
+                    $i = 0;
+                    if (count($pics) > 1) {
+                        foreach ($pics as $key => $value) {
+                            echo    '<div class="tile-content image" style="left:' . $sides[$i++] . ';">
+                                    <img  src="data:image/jpeg;base64,' . $value->getPictureBinary() . '">
+                                </div>';
+                            if ($i == 4)
+                                break;
+                        }
+                    } else {
+                        foreach ($pics as $key => $value) {
+                            echo    '<div class="tile-content image">
+                                        <img  src="data:image/jpeg;base64,' . $value->getPictureBinary() . '">
+                                    </div>';
+                        }
+                    }
+                    echo    '<div class="brand bg-dark opacity">
                                 <span class="label fg-grey">' . $val->getName() . '</span>
                                 <span class="badge">' . $val->getNumOfPics() . ' </span>
                             </div>
