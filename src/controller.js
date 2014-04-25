@@ -146,25 +146,45 @@ $(document).on("click", "#home_btn", function(){
 
 //image zoom
 $(document).on("click", ".picture", function(){
+    
     var image_id = $(this).attr('id').substr(4);
-	$.Dialog({
-		height: 600,
-		width: 1000,
-        overlay: true,
-        shadow: true,
-        flat: true,
-        icon: '',
-        title: '',
-        content: '',
-        onShow: function(_dialog){
-            var content = _dialog.children('.content');
-            $.post( "picture_zoom.php", 'img_id='+image_id)
-			 .done(function(data) {
-				content.html(data);
-			});
-        }
+    var next_image_id = $(this).next().attr('id');
+    var prev_image_id = $(this).prev().attr('id');
+    //alert(prev_image_id+"    "+next_image_id);
+    $(".btn-close").click();
+    $.post( "picture_zoom.php", 'img_id='+image_id)
+     .done(function(data) {
+        $.Dialog({
+            height: 600,
+            width: 1100,
+            //modal: true,
+            overlay: true,
+            shadow: true,
+            flat: true,
+            icon: '',
+            title: '',
+            content: data,
+            onShow: function(_dialog){
+                //var content = _dialog.children('.content');
+                //content.html(data);
+                $("#previous_picture").click(function(){
+                    if (prev_image_id != "undefined"){
+                        $("#"+prev_image_id).click();
+                    }
+                });
+                $("#next_picture").click(function(){
+                    if (next_image_id != "undefined"){
+                        $("#"+next_image_id).click();
+                    } 
+                });
+            }
+        
+        });
     });
+
 });
+
+
 
 /*
 --------------------------------------------------------------

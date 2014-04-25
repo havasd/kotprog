@@ -19,12 +19,21 @@
 	}
 
 	echo '<style>
-			#picture_zoom {
+			#previous_image {
+				float: left;
+				width: 25px;
+				height: 25px;
 			}
+
+			#next_image {
+				float: left;
+				width: 25px;
+				height: 25px;
+			}
+
 			#picture{
-				position: relative;
-				top: -40px;
-				left: 0px;
+				float: left;
+
 				height: 600px;
 				width: 700px;
 				display:-moz-box;
@@ -50,17 +59,26 @@
 				max-width: 700px;
 				max-height: 600px;
 			}
+
 			#info{
-				position: relative;
-				top:-600px;
-				left: 710px;
+				float: right;
+				width: 300px;
+
 			}
 
-			</style>';
-	echo '<div id="picture_zoom">
+			</style>
+
+			';
+
+	echo '<div id="previous_picture">
+		  	<a style="color: black;" href="#"><i class="icon-arrow-left-3 on-left"></i></a>
+		  </div>
 		  <div id="picture">';
-	echo '<img src="data:image/jpeg;base64,'.$picture->getPictureBinary().'">';
-	echo '</div>';
+	echo '	<img src="data:image/jpeg;base64,'.$picture->getPictureBinary().'">';
+	echo '</div>
+		  <div id="next_picture">
+	  		<a style="color: black;" href="#"><i class="icon-arrow-right-3 on-left"></i></a>
+	  	  </div>';
 	echo '<div id="info">
 		<div id="picture_data" class="panel">
 		    <div id="picture_title" class="panel-header bg-lightBlue fg-white">
@@ -77,7 +95,7 @@
 		        Értékelés
 		    </div>
 		    <div class="panel-content">
-		    	<div id="pic_rating" class="rating"
+		    	<div id="pic_rating" class="rating">
 				</div>';
 	if (isset($usr))
 		echo '	<script>

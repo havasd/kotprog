@@ -16,6 +16,7 @@ require_once 'model/User.php';
 
 		<script src="js/metro.min.js"></script>
         <script src="controller.js"></script>
+
     </head>
     <body class="metro">
         <nav class="navigation-bar dark">
