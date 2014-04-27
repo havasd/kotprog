@@ -19,19 +19,23 @@
 	}
 
 	echo '<style>
+
 			#previous_image {
+				display: block;
 				float: left;
 				width: 25px;
 				height: 25px;
 			}
 
 			#next_image {
+				display: block;
 				float: left;
 				width: 25px;
 				height: 25px;
 			}
 
 			#picture{
+				display: block;
 				float: left;
 
 				height: 600px;
@@ -61,6 +65,7 @@
 			}
 
 			#info{
+				display: block;
 				float: right;
 				width: 300px;
 
@@ -182,4 +187,5 @@
         	<button>Elküldés</button>
 		</div>
 	</div>';
+	
 ?>

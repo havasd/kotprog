@@ -59,7 +59,7 @@
                 if (count($pics) > 1) {
                     foreach ($pics as $key => $value) {
                         echo    '<div class="tile-content image" style="left:' . $sides[$i++] . ';">
-                                <img  src="data:image/jpeg;base64,' . $value->getPictureBinary() . '">
+                                <img  src="data:image/jpeg;base64,' . $value->getPictureTileBinary() . '">
                             </div>';
                         if ($i == 4)
                             break;
@@ -67,7 +67,7 @@
                 } else {
                     foreach ($pics as $key => $value) {
                         echo    '<div class="tile-content image">
-                                    <img  src="data:image/jpeg;base64,' . $value->getPictureBinary() . '">
+                                    <img  src="data:image/jpeg;base64,' . $value->getPictureTileBinary() . '">
                                 </div>';
                     }
                 }
@@ -88,7 +88,7 @@
                 
                 echo '<div id="pic_' . $val->getId() . '" class="tile double picture">
                         <div class="tile-content image">
-                            <img class="tile_image" src="data:image/jpeg;base64,'. $val->getPictureBinary() . '">
+                            <img class="tile_image" src="data:image/jpeg;base64,'. $val->getPictureTileBinary() . '">
                         </div>
                       </div>';
             }
@@ -103,7 +103,7 @@
                     
                     echo '<div id="pic_' . $val->getId() . '" class="tile double picture">
                             <div class="tile-content image">
-                                <img class="tile_image" src="data:image/jpeg;base64,'. $val->getPictureBinary() . '">
+                                <img class="tile_image" src="data:image/jpeg;base64,'. $val->getPictureTileBinary() . '">
                             </div>
                           </div>';
                 }
