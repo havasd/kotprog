@@ -7,6 +7,7 @@
         private $m_time;
         private $m_place;
         private $m_data;
+        private $m_data_tile;
         private $m_owner;
         private $m_rating;
 
@@ -53,14 +54,18 @@
         }
 
         public function getPictureTileBinary(){
-             $picture = imagecreatefromstring(base64_decode($this->m_data));
+            $picture = imagecreatefromstring(base64_decode($this->m_data));
+            $new_width = 250;
+            $new_height = 120;
             $picture_tile = imagecreatetruecolor(250, 120);
-            list($width, $height) = getimagesizefromstring(base64_decode($this->m_data));
-            imagecopyresampled($picture_tile, $picture, 0, 0, 0, 0, 250, 120, $width, $height);
-            imagejpeg($picture_tile, "tiletemp.jpg");
-            $blob_tile = base64_encode(file_get_contents("tiletemp.jpg"));
-            unlink("tiletemp.jpg");
-            return $blob_tile;
+            $width = imagesx($picture);
+            $height = imagesy($picture);
+            imagecopyresampled($picture_tile, $picture, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+            ob_start();
+            imagejpeg($picture_tile);
+            imagedestroy($picture_tile);
+            $picture_tile = ob_get_clean();
+            return base64_encode($picture_tile);
         }
     }
 ?>
