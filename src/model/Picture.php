@@ -60,7 +60,7 @@
             $picture_tile = imagecreatetruecolor(250, 120);
             $width = imagesx($picture);
             $height = imagesy($picture);
-            imagecopyresampled($picture_tile, $picture, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+            imagecopyresized($picture_tile, $picture, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
             ob_start();
             imagejpeg($picture_tile);
             imagedestroy($picture_tile);

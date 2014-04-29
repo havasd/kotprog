@@ -135,7 +135,28 @@ $(document).on("click", "#submit_reg", function(){
 //main
 $(document).on("click", "#home_btn", function(){
 	$("#content-header").html("Legfrissebb képek");
-	$("#content").load("home.php");
+	$.post( "home.php", 'header=1')
+     .done(function(data) {
+        $("#content-header").html(data);
+    });
+    $.post( "home.php", 'header=0')
+     .done(function(data) {
+        $("#content").html(data);
+    });
+});
+
+$(document).on("click", "#categories button", function(){
+    var cat_id = $(this).attr("id").substr(4);
+    alert(cat_id);
+    $.post( "home.php", 'header=1&category='+cat_id)
+     .done(function(data) {
+        $("#content-header").html(data);
+    });
+    $.post( "home.php", 'header=0&category='+cat_id)
+     .done(function(data) {
+        $("#content").html(data);
+    });
+
 });
 
 /*
@@ -320,6 +341,7 @@ $(document).on("submit", "#f_new_pictures", function(){
     data.append('file_desc', $("#in_file_desc").val());
     data.append('file_place', $("#in_file_place").val());
     data.append('file_album', $("#in_file_album").val());
+    data.append('file_category', $("#in_file_category").val());
     $.ajax({
         url: 'pictureupload.php',
         type: 'POST',
@@ -414,5 +436,10 @@ $(document).on("submit", "#f_new_album", function(){
 /*
 --------------------------------------------------------------
 --------------------- Saját képek end ------------------------
+--------------------------------------------------------------
+*/
+/*
+--------------------------------------------------------------
+--------------------- Home begin ------------------------
 --------------------------------------------------------------
 */

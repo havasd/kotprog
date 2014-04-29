@@ -81,11 +81,10 @@
             return $user_id;
         }
 
-        public function uploadPicture($blob,$place,$desc,$albid){
+        public function uploadPicture($blob,$place,$desc,$albid,$cid){
             if ($albid == "null"){
                 $albid = null;
             }
-            $cid = null;
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = "INSERT INTO KEPEK (ID,  LEIRAS, FELTOLTES_IDEJE, HELYSZIN, KEPFAJL, ALBUM_ID, FELH_ID, KAT_ID)
                       VALUES (image_seq.nextval, :descr, SYSDATE, :place, EMPTY_BLOB(), :albid, :user_id, :cid)
@@ -132,6 +131,35 @@
                     $blob = $row['KEPFAJL']->load();
                     $rating = (is_null($row['RATE']) ? 0 : $row['RATE']);
                     $pics[$id] = new Picture($id, null , $desc, $time, $place, $blob, $owner, $rating);
+                    $row['KEPFAJL']->free();
+                }
+            }
+            $stmt = null;
+            oci_close($con);
+            return $pics;
+        }
+
+        public function getPicturesByCategory($cid){
+            $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL,
+            TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
+            (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = KEPEK.ID) AS RATE
+            FROM FELHASZNALOK, KEPEK
+            WHERE FELHASZNALOK.ID = KEPEK.FELH_ID
+            AND KAT_ID = '.$cid;
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $pics = array();
+            while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
+                if (is_object($row['KEPFAJL'])) {
+                    $owner = $row['NEV'];
+                    $id = $row['ID'];
+                    $desc = $row['LEIRAS'];
+                    $place = $row['HELYSZIN'];
+                    $time = $row['FELTOLTES_IDEJE'];
+                    $blob = $row['KEPFAJL']->load();
+                    $rating = (is_null($row['RATE']) ? 0 : $row['RATE']);
+                    $pics[$id] = new Picture($id, $cid , $desc, $time, $place, $blob, $owner, $rating);
                     $row['KEPFAJL']->free();
                 }
             }
@@ -321,6 +349,18 @@
 
             oci_close($con);
             return $succed;
+        }
+
+        public function getCategories(){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT ID,KATEGORIA FROM KATEGORIAK';
+            $categories = array();
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            while($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)){
+                $categories[$row['ID']] = $row['KATEGORIA'];
+            }
+            return $categories;
         }
     }
 ?>

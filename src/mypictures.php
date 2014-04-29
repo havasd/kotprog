@@ -85,7 +85,6 @@
 
             $pics = $controller->getPicturesByUser(null);
             foreach ($pics as $val) {
-                
                 echo '<div id="pic_' . $val->getId() . '" class="tile double picture">
                         <div class="tile-content image">
                             <img class="tile_image" src="data:image/jpeg;base64,'. $val->getPictureTileBinary() . '">

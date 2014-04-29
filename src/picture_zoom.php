@@ -20,25 +20,11 @@
 
 	echo '<style>
 
-			#previous_image {
-				display: block;
-				float: left;
-				width: 25px;
-				height: 25px;
-			}
-
-			#next_image {
-				display: block;
-				float: left;
-				width: 25px;
-				height: 25px;
-			}
-
 			#picture{
-				display: block;
+				display: inline-block;
 				float: left;
 
-				height: 600px;
+				height: 540px;
 				width: 700px;
 				display:-moz-box;
 						-moz-box-pack:center;
@@ -61,30 +47,37 @@
 				height: auto;
 				width: auto;
 				max-width: 700px;
-				max-height: 600px;
-			}
-
-			#info{
-				display: block;
-				float: right;
-				width: 300px;
-
+				max-height: 540px;
 			}
 
 			</style>
 
 			';
 
-	echo '<div id="previous_picture">
-		  	<a style="color: black;" href="#"><i class="icon-arrow-left-3 on-left"></i></a>
-		  </div>
-		  <div id="picture">';
+	echo 	'<div id="previous_picture" 
+			   	style="	display: inline-block;
+						float: left;
+						width: 25px;
+						height: 25px;
+						padding-top: 260px;">
+		  		<a style="color: black;" href="#"><i class="icon-arrow-left-3 on-left"></i></a>
+		  	</div>
+		  	<div id="picture">';
 	echo '	<img src="data:image/jpeg;base64,'.$picture->getPictureBinary().'">';
-	echo '</div>
-		  <div id="next_picture">
-	  		<a style="color: black;" href="#"><i class="icon-arrow-right-3 on-left"></i></a>
-	  	  </div>';
-	echo '<div id="info">
+	echo 	'</div>
+		 	<div id="next_picture" 
+		 		style="	display: inline-block;
+						float: left;
+						width: 25px;
+						height: 25px;
+						padding-top: 260px;
+						padding-left: 10px;">
+	  			<a style="color: black;" href="#"><i class="icon-arrow-right-3 on-left"></i></a>
+	  	  	</div>';
+	echo '<div id="info"
+				style=" display: inline-block;
+						float: right;
+						width: 300px;">
 		<div id="picture_data" class="panel">
 		    <div id="picture_title" class="panel-header bg-lightBlue fg-white">
 		        Helyszín:'.$picture->getPlace().'
