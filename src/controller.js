@@ -201,6 +201,9 @@ $(document).on("click", ".picture", function(){
      .done(function(data) {
         if ($.Dialog.opened){
             $.Dialog.content(data);
+            ////////////////////////////////
+            // Dialogon belüli eseménykezelők
+            ////////////////////////////////
             $("#previous_picture").on('click', function() 
             {
                 //alert("prev")
@@ -211,11 +214,42 @@ $(document).on("click", ".picture", function(){
                 //alert("next");
                 $("#"+next_image_id).click();
             });
-        }
-        
-        
+            $("#btn_comment_send").on('click', function(){
+                var comment = $("#new_comment").val();
+                jQuery.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "picture_zoom.php",
+                    data: "img_id=" + image_id + "&new_comment=" + comment,
+                    success: function(data){
+                        if (data.result == 'true'){
+                            $("#pic_"+image_id).click();
+                        } else {
+                            alert("Hiba történt a hozzászólás feltöltése során");
+                            $("#pic_"+image_id).click();
+                        }
+                    },
+                    error: function(jqXHR, exception) {
+                        if (jqXHR.status === 0) {
+                            alert('Not connect.\n Verify Network.');
+                        } else if (jqXHR.status == 404) {
+                            alert('Requested page not found. [404]');
+                        } else if (jqXHR.status == 500) {
+                            alert('Internal Server Error [500].');
+                        } else if (exception === 'parsererror') {
+                            alert(jqXHR.responseText);
+                        } else if (exception === 'timeout') {
+                            alert('Time out error.');
+                        } else if (exception === 'abort') {
+                            alert('Ajax request aborted.');
+                        } else {
+                            alert('Uncaught Error.\n' + jqXHR.responseText);
+                        }
+                    }
+                }); 
+            });
+        } 
     });
-
 });
 
 

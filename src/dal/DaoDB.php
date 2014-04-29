@@ -351,6 +351,34 @@
             return $succed;
         }
 
+        public function commentPicture($pic_id, $user_id, $comment)
+        {
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'INSERT INTO HOZZASZOLASOK (ID, MEGJEGYZES,IDOBELYEG, FELH_ID, KEP_ID) 
+                        VALUES (comment_seq.nextval, :comment_bi, SYSDATE , :usr_bi, :pic_bi)';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':comment_bi', $comment);
+            oci_bind_by_name($stmt, ':usr_bi', $user_id);
+            oci_bind_by_name($stmt, ':pic_bi', $pic_id);
+            oci_execute($stmt);
+            return true;
+        }
+
+        public function getComments($pic_id){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT FELHASZNALONEV, MEGJEGYZES FROM BEJELENTKEZESI_ADATOK, HOZZASZOLASOK
+                        WHERE HOZZASZOLASOK.FELH_ID = BEJELENTKEZESI_ADATOK.FELH_ID
+                        AND HOZZASZOLASOK.KEP_ID = '.$pic_id;
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $comments=array();
+            $i = 0;
+            while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)){
+                $comments[$i++] = $row;
+            }
+            return $comments;
+        }
+
         public function getCategories(){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'SELECT ID,KATEGORIA FROM KATEGORIAK';

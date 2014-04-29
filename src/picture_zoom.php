@@ -2,13 +2,30 @@
 	require_once('model/Picture.php');
 	require_once('dal/DaoDB.php');
 	session_start();
-	$usr = $_SESSION['userObject'];
+	if(isset($_SESSION['userObject'])){
+		$usr = $_SESSION['userObject'];
+	}
+	
 	$controller = new DaoDB();
 	$pic_id = $_POST['img_id'];
 	$picture = $controller->getPictureById($pic_id);
 
 	if (isset($_POST["rate"])) {
 		rate();
+		exit();
+	}
+
+	if (isset($_POST["new_comment"])){
+		global $controller;
+		global $pic_id;
+		$user_id = $_SESSION['userObject']->getId();
+		$comment = $_POST["new_comment"];
+
+		if ($controller->commentPicture($pic_id, $user_id, $comment)){
+			echo json_encode(array("result" => "true"));
+		} else {
+			echo json_encode(array("result" => "false"));
+		}
 		exit();
 	}
 
@@ -48,6 +65,19 @@
 				width: auto;
 				max-width: 700px;
 				max-height: 540px;
+			}
+
+			#comment_list {
+				height: 210px;
+				overflow: scroll;
+			}
+
+			#info .panel-header{
+				line-height: 60%;
+			}
+			#new_comment {
+				width: 300px;
+				height: 40px;
 			}
 
 			</style>
@@ -95,7 +125,7 @@
 		    <div class="panel-content">
 		    	<div id="pic_rating" class="rating">
 				</div>';
-	if (isset($usr))
+	if (isset($usr)){
 		echo '	<script>
                     $(function(){
                         $("#pic_rating").rating({
@@ -126,7 +156,7 @@
 						});
 					});
                 </script>';
-    else
+    } else {
     	echo '	<script>
                     $(function(){
                         $("#pic_rating").rating({
@@ -138,47 +168,48 @@
 						});
 					});
                 </script>';
-
-		echo '	</div>
-		</div>
+    }
+    echo '</div>
+		</div>';
+    if (isset($usr)){
+    	echo '	
 		<div id="comments_panel" class="panel">
 		    <div id="comments_title" class="panel-header bg-lightBlue fg-white">
 		        Hozzászólások
 		    </div>
-		    <div  id="comments" class="panel-content">
-			    <div class="listview-outlook" data-role="listview">
-	                <a class="list marked" href="#">
+		    <div  id="comments" class="panel-content" >
+			    <div id="comment_list" class="listview-outlook" data-role="listview">';
+		//hozzászólások betöltése
+	$comments = $controller->getComments($pic_id);
+	foreach ($comments as $value) {
+		echo '      <a class="list marked" href="#">
 	                    <div class="list-content">
-	                        <span class="list-title">Felhasználó</span>
-	                        <span class="list-remark">Komment</span>
+	                        <span class="list-title">'.$value['FELHASZNALONEV'].'</span>
+	                        <span class="list-remark">'.$value['MEGJEGYZES'].'</span>
 	                    </div>
-	                </a>
-	                <a class="list" href="#">
-	                    <div class="list-content">
-	                        <span class="list-title">Felhasználó</span>
-	                        <span class="list-remark">Komment</span>
-	                    </div>
-	                </a>
-	                <a class="list" href="#">
-	                    <div class="list-content">
-	                        <span class="list-title">Felhasználó</span>
-	                        <span class="list-remark">Komment</span>
-	                    </div>
-	                </a>
-	                <a class="list" href="#">
-	                    <div class="list-content">
-	                        <span class="list-title">Felhasználó</span>
-	                        <span class="list-remark">Komment</span>
-	                    </div>
-	                </a>
-	            </div>
-        	</div>
+	                </a>';
+	}
+               
+	echo  '		</div>
+	    	</div>
+        </div>
             <div class="input-control text" data-role="input-control">
-                <textarea rows="3" cols="35" id="new_comment" type="text" placeholder="Hozzászólás írásához kattints ide..."></textarea>
+                <textarea id="new_comment" type="text" placeholder="Hozzászólás írásához kattints ide..."></textarea>
                 <button class="btn-clear" tabindex="-1"></button>
-        	</div></br>
-        	<button>Elküldés</button>
+        	</div>
+        	<p><button id="btn_comment_send">Elküldés</button></p>
 		</div>
 	</div>';
+    }
+    else {
+    	echo '<div id="comments_panel" class="panel">
+			    <div id="comments_title" class="panel-header bg-lightBlue fg-white">
+			        A hozzászólások megtekintéséhez jelenetkezz be!
+			    </div>
+			    <div  id="comments" class="panel-content">
+			    </div>
+			    </div>';
+    }
+		
 	
 ?>
