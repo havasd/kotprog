@@ -132,31 +132,54 @@ $(document).on("click", "#submit_reg", function(){
 });
 
 
-//main
+//HOME
 $(document).on("click", "#home_btn", function(){
 	$("#content-header").html("Legfrissebb képek");
 	$.post( "home.php", 'header=1')
      .done(function(data) {
         $("#content-header").html(data);
+        $(document).on("click","#categories > button, #order_by > button", function(){
+            //$("#categories").init();
+            var cat_id = $("#categories .active").attr("id").substr(4);
+            var order_id = $("#order_by .active").attr("id");
+            var order;
+            if (order_id == "order_time_desc") order = "FELTOLTES_IDEJE DESC";
+            if (order_id == "order_time_asc") order = "FELTOLTES_IDEJE";
+            if (order_id == "order_rating_desc") order = "RATE DESC";
+            if (order_id == "order_rating_asc") order = "RATE";
+            alert(cat_id+"  "+order);
+            $.post( "home.php", 'header=0&category='+cat_id+'&orderby='+order)
+             .done(function(data) {
+                $("#content").empty().html(data);
+                alert("content reload");
+            });
+        });
+
     });
-    $.post( "home.php", 'header=0')
+     
+    $.post( "home.php", 'header=0&category=all&orderby=FELTOLTES_IDEJE DESC')
      .done(function(data) {
         $("#content").html(data);
     });
-});
 
-$(document).on("click", "#categories button", function(){
-    var cat_id = $(this).attr("id").substr(4);
-    alert(cat_id);
-    $.post( "home.php", 'header=1&category='+cat_id)
-     .done(function(data) {
-        $("#content-header").html(data);
-    });
-    $.post( "home.php", 'header=0&category='+cat_id)
-     .done(function(data) {
-        $("#content").html(data);
-    });
 
+    
+
+    /*$(document).on("click", "#categories , #order_by ", function(){
+        var cat_id = $("#categories .active").attr("id").substr(4);
+        var order_id = $("#order_by .active").attr("id");
+        var order;
+        if (order_id == "order_time_desc") order = "FELTOLTES_IDEJE DESC";
+        if (order_id == "order_time_asc") order = "FELTOLTES_IDEJE ASC";
+        if (order_id == "order_rating_desc") order = "RATE DESC";
+        if (order_id == "order_rating_asc") order = "RATE ASC";
+        alert(cat_id+"  "+order);
+        $.post( "home.php", 'header=0&category='+cat_id+'&orderby='+order)
+         .done(function(data) {
+            console.log(data);
+            $("#content").empty().html(data);
+        });
+    });*/
 });
 
 /*

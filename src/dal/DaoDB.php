@@ -111,6 +111,54 @@
             }
         }
 
+        public function getPictures($from_index, $to_index, $category_id, $orderby){
+            $query = '
+                SELECT * FROM (   
+                    SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
+                    TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
+                    (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = KEPEK.ID) AS RATE
+                    FROM FELHASZNALOK, KEPEK
+                    WHERE FELHASZNALOK.ID = KEPEK.FELH_ID'.
+                    (($category_id != "all") && ($category_id) ? ' AND KAT_ID = :category_id_bi ' : ''). 
+                    ' ORDER BY ' .$orderby.' )
+                 
+                WHERE ROWNUM >= :from_index_bi 
+                AND ROWNUM <= :to_index_bi';
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $stmt = oci_parse($con, $query);
+            
+            if ($category_id != "all"){
+                oci_bind_by_name($stmt, ':category_id_bi', $category_id);
+            }
+            
+            oci_bind_by_name($stmt, ':from_index_bi', $from_index);
+            oci_bind_by_name($stmt, ':to_index_bi', $to_index);
+            oci_execute($stmt);
+            $pics = array();
+            $i=0;
+            while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
+                if (is_object($row['KEPFAJL'])) {
+                    $owner = $row['NEV'];
+                    $id = $row['ID'];
+                    $desc = $row['LEIRAS'];
+                    $place = $row['HELYSZIN'];
+                    $cat_id = $row['KAT_ID'];
+                    $time = $row['FELTOLTES_IDEJE'];
+                    $blob = $row['KEPFAJL']->load();
+                    $rating = (is_null($row['RATE']) ? 0 : $row['RATE']);
+                    $pics[$i] = new Picture($id, $cat_id , $desc, $time, $place, $blob, $owner, $rating);
+                    $row['KEPFAJL']->free();
+                    $i++;
+                }
+                //var_dump($row);
+                //echo "<br>";
+            }
+            $stmt = null;
+            oci_close($con);
+            //var_dump($pics);
+            return $pics;
+        }
+
         public function getAllPictures(){
             $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
             TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
@@ -138,6 +186,8 @@
             oci_close($con);
             return $pics;
         }
+
+
 
         public function getPicturesByCategory($cid){
             $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL,
