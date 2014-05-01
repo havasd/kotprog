@@ -1,5 +1,5 @@
 <?php
-	require_once('dbstrings.php');
+	require_once $_SERVER['DOCUMENT_ROOT']."/kotprog/src/dbstrings.php";
 	require_once('Album.php');
 
 	class User

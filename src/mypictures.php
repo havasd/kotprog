@@ -9,14 +9,18 @@
     if (isset($usr)) {
         $controller = new DaoDB();
         $albid = 0;
-        if (isset($_GET["alb"])){
-            $albid = explode("_", $_GET["alb"])[1];
+        if (isset($_POST["alb"])){
+            $albid = explode("_", $_POST["alb"])[1];
         }
-        if ($_GET["header"] == 1) {
+        if (isset($_POST["header"])){
+            if ($_POST["header"] == 1) {
             generateHeader($albid);
-         } else {
-            generateContent($albid);
+             } else {
+                echo $albid;
+                generateContent($albid);
+            }
         }
+        
     }
 
     function generateHeader($albumid){
@@ -44,6 +48,8 @@
     function generateContent($albumid){
         global $controller;
         // main page
+        //SAJÁT ALBUMOK
+
         if (!$albumid) {
             echo '<div class="grid" style="margin-left: 30px; margin-right: 30px">
                     <div class="row">';
@@ -77,7 +83,7 @@
                         </div>
                       </div>';
             }
-                /*echo '<div class="notice marker-on-top bg-dark fg-white" style="width:30em; text-align:center">
+            /*echo '<div class="notice marker-on-top bg-dark fg-white" style="width:30em; text-align:center">
                         Üres a fényképalbum.
                       </div>';*/
             echo '</div>
@@ -87,7 +93,7 @@
             foreach ($pics as $val) {
                 echo '<div id="pic_' . $val->getId() . '" class="tile double picture">
                         <div class="tile-content image">
-                            <img class="tile_image" src="data:image/jpeg;base64,'. $val->getPictureTileBinary() . '">
+                            <img class="tile_image" src="">
                         </div>
                       </div>';
             }
@@ -102,7 +108,7 @@
                     
                     echo '<div id="pic_' . $val->getId() . '" class="tile double picture">
                             <div class="tile-content image">
-                                <img class="tile_image" src="data:image/jpeg;base64,'. $val->getPictureTileBinary() . '">
+                                <img class="tile_image" src="">
                             </div>
                           </div>';
                 }

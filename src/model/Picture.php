@@ -52,7 +52,7 @@
         public function getRating(){
             return $this->m_rating;
         }
-
+        
         public function getPictureTileBinary(){
             $picture = imagecreatefromstring(base64_decode($this->m_data));
             $new_width = 250;
@@ -67,5 +67,7 @@
             $picture_tile = ob_get_clean();
             return base64_encode($picture_tile);
         }
+        
+
     }
 ?>

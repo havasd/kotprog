@@ -131,7 +131,18 @@ $(document).on("click", "#submit_reg", function(){
 	return false;
 });
 
-
+function initThumbs(){
+    $(".picture").each(function(){
+            var pic = $(this).children().children();
+            var pic_id = $(this).attr("id").substr(4);
+            console.log(pic_id+"\n");
+            $.post( "dal/DaoDB.php", 'getThumb='+pic_id)
+             .done(function(data) {
+                 pic.attr("src", data);
+                 pic.show();
+            });
+    });
+}
 //HOME
 $(document).on("click", "#home_btn", function(){
 	$("#content-header").html("Legfrissebb képek");
@@ -147,39 +158,19 @@ $(document).on("click", "#home_btn", function(){
             if (order_id == "order_time_asc") order = "FELTOLTES_IDEJE";
             if (order_id == "order_rating_desc") order = "RATE DESC";
             if (order_id == "order_rating_asc") order = "RATE";
-            alert(cat_id+"  "+order);
             $.post( "home.php", 'header=0&category='+cat_id+'&orderby='+order)
              .done(function(data) {
-                $("#content").empty().html(data);
-                alert("content reload");
+                $("#content").html(data);
+                initThumbs();
             });
         });
-
     });
      
     $.post( "home.php", 'header=0&category=all&orderby=FELTOLTES_IDEJE DESC')
      .done(function(data) {
         $("#content").html(data);
+        initThumbs();
     });
-
-
-    
-
-    /*$(document).on("click", "#categories , #order_by ", function(){
-        var cat_id = $("#categories .active").attr("id").substr(4);
-        var order_id = $("#order_by .active").attr("id");
-        var order;
-        if (order_id == "order_time_desc") order = "FELTOLTES_IDEJE DESC";
-        if (order_id == "order_time_asc") order = "FELTOLTES_IDEJE ASC";
-        if (order_id == "order_rating_desc") order = "RATE DESC";
-        if (order_id == "order_rating_asc") order = "RATE ASC";
-        alert(cat_id+"  "+order);
-        $.post( "home.php", 'header=0&category='+cat_id+'&orderby='+order)
-         .done(function(data) {
-            console.log(data);
-            $("#content").empty().html(data);
-        });
-    });*/
 });
 
 /*
@@ -341,9 +332,16 @@ $(document).on("submit","#avatar",function(){
 --------------------------------------------------------------
 */
 // clicks
+
+
 $(document).on("click", "#mypictures_btn", function(){
-    $("#content-header").load("mypictures.php", "header=1");
-    $("#content").load("mypictures.php", "header=0");
+    $.post("mypictures.php", "header=1").done(function(data){
+        $("#content-header").html(data);
+    });
+    $.post("mypictures.php", "header=0").done(function(data){
+        $("#content").html(data);
+        initThumbs();
+    });
 });
 
 // new album click
@@ -412,8 +410,13 @@ $(document).on("submit", "#f_new_pictures", function(){
             if (data.create == "true"){
                     $.Dialog.close();
                     $.Notify.show("Fényképek feltöltése sikeres.");
-                    $("#content-header").load("mypictures.php", "header=1");
-                    $("#content").load("mypictures.php", "header=0");
+                    $.post("mypictures.php", "header=1").done(function(data){
+                        $("#content-header").html(data);
+                    });
+                    $.post("mypictures.php", "header=0").done(function(data){
+                        $("#content").html(data);
+                        initThumbs();
+                    });
             } else {
                 $.Notify.show("Fénykép feltöltése sikertelen.");
             }
@@ -441,15 +444,29 @@ $(document).on("submit", "#f_new_pictures", function(){
 
 // back button when usr in an album
 $(document).on("click", "#btn_album_back", function(){
-    $("#content-header").load("mypictures.php", "header=1");
-    $("#content").load("mypictures.php", "header=0");
+    $.post("mypictures.php", "header=1").done(function(data){
+        $("#content-header").html(data);
+    });
+    $.post("mypictures.php", "header=0").done(function(data){
+        $("#content").html(data);
+        initThumbs();
+    });
+    initThumbs();
 });
 
 // album navigation
 $(document).on("click", ".album", function(){
     $(this).trigger('mouseleave');
-    $("#content-header").load("mypictures.php", "header=1&alb=" + ($(this).attr('id')));
-    $("#content").load("mypictures.php", "header=0&alb=" + ($(this).attr('id')));
+    $.post("mypictures.php", "header=1&alb=" + $(this).attr('id')).done(function(data){
+        console.log(data);
+        $("#content-header").html(data);
+    });
+    $.post("mypictures.php", "header=0&alb=" + $(this).attr('id')).done(function(data){
+        console.log(data);
+        $("#content").html(data);
+        initThumbs();
+    });
+    
 });
 
 // form album create
@@ -466,8 +483,13 @@ $(document).on("submit", "#f_new_album", function(){
             if (result.create == "true"){
                     $.Dialog.close();
                     $.Notify.show("Album sikeresen létrehozva.");
-                    $("#content-header").load("mypictures.php", "header=1");
-                    $("#content").load("mypictures.php", "header=0");
+                    $.post("mypictures.php", "header=1").done(function(data){
+                        $("#content-header").html(data);
+                    });
+                    $.post("mypictures.php", "header=0").done(function(data){
+                        $("#content").html(data);
+                        initThumbs();
+                    });
             }
         },
         error: function(jqXHR, exception) {

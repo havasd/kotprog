@@ -1,8 +1,9 @@
 <?php
-    require_once('dbstrings.php');
-    require_once('/model/User.php');
-    require_once('/model/Album.php');
-    require_once('/model/Picture.php');
+    require_once $_SERVER['DOCUMENT_ROOT']."/kotprog/src/dbstrings.php";
+    //require_once('/dbstrings.php');
+    require_once $_SERVER['DOCUMENT_ROOT']."/kotprog/src/model/User.php";
+    require_once $_SERVER['DOCUMENT_ROOT']."/kotprog/src/model/Album.php";
+    require_once $_SERVER['DOCUMENT_ROOT']."/kotprog/src/model/Picture.php";
 
     class DaoDB
     {
@@ -87,7 +88,7 @@
             }
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = "INSERT INTO KEPEK (ID,  LEIRAS, FELTOLTES_IDEJE, HELYSZIN, KEPFAJL, ALBUM_ID, FELH_ID, KAT_ID)
-                      VALUES (image_seq.nextval, :descr, SYSDATE, :place, EMPTY_BLOB(), :albid, :user_id, :cid)
+                      VALUES (image_seq.nextval, :descr, CURRENT_DATE, :place, EMPTY_BLOB(), :albid, :user_id, :cid)
                       RETURNING KEPFAJL INTO :myblob";
 
             $stmt = oci_parse($con, $query);
@@ -218,8 +219,8 @@
             return $pics;
         }
 
-        //Picture($id, $category, $desc, $time, $place, $data, $owner)
-        public function getPicturesByUser($album_id){
+        //Picture($id, $category, $desc, $time, $place, $data, $owner, $rating)
+       public function getPicturesByUser($album_id){
             if (!$album_id){
                 $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
                 TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
@@ -288,6 +289,31 @@
             $stmt = null;
             oci_close($con);
             return $pic;
+        }
+
+        public function getPictureTileById($pic_id){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT KEPFAJL FROM KEPEK WHERE ID = '.$pic_id;
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            if (is_object($row['KEPFAJL'])) {
+                $blob = $row['KEPFAJL']->load();
+                $row['KEPFAJL']->free();
+            }
+            oci_close($con);
+            $picture = imagecreatefromstring(base64_decode($blob));
+            $new_width = 250;
+            $new_height = 120;
+            $picture_tile = imagecreatetruecolor(250, 120);
+            $width = imagesx($picture);
+            $height = imagesy($picture);
+            imagecopyresized($picture_tile, $picture, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+            ob_start();
+            imagejpeg($picture_tile);
+            imagedestroy($picture_tile);
+            $picture_tile = ob_get_clean();
+            return base64_encode($picture_tile);
         }
 
 
@@ -405,7 +431,7 @@
         {
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'INSERT INTO HOZZASZOLASOK (ID, MEGJEGYZES,IDOBELYEG, FELH_ID, KEP_ID) 
-                        VALUES (comment_seq.nextval, :comment_bi, SYSDATE , :usr_bi, :pic_bi)';
+                        VALUES (comment_seq.nextval, :comment_bi, CURRENT_DATE , :usr_bi, :pic_bi)';
             $stmt = oci_parse($con, $query);
             oci_bind_by_name($stmt, ':comment_bi', $comment);
             oci_bind_by_name($stmt, ':usr_bi', $user_id);
@@ -439,6 +465,17 @@
                 $categories[$row['ID']] = $row['KATEGORIA'];
             }
             return $categories;
+        }
+    }
+
+
+    if (isset($_POST)){
+        $controller = new DaoDB();
+        if(isset($_POST['getThumb'])){
+            {
+                echo "data:image/jpeg;base64,".$controller->getPictureTileById($_POST['getThumb']);
+                exit();
+            }
         }
     }
 ?>

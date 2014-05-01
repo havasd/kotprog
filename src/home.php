@@ -35,7 +35,7 @@
       while (isset($pics[$i])){
         echo '<div id="pic_' . $pics[$i]->getId() . '" class="tile double picture">
                     <div class="tile-content image">
-                        <img class="tile_image" src="data:image/jpeg;base64,'.$pics[$i]->getPictureTileBinary() . '">
+                        <img class="tile_image" src="'/*.$pics[$i]->getPictureTileBinary() */.'">
                         '.$pics[$i]->getUploadTime().'    '.$pics[$i]->getRating().'
                     </div>
                   </div>';
