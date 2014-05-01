@@ -2,6 +2,11 @@ $(document).ready(function(){
 	
 });
 
+var deleteMode = false;
+var deleteNot = null;
+var editMode = false;
+var editNot = null;
+
 //bejelelentkezés form betöltése
 $(document).on("click", "#login_btn", function(){
 	$("#content-header").html("Bejelelentkezés");
@@ -135,7 +140,6 @@ function initThumbs(){
     $(".picture").each(function(){
             var pic = $(this).children().children();
             var pic_id = $(this).attr("id").substr(4);
-            console.log(pic_id+"\n");
             $.post( "dal/DaoDB.php", 'getThumb='+pic_id)
              .done(function(data) {
                  pic.attr("src", data);
@@ -145,7 +149,6 @@ function initThumbs(){
 }
 //HOME
 $(document).on("click", "#home_btn", function(){
-	$("#content-header").html("Legfrissebb képek");
 	$.post( "home.php", 'header=1')
      .done(function(data) {
         $("#content-header").html(data);
@@ -184,6 +187,14 @@ $(document).on("click", "#home_btn", function(){
 //image zoom
 $(document).on("click", ".picture", function(){
     
+    if (deleteMode) {
+        if ($(this).hasClass("selected")) {
+            $(this).removeClass("selected");
+        } else {
+            $(this).addClass("selected");
+        }
+        return false;
+    }
     var image_id = $(this).attr('id').substr(4);
     var next_image_id = $(this).next().attr('id');
     var prev_image_id = $(this).prev().attr('id');
@@ -399,6 +410,61 @@ $(document).on("submit", "#f_personaldata_change", function(){
 */
 // clicks
 
+// reset delete mode on page switch
+$(document).on("click", ".element", function(){
+    deleteMode = false;
+    editMode = false;
+    if (deleteNot != null) {
+        deleteNot.close();
+    }
+   if (editNot != null) {
+        editNot.close();
+    }
+});
+
+// edit mode
+$(document).on("click", "#b_edit", function(){
+    if (editMode) {
+        alert("néger");
+    } else {
+        editNot = $.Notify({
+            caption: "Szerkesztés",
+            content: "Szerkesztéshez válassz ki elemet.",
+            timeout: 10000
+        });
+    }
+
+    editMode = !editMode;
+});
+
+// delete mode
+$(document).on("click", "#b_delete", function(){
+    if (deleteMode) {
+        $(".selected").each(function(){
+            var id = $(this).attr("id").substr(4);
+            if ($(this).hasClass("picture")) {
+                $.post( "dal/DaoDB.php", 'deletePicture=' + id, function(data) {
+                    console.log(data);
+                });
+            } else {
+                $.post( "dal/DaoDB.php", 'deleteAlbum=' + id, function(data) {
+                    console.log(data);
+                });
+            }
+        });
+        $(".selected").remove();
+        deleteNot.close();
+    } else if (!deleteMode) {
+        deleteNot = $.Notify({
+            caption: "Törlés",
+            content: "Törléshez válassz ki elemeket majd kattints újra a törlés gombra.",
+            timeout: 10000
+        });
+    }
+
+    deleteMode = !deleteMode;
+});
+
 
 $(document).on("click", "#mypictures_btn", function(){
     $.post("mypictures.php", "header=1").done(function(data){
@@ -517,12 +583,27 @@ $(document).on("click", "#btn_album_back", function(){
         $("#content").html(data);
         initThumbs();
     });
-    initThumbs();
+    deleteMode = false;
+    editMode = false;
+    if (deleteNot != null) {
+        deleteNot.close();
+    }
+    if (editNot != null) {
+        editNot.close();
+    }
 });
 
 // album navigation
 $(document).on("click", ".album", function(){
     $(this).trigger('mouseleave');
+    if (deleteMode) {
+        if ($(this).hasClass("selected")) {
+            $(this).removeClass("selected");
+        } else {
+            $(this).addClass("selected");
+        }
+        return false;
+    }
     $.post("mypictures.php", "header=1&alb=" + $(this).attr('id')).done(function(data){
         console.log(data);
         $("#content-header").html(data);
@@ -581,10 +662,5 @@ $(document).on("submit", "#f_new_album", function(){
 /*
 --------------------------------------------------------------
 --------------------- Saját képek end ------------------------
---------------------------------------------------------------
-*/
-/*
---------------------------------------------------------------
---------------------- Home begin ------------------------
 --------------------------------------------------------------
 */

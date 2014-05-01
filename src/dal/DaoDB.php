@@ -512,16 +512,36 @@
             }
             return $categories;
         }
+
+        public function deletePictureById($id){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'DELETE FROM KEPEK WHERE ID = ' . $id;
+            $stmt = oci_parse($con, $query);
+            return oci_execute($stmt);
+        }
+
+        public function deleteAlbumById($id){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'DELETE FROM ALBUMOK WHERE ID = ' . $id;
+            $stmt = oci_parse($con, $query);
+            return oci_execute($stmt);
+        }
     }
 
 
     if (isset($_POST)){
         $controller = new DaoDB();
-        if(isset($_POST['getThumb'])){
-            {
-                echo "data:image/jpeg;base64,".$controller->getPictureTileById($_POST['getThumb']);
-                exit();
-            }
+        if (isset($_POST['getThumb'])){
+            echo "data:image/jpeg;base64,".$controller->getPictureTileById($_POST['getThumb']);
+            exit();
+        } 
+        if (isset($_POST['deletePicture'])) {
+            $controller->deletePictureById($_POST['deletePicture']);
+            exit();
+        }
+        if (isset($_POST['deleteAlbum'])) {
+            $controller->deleteAlbumById($_POST['deleteAlbum']);
+            exit();
         }
     }
 ?>

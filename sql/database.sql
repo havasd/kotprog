@@ -214,9 +214,9 @@
 --------------------------------------------------------
 
   ALTER TABLE  "ERTEKELESEK" ADD CONSTRAINT "ERTEKELESEK_FK1" FOREIGN KEY ("KEP_ID")
-	  REFERENCES  "KEPEK" ("ID") ENABLE;
+	  REFERENCES  "KEPEK" ("ID")  ON DELETE CASCADEENABLE;
   ALTER TABLE  "ERTEKELESEK" ADD CONSTRAINT "ERTEKELESEK_FK_F" FOREIGN KEY ("FELH_ID")
-	  REFERENCES  "FELHASZNALOK" ("ID") ENABLE;
+	  REFERENCES  "FELHASZNALOK" ("ID") ON DELETE CASCADE ENABLE;
 --------------------------------------------------------
 --  Ref Constraints for Table FELHASZNALOK
 --------------------------------------------------------

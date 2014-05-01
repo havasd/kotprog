@@ -14,9 +14,8 @@
         }
         if (isset($_POST["header"])){
             if ($_POST["header"] == 1) {
-            generateHeader($albid);
-             } else {
-                echo $albid;
+                generateHeader($albid);
+            } else {
                 generateContent($albid);
             }
         }
@@ -26,22 +25,26 @@
     function generateHeader($albumid){
         global $controller;
         if (!$albumid) {
-            echo 'Képeim
-                    <a class="dropdown-toggle place-right" style="color: black;" href="#">Új<i class="icon-new on-right" style="color: black;"></i></a>
+            echo '<nav class="horizontal-menu">
+                    <a style="color: black;"">Képeim</a>
+                    <a class="dropdown-toggle place-right" style="color: black;" href="#"><i class="icon-new" style="color: black;"></i>Új</a>
                     <ul class="dropdown-menu place-right" data-role="dropdown">
                         <li><a id="btn_new_album" href="#">Album</a></li>
                         <li><a id="btn_new_picture" href="#">Kép</a></li>
                     </ul>
-                  </div>';
+                    <a class="place-right" id="b_delete" style="color: black;" href="#"><i class="icon-remove on-left" style="color: black;"></i>Törlés</a>
+                    <a class="place-right" id="b_edit" style="color: black;" href="#"><i class="icon-wrench" style="color: black;"></i>Szerkesztés</a></nav>';
         } else {
             $current_album = $controller->getAlbumById($albumid);
-            echo '<a id="btn_album_back" style="color: black;" href="#"><i class="icon-arrow-left-3 on-left"></i></a>'
-                    . $current_album->getName() . 
-                    '<a class="dropdown-toggle place-right" style="color: black;" href="#">Új<i class="icon-new on-right" style="color: black;"></i></a>
+            echo '<nav class="horizontal-menu">
+                    <a id="btn_album_back" style="color: black;" href="#"><i class="icon-arrow-left-3"></i></a>
+                    <a style="color: black;" >' . $current_album->getName() . '</a>
+                    <a class="dropdown-toggle place-right" style="color: black;" href="#"><i class="icon-new" style="color: black;"></i>Új</a>
                     <ul class="dropdown-menu place-right" data-role="dropdown">
                         <li><a id="btn_new_picture" href="#">Kép</a></li>
                     </ul>
-                  </div>';
+                    <a class="place-right" id="b_delete" style="color: black;" href="#"><i class="icon-remove" style="color: black;"></i>Törlés</a>
+                    <a class="place-right" id="b_edit" style="color: black;" href="#"><i class="icon-wrench" style="color: black;"></i>Szerkesztés</a></nav>';
         }
     }
 
