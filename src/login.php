@@ -25,15 +25,21 @@ require_once('model/User.php');
         				width: 30em;
     				}
 				</style>
-				<form id="login2">
-    				<label>Felhasználónév :</label>
+				<form id="login2" style="width:30em">
+                    <fieldset>
+    				<label for="login2_username">Felhasználónév</label>
+                    <div class="input-control text">
     				<input id="login2_username" name="username" type="text" autofocus>
+                    <button class="btn-clear"></button>
+                    </div>
 
-				    <label>Jelszó :</label>
-    				<input id="login2_pwd" name="password" type="password">
-    				<br>
+				    <label for="login2_pwd">Jelszó</label>
+                    <div class="input-control password">
+    				    <input id="login2_pwd" name="password" type="password" required>
+                    <button class="btn-reveal"></button></div>
     				<button id="submit_login">Bejelentkezés</button>
-    				<div id="login_error"></div>
+                    </fieldset>
+                    </div>
 				</form>';
 	}
 ?>

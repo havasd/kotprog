@@ -53,3 +53,25 @@ BEGIN
   create_time := TO_CHAR(c_time, 'YYYY/MM/DD HH24:MI:SS');
   INSERT INTO ALBUMOK (ID, NEV, LEIRAS, LETREHOZAS_IDEJE, FELH_ID) VALUES (id, name, description, c_time, user_id);
 END;
+
+--------------------------------------------------------
+--  Update user data PROCEDURE
+--------------------------------------------------------
+create or replace PROCEDURE updateUserData
+(user_id IN number,name_new IN varchar2, email_new IN varchar2, country IN varchar2, city IN varchar2)
+IS
+ varos number;
+BEGIN
+  BEGIN
+    SELECT ID INTO varos FROM VAROSOK WHERE orszag=country and varos=city;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+        varos := 0;
+  END;
+  IF varos = 0 THEN
+    varos := city_seq.nextval;
+    INSERT INTO VAROSOK VALUES(varos, city, country);
+  END IF;
+
+  UPDATE FELHASZNALOK SET NEV=name_new, EMAIL=email_new, VAROS_ID=varos WHERE ID=user_id;
+END;

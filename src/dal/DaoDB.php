@@ -7,6 +7,32 @@
 
     class DaoDB
     {
+        // data post
+        public function updateUser($data){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'begin updateUserData(:bv_usr, :bv_name, :bv_email, :bv_country, :bv_city); end;';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_usr', $_SESSION['userObject']->getId());
+            oci_bind_by_name($stmt, ':bv_name', isset($data['name_new']) ? $data['name_new'] : $_SESSION['userObject']->getName());
+            oci_bind_by_name($stmt, ':bv_email', isset($data['email_new']) ? $data['email_new'] : $_SESSION['userObject']->getEmail());
+            oci_bind_by_name($stmt, ':bv_country', isset($data['country_new']) ? $data['country_new'] : $_SESSION['userObject']->getCountry());
+            oci_bind_by_name($stmt, ':bv_city', isset($data['city_new']) ? $data['city_new'] : $_SESSION['userObject']->getCity());
+            $suc = oci_execute($stmt);
+            if ($suc) {
+                if (isset($data['name_new']))
+                    $_SESSION['userObject']->setName($data['name_new']);
+                if (isset($data['email_new']))
+                    $_SESSION['userObject']->setEmail($data['email_new']);
+                if (isset($data['country_new']))
+                    $_SESSION['userObject']->setCountry($data['country_new']);
+                if (isset($data['city_new']))
+                    $_SESSION['userObject']->setCity($data['city_new']);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         //User($id,$name,$email,$country,$city)
         public function getUserById($id){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
@@ -51,6 +77,25 @@
             $ok = oci_execute($stmt);
             oci_close($con);
             return $ok;
+        }
+
+        public function getUserPassword() {
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT JELSZO FROM BEJELENTKEZESI_ADATOK WHERE FELH_ID=:bv_felh_id';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_felh_id', $_SESSION['userObject']->getId());
+            oci_execute($stmt);
+            $row = oci_fetch_array($stmt, OCI_RETURN_NULLS);
+            return $row['JELSZO'];
+        }
+
+        public function updateUserPassword($pass){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'UPDATE BEJELENTKEZESI_ADATOK SET JELSZO=:bv_passw WHERE FELH_ID=:bv_felh_id';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_passw', $pass);
+            oci_bind_by_name($stmt, ':bv_felh_id', $_SESSION['userObject']->getId());
+            return oci_execute($stmt);
         }
 
         public function isUserNameTaken($username){
@@ -398,6 +443,7 @@
             if ($dlob->save($blob)) {
                 oci_commit($con);
                 oci_close($con);
+                $_SESSION['userObject']->setAvatar($blob);
                 return true;
             } else {
                 oci_close($con);

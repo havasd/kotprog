@@ -285,16 +285,17 @@ $(document).on("change","#avatar_file",function(){
 });
 
 // avatar submit
-$(document).on("submit","#avatar",function(){
+$(document).on("submit","#f_avatar",function(){
 	event.stopPropagation(); // Stop stuff happening
     event.preventDefault(); // Totally stop stuff happening
     var data = new FormData();
-    $.each(files, function(key,value)
-        	{
+    $.each(files, function(key,value){
 				data.append(key, value);
-			});
+    });
+    data.append('mode', 'avatar');
+
 	$.ajax({
-        url: 'avatar_upload.php',
+        url: 'userdata.php',
         type: 'POST',
         data: data,
         cache: false,
@@ -303,29 +304,94 @@ $(document).on("submit","#avatar",function(){
         contentType: false, // Set content type to false as jQuery will tell the server its a query string request
         success: function(data, textStatus, jqXHR)
         {
-        	//console.log(data);
-        	$("#content").empty().load("userdata.php");
+            if (data.result == "true") {
+                $.Notify.show("Avatar feltöltése sikeres.");
+                $("#d_avatar").html(data.avatar);
+            } else {
+                $.Notify.show("Avatar feltöltése sikertelen.");
+            }
         },
 		error: function(jqXHR, exception) {
-            if (jqXHR.status === 0) {
-                alert('Not connect.\n Verify Network.');
-            } else if (jqXHR.status == 404) {
-                alert('Requested page not found. [404]');
-            } else if (jqXHR.status == 500) {
-                alert('Internal Server Error [500].');
-            } else if (exception === 'parsererror') {
-                alert(jqXHR.responseText);
-            } else if (exception === 'timeout') {
-                alert('Time out error.');
-            } else if (exception === 'abort') {
-                alert('Ajax request aborted.');
-            } else {
-                alert('Uncaught Error.\n' + jqXHR.responseText);
-            }
+            alert('Uncaught Error.\n' + jqXHR.responseText);
         }
     });
 });
 
+// password change submit
+$(document).on("submit", "#f_password_change", function(){
+    event.stopPropagation(); // Stop stuff happening
+    event.preventDefault(); // Totally stop stuff happening
+    var form = $("#f_password_change").serialize();
+    form += '&mode=pwd';
+
+    $.post("userdata.php", form, function(data) {
+            if (data.result == "true") {
+                $.Notify.show("Jelszó módosítása sikeres.");
+                $("#password_old").attr('data-state', "");
+                $("#password_new").attr('data-state', "");
+                $("#password_new2").attr('data-state', "");
+            } else {
+                var errormsg = "Jelszó megváltoztatása sikertelen!";
+                $("#password_old").attr('data-state', "");
+                $("#password_new").attr('data-state', "");
+                $("#password_new2").attr('data-state', "");
+                switch (data.password) {
+                    case 1:
+                        $("#password_new").attr('data-state', "error");
+                        $("#password_new2").attr('data-state', "error");
+                        errormsg = "Két jelszó nem egyezik meg.";
+                        break;
+                    case 4:
+                        $("#password_old").attr('data-state', "error");
+                        errormsg = "Jelenlegi jelszó nem megfelelő.";
+                        break;
+                    case 2:
+                        $("#password_new").attr('data-state', "error");
+                        errormsg = "A jelszó összetétele nem megfelelő.";
+                        break;
+                    case 3:
+                        errormsg = "Belső hiba.";
+                        break;
+                }
+                $.Notify({  
+                    caption: "Jelszó módosítása sikertelen!",
+                    content: errormsg,
+                    timeout: 3000,
+                    style: {background: 'red', color: 'white'}
+                });
+            }
+        }, "json");
+});
+
+// personal data change submit
+$(document).on("submit", "#f_personaldata_change", function(){
+    event.stopPropagation(); // Stop stuff happening
+    event.preventDefault(); // Totally stop stuff happening
+    var form = "mode=chg";
+    var changed = false;
+    var id = [ "name_new", "email_new", "country_new", "city_new" ];
+    for (var i = 0; i < id.length; ++i) {
+        var name = $("#" + id[i]);
+        if (name.val() != name.attr('data-orig')) {
+            form += "&" + id[i] + "=" + name.val();
+            name.attr('data-orig', name.val());
+            changed = true;
+        }
+    }
+
+    if (!changed) {
+        $.Notify.show("Nem történt adat módosítás.");
+        return false;
+    }
+    alert(form);
+
+
+    $.post("userdata.php", form, function(data) {
+            if (data.result == "true") {
+                $.Notify.show("Adatok módosítása sikeres.");
+            }
+        }, "json");
+});
 /*
 --------------------------------------------------------------
 --------------------- Saját képek begin ----------------------

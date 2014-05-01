@@ -7,7 +7,6 @@
         private $m_time;
         private $m_place;
         private $m_data;
-        private $m_data_tile;
         private $m_owner;
         private $m_rating;
 
@@ -63,7 +62,6 @@
             imagecopyresized($picture_tile, $picture, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
             ob_start();
             imagejpeg($picture_tile);
-            imagedestroy($picture_tile);
             $picture_tile = ob_get_clean();
             return base64_encode($picture_tile);
         }
