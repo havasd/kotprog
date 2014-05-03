@@ -28,9 +28,18 @@
 
 	function generateContent(){
 		global $controller;
-		echo '	<div id="picture_tiles" class="grid fluid" style="margin-left: 30px; margin-right: 30px">';
+    echo  '<div id="previous_picture" 
+            style=" display: inline-block;
+              float: left;
+              width: 25px;
+              height: 25px;
+              ">
+            <a style="color: black;" href="#"><i class="icon-arrow-left-3 on-left"></i></a>
+          </div>';
+    echo '	<div id="picture_tiles" class="grid" style="margin-left: 30px; margin-right: 30px">
+              <div class="row" style=" display: inline-block;">';
    	if (isset($_POST['category']) && isset($_POST['orderby'])){
-   		$pics = $controller->getPictures(0,10,$_POST['category'],$_POST['orderby']);
+   		$pics = $controller->getPictures(0,12,$_POST['category'],$_POST['orderby']);
       $i=0;
       while (isset($pics[$i])){
         echo '<div id="pic_' . $pics[$i]->getId() . '" class="tile double picture">
@@ -41,10 +50,17 @@
                   </div>';
         $i++;
       }
+      echo '</div>
+            </div>';
+      echo  '<div id="next_picture" 
+        style=" display: inline-block;
+            float: left;
+            width: 25px;
+            height: 25px;
+            ">
+          <a style="color: black;" href="#"><i class="icon-arrow-right-3 on-left"></i></a>
+          </div>';
+      echo $controller->getNumOfPictures(null);
    	} 
-            
-	echo '</div>';
-	}
-	
-    
+  } 
 ?>

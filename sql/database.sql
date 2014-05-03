@@ -256,3 +256,16 @@
   CREATE SEQUENCE image_seq;
   CREATE SEQUENCE city_seq;
   
+--------------------------------------------------------
+--  Kategóriák létrehozása
+--------------------------------------------------------
+
+INSERT INTO KATEGORIAK(ID,KATEGORIA) VALUES (category_seq.nextval,'Állatok');
+INSERT INTO KATEGORIAK(ID,KATEGORIA) VALUES (category_seq.nextval,'Emberek');
+INSERT INTO KATEGORIAK(ID,KATEGORIA) VALUES (category_seq.nextval,'Építmények');
+INSERT INTO KATEGORIAK(ID,KATEGORIA) VALUES (category_seq.nextval,'Járművek');
+INSERT INTO KATEGORIAK(ID,KATEGORIA) VALUES (category_seq.nextval,'Növények');
+INSERT INTO KATEGORIAK(ID,KATEGORIA) VALUES (category_seq.nextval,'Tájképek');
+INSERT INTO KATEGORIAK(ID,KATEGORIA) VALUES (category_seq.nextval,'Tárgyak');
+INSERT INTO KATEGORIAK(ID,KATEGORIA) VALUES (category_seq.nextval,'Sport');
+INSERT INTO KATEGORIAK(ID,KATEGORIA) VALUES (category_seq.nextval,'Egyéb');

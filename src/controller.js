@@ -511,12 +511,35 @@ function createAlbumDialog(id){
     });
 }
 
+var countrylist;
+var citylist;
 function createPictureDialog(id){
     if (id == undefined)
         id = 0;
 
+    $.ajax({
+        url: 'dal/DaoDB.php',
+        type: 'POST',
+        data: 'getCountries=1',
+        dataType: 'json',
+        success : function(data){
+            countrylist= data;
+        }
+    });
+
+    $.ajax({
+        url: 'dal/DaoDB.php',
+        type: 'POST',
+        data: 'getCities=1',
+        dataType: 'json',
+        success : function(data){
+            citylist= data;
+        }
+    });
+
+    var content;
     $.Dialog({
-        height: 470,
+        height: 600,
         width: 300,
         overlay: true,
         shadow: true,
@@ -525,16 +548,30 @@ function createPictureDialog(id){
         title: id ? 'Kép adatainak módosítása' : 'Új képek feltöltése',
         content: '',
         onShow: function(_dialog){
-            var content = _dialog.children('.content');
+            content = _dialog.children('.content');
             var curr_album = "0";
             if ($("#btn_album_back").attr("data-id"))
                 curr_album = $("#btn_album_back").attr("data-id");
-            alert(curr_album);
+            alert(curr_album + " " + id);
             $.post("pictureupload.php", 'id=' + id + '&curr_album=' + curr_album).done(function(data){
-                content.html(data);
+                content.html(data)
+                $( "#in_file_country" ).autocomplete({
+                  minLength: 0,
+                  source: countrylist
+                });
+                $( "#in_file_city" ).autocomplete({
+                  minLength: 0,
+                  source: citylist
+                });
             });
         }
     });
+    /*$.post("pictureupload.php","").done(function(data){
+        content.html(data);
+        
+        $("#in_file_country").autoComplete({source :countrylist});
+        $("#in_file_city").autoComplete({source: citylist});
+    })*/
 }
 
 // new album click
@@ -551,7 +588,9 @@ $(document).on("click", "#btn_new_picture", function(){
 $(document).on("change", "#in_file_picture", function(){
     files = event.target.files;
 });
-
+/*<input type="text" name="file_country" id="in_file_country"/><br>
+<input type="text" name="file_city" id="in_file_city"/><br>
+<input type="text" name="file_place" id="in_file_place"/><br>*/
 // picture upload
 $(document).on("submit", "#f_new_pictures", function(){
     event.stopPropagation(); // Stop stuff happening
@@ -561,9 +600,34 @@ $(document).on("submit", "#f_new_pictures", function(){
         data.append(key, value);
     });
     data.append('file_desc', $("#in_file_desc").val());
-    data.append('file_place', $("#in_file_place").val());
     data.append('file_album', $("#in_file_album").val());
     data.append('file_category', $("#in_file_category").val());
+    var country = $("#in_file_country").val();
+    var city = $("#in_file_city").val();
+    var place = $("#in_file_place").val();
+    if($.inArray(city,citylist) > 0 && $.inArray(country,countrylist) > 0){
+        alert ("jó");
+        $.ajax({
+            url: 'dal/DaoDB.php',
+            type: 'POST',
+            data: 'getCityId='+city+'&country='+country,
+            dataType: 'json',
+            success : function(data){
+                data.append('file_place', data+'_'+$("#in_file_place").val());
+            }
+        });
+    } else {
+        $.ajax({
+            url: 'dal/DaoDB.php',
+            type: 'POST',
+            data: 'addCityId='+city+'&country='+country,
+            dataType: 'json',
+            success : function(data){
+                data.append('file_place', data+'_'+$("#in_file_place").val());
+            }
+        });
+    }
+
     $.ajax({
         url: 'pictureupload.php',
         type: 'POST',

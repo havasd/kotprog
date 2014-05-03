@@ -205,6 +205,15 @@
             return $pics;
         }
 
+        public function getNumOfPictures($category_id){
+            $query = 'SELECT COUNT(*) FROM KEPEK '.(!is_null($category_id) ? 'WHERE KAT_ID = '.$category_id : "");
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $count = oci_fetch_array($stmt); 
+            return $count['COUNT(*)'];
+        }
+
         public function getAllPictures(){
             $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
             TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
@@ -535,6 +544,48 @@
             $stmt = oci_parse($con, $query);
             return oci_execute($stmt);
         }
+
+        public function getCountries(){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT DISTINCT ORSZAG FROM VAROSOK';
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $i = 0;
+            while ($tmp = oci_fetch_array($stmt)){
+                $countries[$i++] = $tmp['ORSZAG'];
+            }
+            return $countries;
+        }
+
+        public function getCities(){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT DISTINCT VAROS FROM VAROSOK';
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $i = 0;
+            while ($tmp = oci_fetch_array($stmt)){
+                $cities[$i++] = $tmp['VAROS'];
+            }
+            return $cities;
+        }
+
+        public function getCityId($city,$country){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT ID FROM VAROSOK WHERE VAROS = :city AND ORSZAG = :country';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':city', $city);
+            oci_bind_by_name($stmt, ':country', $country);
+            oci_execute($stmt);
+            $tmp = oci_fetch_array($stmt);
+            return $tmp['ID'];
+        }
+
+        public function addCity($city, $county){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'INSERT INTO VAROSOK VALUES (city_seq.nextval,'.$city.', '.$coutry.')';
+            $stmt = oci_parse($con, $query);
+            return oci_execute($stmt);
+        }
     }
 
 
@@ -551,6 +602,20 @@
         if (isset($_POST['deleteAlbum'])) {
             $controller->deleteAlbumById($_POST['deleteAlbum']);
             exit();
+        }
+        if (isset($_POST['getCities'])){
+            echo json_encode($controller->getCities());
+        }
+
+        if (isset($_POST['getCountries'])){
+            echo json_encode($controller->getCountries());
+        }
+        if (isset($_POST['getCityId'])){
+            echo json_encode($controller->getCityId($_POST['getCityId'],$_POST['country']));
+        }
+        if (isset($_POST['addCity'])){
+            $controller->addCity($_POST['addCity'],$_POST['country']);
+            echo json_encode($controller->getCityId($_POST['addCity'],$_POST['country']));
         }
     }
 ?>
