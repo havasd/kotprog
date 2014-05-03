@@ -8,12 +8,10 @@ require_once 'model/User.php';
         <link href="css/metro-bootstrap.css" rel="stylesheet" >
         <link href="css/metro-bootstrap-responsive.css" rel="stylesheet">
 	    <link href="css/iconFont.css" rel="stylesheet">
-	    <link href="css/ui-lightness/jquery-ui-1.10.4.custom.css" rel="stylesheet">
 
-        <script src="js/jquery/jquery.min.js"></script>
-        
-		<script src="js/jquery-1.10.2.js"></script>
-		<script src="js/jquery-ui-1.10.4.custom.js"></script>
+	    <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.4.custom.css">
+  		<script src="js/jquery-1.10.2.js"></script>
+  		<script src="js/jquery-ui-1.10.4.custom.js"></script>
         
 	    <script src="js/jquery/jquery.widget.min.js"></script>
 	    <script src="js/jquery/jquery.mousewheel.js"></script>
@@ -34,7 +32,9 @@ require_once 'model/User.php';
 		    	<div class="element input-element">
 		            <form>
 		                <div class="input-control text">
+		                	<div class="ui-widget">
 		                    <input id="search" type="text" placeholder="Keresés...">
+		                	</div>
 		                    <button class="btn-search"></button>
 		                </div>
 		            </form>

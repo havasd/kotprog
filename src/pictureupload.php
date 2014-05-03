@@ -1,3 +1,4 @@
+
 <?php
     require_once('model/User.php');
     require_once('model/Album.php');
@@ -21,52 +22,52 @@
             else
                 echo json_encode(array('create' => 'false'));
         } else {
-            echo '
-            <form id="f_new_pictures" style="margin: 5px 5px 5px 5px">
-                    <div class="grid fluid show-grid">
-                        <div class="row" >
-                            <div class="ui-widget">
-                              <label for="in_file_country">Ország: </label>
-                              <input type="text" name="file_country" id="in_file_country" /><br>
+
+    echo '      <form id="f_new_pictures" style="margin: 5px 5px 5px 5px">
+                    <div class="grid">
+                        
+                            <div class="row">
+                                
+                                    
+                                      <label for="in_file_country">Ország: </label>
+                                      <div class="ui-widget">
+                                      <input id="in_file_country" type="text" placeholder="Ország...">
+                                      </div>
+                                  
+                                    
+                                      <label for="in_file_city">Város: </label>
+                                      <div class="ui-widget">
+                                      <input id="in_file_city" type="text" placeholder="Város...">
+                                      </div>
+                                    
+                                    
+                                      <label for="in_file_place">Hely: </label>
+                                      <input id="in_file_place" type="text" placeholder="Helyszín...">
+                                    
+                                
+                                    <label>Leírás</label>
+                                    <input type="text" name="file_desc" id="in_file_desc"/><br>';
+
+            echo '                  <label>Kategória</label>
+                                    <select name="file_category" id="in_file_category">';
+            foreach ($categories as $key => $value) {
+                                    echo '<option value="'.$key.'">'.$value.'</option>';
+            }
+            echo '                  </select>';
+
+            echo '                  <label>Album</label>
+                                    <select name="file_album" id="in_file_album">
+                                        <option value="null">Főalbum</option>';
+                            foreach ($albumok as $key => $value) {
+                                echo '  <option value="'.$value->getId().'">'.$value->getName().'</option>';             
+                            };
+            echo '                  </select>';
+            echo '                  <label>Képfájl</label>
+                                    <input type="file" name="file_picture" id="in_file_picture"/><br>
+                                    <input type="submit" id="btn_upload_picture" value="Feltöltés">
+                                
                             </div>
-                            <div class="ui-widget">
-                              <label for="in_file_city">Város: </label>
-                              <input type="text" name="file_city" id="in_file_city" /><br>
-                            </div>
-                            <div class="ui-widget">
-                              <label for="in_file_place">Hely: </label>
-                              <input type="text" name="file_place" id="in_file_place" /><br>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <label>Leírás</label>
-                            <input type="text" name="file_desc" id="in_file_desc"/><br>
-                        </div>
-                        <div class="row">
-                            <label>Képfájl</label>
-                            <input type="file" name="file_picture" id="in_file_picture"/><br>
-                        </div>';
-            echo '      <div class="row">
-                            <label>Kategória</label>
-                            <select name="file_category" id="in_file_category">';
-                        foreach ($categories as $key => $value) {
-                            echo '<option value="'.$key.'">'.$value.'</option>';
-                        }
-            echo '          </select>
-                        </div>';
-            echo '      <div class="row">
-                            <label>Album</label>
-                            <select name="file_album" id="in_file_album">
-                            <option value="null">Főalbum</option>';
-                        foreach ($albumok as $key => $value) {
-                            echo '<option value="'.$value->getId().'">'.$value->getName().'</option>';             
-                        };
-            echo            '</select>
-                        </div>
-                        <div class="row">
-                            <input type="submit" id="btn_upload_picture" value="Feltöltés">
-                        </div>
-                    </div>
+                        
                 </form>';
         }
     }

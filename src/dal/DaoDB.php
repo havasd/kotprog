@@ -492,6 +492,7 @@
             oci_bind_by_name($stmt, ':usr_bi', $user_id);
             oci_bind_by_name($stmt, ':pic_bi', $pic_id);
             oci_execute($stmt);
+            oci_close($con);
             return true;
         }
 
@@ -502,6 +503,7 @@
                         AND HOZZASZOLASOK.KEP_ID = '.$pic_id;
             $stmt = oci_parse($con, $query);
             oci_execute($stmt);
+            oci_close($con);
             $comments=array();
             $i = 0;
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)){
@@ -516,7 +518,8 @@
             $categories = array();
             $stmt = oci_parse($con, $query);
             oci_execute($stmt);
-            while($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)){
+            oci_close($con);
+            while($row = oci_fetch_array($stmt)){
                 $categories[$row['ID']] = $row['KATEGORIA'];
             }
             return $categories;
@@ -527,6 +530,7 @@
             $query = 'DELETE FROM KEPEK WHERE ID = ' . $id;
             $stmt = oci_parse($con, $query);
             return oci_execute($stmt);
+            oci_close($con);
         }
 
         public function deleteAlbumById($id){
@@ -534,6 +538,7 @@
             $query = 'DELETE FROM ALBUMOK WHERE ID = ' . $id;
             $stmt = oci_parse($con, $query);
             return oci_execute($stmt);
+            oci_close($con);
         }
 
         public function getCountries(){
@@ -541,10 +546,13 @@
             $query = 'SELECT DISTINCT ORSZAG FROM VAROSOK';
             $stmt = oci_parse($con, $query);
             oci_execute($stmt);
+            oci_close($con);
             $i = 0;
             while ($tmp = oci_fetch_array($stmt)){
-                $countries[$i++] = $tmp['ORSZAG'];
+                $countries[$i] = $tmp['ORSZAG'];
+                $i+=1;
             }
+
             return $countries;
         }
 
@@ -555,9 +563,12 @@
             oci_execute($stmt);
             $i = 0;
             while ($tmp = oci_fetch_array($stmt)){
-                $cities[$i++] = $tmp['VAROS'];
+                $cities[$i] = $tmp['VAROS'];
+                $i+=1;
             }
             return $cities;
+            die(var_dump($cities));
+            oci_close($con);
         }
 
         public function getCityId($city,$country){
@@ -568,14 +579,25 @@
             oci_bind_by_name($stmt, ':country', $country);
             oci_execute($stmt);
             $tmp = oci_fetch_array($stmt);
+            oci_close($con);
             return $tmp['ID'];
         }
 
-        public function addCity($city, $county){
+        public function addCity($city, $country){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'INSERT INTO VAROSOK VALUES (city_seq.nextval,'.$city.', '.$coutry.')';
+            $query = 'INSERT INTO VAROSOK VALUES (city_seq.nextval, :city, :country)';
             $stmt = oci_parse($con, $query);
-            return oci_execute($stmt);
+            oci_bind_by_name($stmt, ':city', $city);
+            oci_bind_by_name($stmt, ':country', $country);
+            oci_execute($stmt);
+            $query = 'SELECT ID FROM VAROSOK WHERE VAROS = :city AND ORSZAG = :country';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':city', $city);
+            oci_bind_by_name($stmt, ':country', $country);
+            oci_execute($stmt);
+            $tmp = oci_fetch_array($stmt);
+            return $tmp['ID'];
+            oci_close($con);
         }
     }
 
@@ -602,11 +624,10 @@
             echo json_encode($controller->getCountries());
         }
         if (isset($_POST['getCityId'])){
-            echo json_encode($controller->getCityId($_POST['getCityId'],$_POST['country']));
+            echo ($controller->getCityId($_POST['getCityId'],$_POST['country']));
         }
         if (isset($_POST['addCity'])){
-            $controller->addCity($_POST['addCity'],$_POST['country']);
-            echo json_encode($controller->getCityId($_POST['addCity'],$_POST['country']));
+            echo ($controller->addCity($_POST['addCity'],$_POST['country']));
         }
     }
 ?>

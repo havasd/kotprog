@@ -1,7 +1,27 @@
 $(document).ready(function(){
-	
+	$.ajax({
+            url: "dal/DaoDB.php",
+            type: "POST",
+            data: "getCountries=1",
+            dataType: "json",
+            success : function(data){
+                countrylist = data;
+                
+            }
+    });
+    $.ajax({
+            url: "dal/DaoDB.php",
+            type: "POST",
+            data: "getCities=1",
+            dataType: "json",
+            success : function(data){
+                console.log(data);
+                citylist = data;
+            }
+    });
 });
-
+var countrylist;
+var citylist;
 var deleteMode = false;
 var deleteNot = null;
 var editMode = false;
@@ -495,27 +515,8 @@ $(document).on("click", "#btn_new_album", function(){
 });
 
 // picture upload click
-var countrylist;
-var citylist;
+
 $(document).on("click", "#btn_new_picture", function(){
-    $.ajax({
-        url: 'dal/DaoDB.php',
-        type: 'POST',
-        data: 'getCountries=1',
-        dataType: 'json',
-        success : function(data){
-            countrylist= data;
-        }
-    });
-    $.ajax({
-        url: 'dal/DaoDB.php',
-        type: 'POST',
-        data: 'getCities=1',
-        dataType: 'json',
-        success : function(data){
-            citylist= data;
-        }
-    });
     var content;
     $.Dialog({
         height: 550,
@@ -529,18 +530,21 @@ $(document).on("click", "#btn_new_picture", function(){
         onShow: function(_dialog){
             content = _dialog.children('.content');
             $.post("pictureupload.php", "").done(function(data){
-                content.html(data)
-                $( "#in_file_country" ).autocomplete({
-                  minLength: 0,
-                  source: countrylist
+                content.html(data);
+                $("#in_file_country").autocomplete({
+                    source: countrylist,
+                    appendTo: content
                 });
-                $( "#in_file_city" ).autocomplete({
-                  minLength: 0,
-                  source: citylist
+                $("#in_file_city").autocomplete({
+                    minlenght: 3,
+                    source: citylist,
+                    appendTo: content
                 });
             });
         }
     });
+
+
     /*$.post("pictureupload.php","").done(function(data){
         content.html(data);
         
@@ -555,9 +559,6 @@ $(document).on("click", "#btn_new_picture", function(){
 $(document).on("change", "#in_file_picture", function(){
     files = event.target.files;
 });
-/*<input type="text" name="file_country" id="in_file_country"/><br>
-<input type="text" name="file_city" id="in_file_city"/><br>
-<input type="text" name="file_place" id="in_file_place"/><br>*/
 // picture upload
 $(document).on("submit", "#f_new_pictures", function(){
     event.stopPropagation(); // Stop stuff happening
@@ -572,29 +573,23 @@ $(document).on("submit", "#f_new_pictures", function(){
     var country = $("#in_file_country").val();
     var city = $("#in_file_city").val();
     var place = $("#in_file_place").val();
-    if($.inArray(city,citylist) > 0 && $.inArray(country,countrylist) > 0){
-        alert ("jó");
-        $.ajax({
-            url: 'dal/DaoDB.php',
-            type: 'POST',
-            data: 'getCityId='+city+'&country='+country,
-            dataType: 'json',
-            success : function(data){
-                data.append('file_place', data+'_'+$("#in_file_place").val());
+    var city_id;
+    $.post("dal/DaoDB.php", 'getCityId='+city+'&country='+country).done(function(result){
+            alert(result);
+            if (result == ""){
+                $.post("dal/DaoDB.php", 'addCity='+city+'&country='+country).done(function(result){
+                    data.append('file_place', result+'_'+place);
+                });
+            } else {
+                data.append('file_place', result+'_'+place);
             }
-        });
-    } else {
-        $.ajax({
-            url: 'dal/DaoDB.php',
-            type: 'POST',
-            data: 'addCityId='+city+'&country='+country,
-            dataType: 'json',
-            success : function(data){
-                data.append('file_place', data+'_'+$("#in_file_place").val());
-            }
-        });
-    }
+            
+            uploadpicture(data);
+    });
+    
+});
 
+function uploadpicture(data){
     $.ajax({
         url: 'pictureupload.php',
         type: 'POST',
@@ -638,8 +633,7 @@ $(document).on("submit", "#f_new_pictures", function(){
             }
         }
     });
-});
-
+}
 // back button when usr in an album
 $(document).on("click", "#btn_album_back", function(){
     $.post("mypictures.php", "header=1").done(function(data){
