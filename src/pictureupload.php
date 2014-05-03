@@ -21,6 +21,7 @@
             else
                 echo json_encode(array('create' => 'false'));
         } else {
+            
             echo '<form id="f_new_pictures" style="margin: 5px 5px 5px 5px">
                     <div class="grid fluid show-grid">
                         <div class="row">
@@ -48,7 +49,7 @@
                             <select name="file_album" id="in_file_album">
                             <option value="null">Főalbum</option>';
                         foreach ($albumok as $key => $value) {
-                            echo '<option value="'.$value->getId().'">'.$value->getName().'</option>';             
+                            echo '<option value="'.$value->getId().'" ' . ($_POST['curr_album'] == $key ? 'selected' : '') . '>' . $value->getName() . '</option>';             
                         };
             echo            '</select>
                         </div>

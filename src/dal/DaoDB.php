@@ -361,6 +361,15 @@
             return base64_encode($picture_tile);
         }
 
+        public function updateAlbum($id, $name, $desc){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'UPDATE ALBUMOK SET NEV=:bv_name, LEIRAS=:bv_leiras WHERE ID=:bv_id';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_name', $name);
+            oci_bind_by_name($stmt, ':bv_leiras', $desc);
+            oci_bind_by_name($stmt, ':bv_id', $id);
+            return oci_execute($stmt);;
+        }
 
         public function createAlbum($name, $desc){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');

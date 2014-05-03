@@ -186,7 +186,13 @@ $(document).on("click", "#home_btn", function(){
 
 //image zoom
 $(document).on("click", ".picture", function(){
+    var image_id = $(this).attr('id').substr(4);    
     
+    if (editMode){
+        createPictureDialog(image_id);
+        return false;
+    }
+
     if (deleteMode) {
         if ($(this).hasClass("selected")) {
             $(this).removeClass("selected");
@@ -195,7 +201,7 @@ $(document).on("click", ".picture", function(){
         }
         return false;
     }
-    var image_id = $(this).attr('id').substr(4);
+
     var next_image_id = $(this).next().attr('id');
     var prev_image_id = $(this).prev().attr('id');
     if (prev_image_id == undefined){
@@ -394,7 +400,7 @@ $(document).on("submit", "#f_personaldata_change", function(){
         $.Notify.show("Nem történt adat módosítás.");
         return false;
     }
-    alert(form);
+    //alert(form);
 
 
     $.post("userdata.php", form, function(data) {
@@ -414,6 +420,7 @@ $(document).on("submit", "#f_personaldata_change", function(){
 $(document).on("click", ".element", function(){
     deleteMode = false;
     editMode = false;
+
     if (deleteNot != null) {
         deleteNot.close();
     }
@@ -425,13 +432,18 @@ $(document).on("click", ".element", function(){
 // edit mode
 $(document).on("click", "#b_edit", function(){
     if (editMode) {
-        alert("néger");
+        if (editNot != null)
+            editNot.close();
     } else {
         editNot = $.Notify({
             caption: "Szerkesztés",
-            content: "Szerkesztéshez válassz ki elemet.",
+            content: "Szerkesztéshez válassz ki egy képet vagy albumot.",
             timeout: 10000
         });
+        deleteMode = false;
+        if (deleteNot != null)
+            deleteNot.close();
+        $(".selected").removeClass("selected");
     }
 
     editMode = !editMode;
@@ -443,23 +455,23 @@ $(document).on("click", "#b_delete", function(){
         $(".selected").each(function(){
             var id = $(this).attr("id").substr(4);
             if ($(this).hasClass("picture")) {
-                $.post( "dal/DaoDB.php", 'deletePicture=' + id, function(data) {
-                    console.log(data);
-                });
+                $.post( "dal/DaoDB.php", 'deletePicture=' + id);
             } else {
-                $.post( "dal/DaoDB.php", 'deleteAlbum=' + id, function(data) {
-                    console.log(data);
-                });
+                $.post( "dal/DaoDB.php", 'deleteAlbum=' + id);
             }
         });
         $(".selected").remove();
-        deleteNot.close();
+        if (deleteNot != null)
+            deleteNot.close();
     } else if (!deleteMode) {
         deleteNot = $.Notify({
             caption: "Törlés",
             content: "Törléshez válassz ki elemeket majd kattints újra a törlés gombra.",
             timeout: 10000
         });
+        editMode = false;
+        if (editNot != null)
+            editNot.close();
     }
 
     deleteMode = !deleteMode;
@@ -476,8 +488,11 @@ $(document).on("click", "#mypictures_btn", function(){
     });
 });
 
-// new album click
-$(document).on("click", "#btn_new_album", function(){
+function createAlbumDialog(id){
+    if (id === undefined) 
+        id = 0;
+
+    //alert(id);
     $.Dialog({
         height: 250,
         width: 300,
@@ -485,31 +500,51 @@ $(document).on("click", "#btn_new_album", function(){
         shadow: true,
         flat: true,
         icon: '',
-        title: 'Új album létrehozása',
+        title: id ? 'Album módosítása' : 'Új album létrehozása',
         content: '',
         onShow: function(_dialog){
             var content = _dialog.children('.content');
-            $(content).load("NewAlbumPage.php");
+            $.post("albumdialog.php", 'id=' + id).done(function(data){
+                content.html(data);
+            });
         }
     });
-});
+}
 
-// picture upload click
-$(document).on("click", "#btn_new_picture", function(){
+function createPictureDialog(id){
+    if (id == undefined)
+        id = 0;
+
     $.Dialog({
-        height: 450,
+        height: 470,
         width: 300,
         overlay: true,
         shadow: true,
         flat: true,
         icon: '',
-        title: 'Új képek feltöltése',
+        title: id ? 'Kép adatainak módosítása' : 'Új képek feltöltése',
         content: '',
         onShow: function(_dialog){
             var content = _dialog.children('.content');
-            $(content).load("pictureupload.php");
+            var curr_album = "0";
+            if ($("#btn_album_back").attr("data-id"))
+                curr_album = $("#btn_album_back").attr("data-id");
+            alert(curr_album);
+            $.post("pictureupload.php", 'id=' + id + '&curr_album=' + curr_album).done(function(data){
+                content.html(data);
+            });
         }
     });
+}
+
+// new album click
+$(document).on("click", "#btn_new_album", function(){
+    createAlbumDialog();
+});
+
+// picture upload click
+$(document).on("click", "#btn_new_picture", function(){
+    createPictureDialog();
 });
 
 //picture upload prepare
@@ -583,6 +618,7 @@ $(document).on("click", "#btn_album_back", function(){
         $("#content").html(data);
         initThumbs();
     });
+
     deleteMode = false;
     editMode = false;
     if (deleteNot != null) {
@@ -596,6 +632,12 @@ $(document).on("click", "#btn_album_back", function(){
 // album navigation
 $(document).on("click", ".album", function(){
     $(this).trigger('mouseleave');
+
+    if (editMode) {
+        var id = $(this).attr("id").substr(4);
+        createAlbumDialog(id);
+        return false;
+    }
     if (deleteMode) {
         if ($(this).hasClass("selected")) {
             $(this).removeClass("selected");
@@ -604,6 +646,7 @@ $(document).on("click", ".album", function(){
         }
         return false;
     }
+
     $.post("mypictures.php", "header=1&alb=" + $(this).attr('id')).done(function(data){
         console.log(data);
         $("#content-header").html(data);
@@ -621,18 +664,18 @@ $(document).on("submit", "#f_new_album", function(){
     event.stopPropagation(); // Stop stuff happening
     event.preventDefault(); // Totally stop stuff happening
     var form = $("#f_new_album").serialize();
+    form += '&id=' + $(this).attr('data-id');
     jQuery.ajax({
         type: "POST",
         dataType: "json",
-        url: "NewAlbumPage.php",
+        url: "albumdialog.php",
         data:  form,
         success: function(result){
             if (result.create == "true"){
                     $.Dialog.close();
-                    $.Notify.show("Album sikeresen létrehozva.");
-                    $.post("mypictures.php", "header=1").done(function(data){
-                        $("#content-header").html(data);
-                    });
+                    if ($(this).attr('data-id') == "0")
+                        $.Notify.show("Album sikeresen létrehozva.");
+
                     $.post("mypictures.php", "header=0").done(function(data){
                         $("#content").html(data);
                         initThumbs();
