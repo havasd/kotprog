@@ -8,8 +8,13 @@ require_once 'model/User.php';
         <link href="css/metro-bootstrap.css" rel="stylesheet" >
         <link href="css/metro-bootstrap-responsive.css" rel="stylesheet">
 	    <link href="css/iconFont.css" rel="stylesheet">
+	    <link href="css/ui-lightness/jquery-ui-1.10.4.custom.css" rel="stylesheet">
 
         <script src="js/jquery/jquery.min.js"></script>
+        
+		<script src="js/jquery-1.10.2.js"></script>
+		<script src="js/jquery-ui-1.10.4.custom.js"></script>
+        
 	    <script src="js/jquery/jquery.widget.min.js"></script>
 	    <script src="js/jquery/jquery.mousewheel.js"></script>
     	<script src="js/prettify/prettify.js"></script>

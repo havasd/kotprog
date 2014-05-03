@@ -21,11 +21,22 @@
             else
                 echo json_encode(array('create' => 'false'));
         } else {
-            echo '<form id="f_new_pictures" style="margin: 5px 5px 5px 5px">
+            echo '
+            <form id="f_new_pictures" style="margin: 5px 5px 5px 5px">
                     <div class="grid fluid show-grid">
-                        <div class="row">
-                            <label>Helyszín</label>
-                            <input type="text" name="file_place" id="in_file_place"/><br>
+                        <div class="row" >
+                            <div class="ui-widget">
+                              <label for="in_file_country">Ország: </label>
+                              <input type="text" name="file_country" id="in_file_country" /><br>
+                            </div>
+                            <div class="ui-widget">
+                              <label for="in_file_city">Város: </label>
+                              <input type="text" name="file_city" id="in_file_city" /><br>
+                            </div>
+                            <div class="ui-widget">
+                              <label for="in_file_place">Hely: </label>
+                              <input type="text" name="file_place" id="in_file_place" /><br>
+                            </div>
                         </div>
                         <div class="row">
                             <label>Leírás</label>
