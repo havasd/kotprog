@@ -182,8 +182,6 @@ $(document).on("click", "#home_btn", function(){
 --------------------------------------------------------------
 */
 
-
-
 //image zoom
 $(document).on("click", ".picture", function(){
     var image_id = $(this).attr('id').substr(4);    
@@ -278,6 +276,10 @@ $(document).on("click", ".picture", function(){
                         }
                     }
                 }); 
+            });
+            $(".btn_comm_delete").on("click", function(){
+                //var commid = $(this).parentsUntil("a");
+                alert("click delete comment ";
             });
         } 
     });
@@ -584,10 +586,57 @@ $(document).on("click", "#btn_new_picture", function(){
     createPictureDialog();
 });
 
+// form album create
+$(document).on("submit", "#f_new_album", function(){
+    event.stopPropagation(); // Stop stuff happening
+    event.preventDefault(); // Totally stop stuff happening
+    var form = $("#f_new_album").serialize();
+    form += '&id=' + $(this).attr('data-id');
+    jQuery.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "albumdialog.php",
+        data:  form,
+        success: function(result){
+            if (result.create == "true"){
+                    $.Dialog.close();
+                    if ($(this).attr('data-id') == "0")
+                        $.Notify.show("Album sikeresen létrehozva.");
+                    else
+                        $.Notify.show("Album sikeresen módosítva.");
+
+                    $.post("mypictures.php", "header=0").done(function(data){
+                        $("#content").html(data);
+                        initThumbs();
+                    });
+            }
+        },
+        error: function(jqXHR, exception) {
+            if (jqXHR.status === 0) {
+                alert('Not connect.\n Verify Network.');
+            } else if (jqXHR.status == 404) {
+                alert('Requested page not found. [404]');
+            } else if (jqXHR.status == 500) {
+                alert('Internal Server Error [500].');
+            } else if (exception === 'parsererror') {
+                alert(jqXHR.responseText);
+            } else if (exception === 'timeout') {
+                alert('Time out error.');
+            } else if (exception === 'abort') {
+                alert('Ajax request aborted.');
+            } else {
+                alert('Uncaught Error.\n' + jqXHR.responseText);
+            }
+        }
+    });
+    return false;
+});
+
 //picture upload prepare
 $(document).on("change", "#in_file_picture", function(){
     files = event.target.files;
 });
+
 /*<input type="text" name="file_country" id="in_file_country"/><br>
 <input type="text" name="file_city" id="in_file_city"/><br>
 <input type="text" name="file_place" id="in_file_place"/><br>*/
@@ -596,17 +645,24 @@ $(document).on("submit", "#f_new_pictures", function(){
     event.stopPropagation(); // Stop stuff happening
     event.preventDefault(); // Totally stop stuff happening
     var data = new FormData();
-    $.each(files, function(key, value){
-        data.append(key, value);
-    });
+    var picid = $(this).attr('data-id');
+    if (picid == "0") {
+        $.each(files, function(key, value){
+            data.append(key, value);
+        });
+    }
+
     data.append('file_desc', $("#in_file_desc").val());
     data.append('file_album', $("#in_file_album").val());
     data.append('file_category', $("#in_file_category").val());
+    data.append('id', picid);
+
     var country = $("#in_file_country").val();
     var city = $("#in_file_city").val();
     var place = $("#in_file_place").val();
+
     if($.inArray(city,citylist) > 0 && $.inArray(country,countrylist) > 0){
-        alert ("jó");
+        alert("jó");
         $.ajax({
             url: 'dal/DaoDB.php',
             type: 'POST',
@@ -628,6 +684,7 @@ $(document).on("submit", "#f_new_pictures", function(){
         });
     }
 
+    alert("id: " + picid + " desc: " + $("#in_file_desc").val() +  " albumid:" +  $("#in_file_album").val() + " catid:" + $("#in_file_category").val());
     $.ajax({
         url: 'pictureupload.php',
         type: 'POST',
@@ -640,7 +697,8 @@ $(document).on("submit", "#f_new_pictures", function(){
         {
             if (data.create == "true"){
                     $.Dialog.close();
-                    $.Notify.show("Fényképek feltöltése sikeres.");
+                    if (picid == "0")
+                        $.Notify.show("Fényképek feltöltése sikeres.");
                     $.post("mypictures.php", "header=1").done(function(data){
                         $("#content-header").html(data);
                     });
@@ -723,49 +781,6 @@ $(document).on("click", ".album", function(){
     
 });
 
-// form album create
-$(document).on("submit", "#f_new_album", function(){
-    event.stopPropagation(); // Stop stuff happening
-    event.preventDefault(); // Totally stop stuff happening
-    var form = $("#f_new_album").serialize();
-    form += '&id=' + $(this).attr('data-id');
-    jQuery.ajax({
-        type: "POST",
-        dataType: "json",
-        url: "albumdialog.php",
-        data:  form,
-        success: function(result){
-            if (result.create == "true"){
-                    $.Dialog.close();
-                    if ($(this).attr('data-id') == "0")
-                        $.Notify.show("Album sikeresen létrehozva.");
-
-                    $.post("mypictures.php", "header=0").done(function(data){
-                        $("#content").html(data);
-                        initThumbs();
-                    });
-            }
-        },
-        error: function(jqXHR, exception) {
-            if (jqXHR.status === 0) {
-                alert('Not connect.\n Verify Network.');
-            } else if (jqXHR.status == 404) {
-                alert('Requested page not found. [404]');
-            } else if (jqXHR.status == 500) {
-                alert('Internal Server Error [500].');
-            } else if (exception === 'parsererror') {
-                alert(jqXHR.responseText);
-            } else if (exception === 'timeout') {
-                alert('Time out error.');
-            } else if (exception === 'abort') {
-                alert('Ajax request aborted.');
-            } else {
-                alert('Uncaught Error.\n' + jqXHR.responseText);
-            }
-        }
-    });
-    return false;
-});
 /*
 --------------------------------------------------------------
 --------------------- Saját képek end ------------------------

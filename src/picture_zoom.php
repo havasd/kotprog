@@ -180,12 +180,13 @@
 		    <div  id="comments" class="panel-content" >
 			    <div id="comment_list" class="listview-outlook" data-role="listview">';
 		//hozzászólások betöltése
-	$comments = $controller->getComments($pic_id);
-	foreach ($comments as $value) {
-		echo '      <a class="list marked" href="#">
+		$comments = $controller->getComments($pic_id);
+		foreach ($comments as $value) {
+			echo '<a id="com_' . $value['ID'] . '" class="list">
 	                    <div class="list-content">
-	                        <span class="list-title">'.$value['FELHASZNALONEV'].'</span>
-	                        <span class="list-remark">'.$value['MEGJEGYZES'].'</span>
+	                        <span class="list-title">'. $value['NEV'] . (($usr->getId() == $value['FELH_ID']) ? '<i class="btn_comm_delete icon-cancel-2 place-right" style="font-size: 15px"></i>' : '')  . '</span>
+	                        <span class="list-subtitle">' . $value['IDOBELYEG'] . '</span>
+	                        <span class="list-remark">' . $value['MEGJEGYZES'] .'</span>
 	                    </div>
 	                </a>';
 	}

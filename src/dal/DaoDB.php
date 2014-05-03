@@ -79,6 +79,28 @@
             return $ok;
         }
 
+        public function updateAvatar($blob){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'UPDATE FELHASZNALOK
+                    SET AVATAR = EMPTY_BLOB()
+                    WHERE ID = :id
+                    RETURNING AVATAR INTO :myblob';
+            $stmt = oci_parse($con, $query);
+            $dlob = oci_new_descriptor($con, OCI_D_LOB);
+            oci_bind_by_name($stmt, ':myblob', $dlob, -1, OCI_B_BLOB);
+            oci_bind_by_name($stmt, ':id', $_SESSION['userObject']->getId());
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+            if ($dlob->save($blob)) {
+                oci_commit($con);
+                oci_close($con);
+                $_SESSION['userObject']->setAvatar($blob);
+                return true;
+            } else {
+                oci_close($con);
+                return false;
+            }
+        }
+
         public function getUserPassword() {
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'SELECT JELSZO FROM BEJELENTKEZESI_ADATOK WHERE FELH_ID=:bv_felh_id';
@@ -372,6 +394,33 @@
             return base64_encode($picture_tile);
         }
 
+        public function deletePictureById($id){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'DELETE FROM KEPEK WHERE ID = ' . $id;
+            $stmt = oci_parse($con, $query);
+            return oci_execute($stmt);
+        }
+
+        public function updatePicture($id, $desc, $alb_id, $cat_id, $place = 0){
+            if ($alb_id = "null")
+                $alb_id = null;
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'UPDATE KEPEK SET LEIRAS = :bv_desc, ALBUM_ID = :bv_albid, KAT_ID = :bv_catid WHERE ID = :bv_id';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_id', $id);
+            oci_bind_by_name($stmt, ':bv_desc', $desc);
+            oci_bind_by_name($stmt, ':bv_albid', $alb_id);
+            oci_bind_by_name($stmt, ':bv_catid', $cat_id);
+            // oci_bind_by_name($stmt, ':bv_place', $place); // TODO
+            return oci_execute($stmt);
+        }
+
+        public function deleteAlbumById($id){
+            $query = 'DELETE FROM ALBUMOK WHERE ID = ' . $id;
+            $stmt = oci_parse($con, $query);
+            return oci_execute($stmt);
+        }
+
         public function updateAlbum($id, $name, $desc){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'UPDATE ALBUMOK SET NEV=:bv_name, LEIRAS=:bv_leiras WHERE ID=:bv_id';
@@ -448,29 +497,6 @@
             return $album;
         }
 
-
-        public function updateAvatar($blob){
-            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'UPDATE FELHASZNALOK
-                    SET AVATAR = EMPTY_BLOB()
-                    WHERE ID = :id
-                    RETURNING AVATAR INTO :myblob';
-            $stmt = oci_parse($con, $query);
-            $dlob = oci_new_descriptor($con, OCI_D_LOB);
-            oci_bind_by_name($stmt, ':myblob', $dlob, -1, OCI_B_BLOB);
-            oci_bind_by_name($stmt, ':id', $_SESSION['userObject']->getId());
-            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
-            if ($dlob->save($blob)) {
-                oci_commit($con);
-                oci_close($con);
-                $_SESSION['userObject']->setAvatar($blob);
-                return true;
-            } else {
-                oci_close($con);
-                return false;
-            }
-        }
-
         public function ratePicture($pic_id, $rate){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'DELETE FROM ERTEKELESEK WHERE KEP_ID=:kepid AND FELH_ID=:felhid';
@@ -508,12 +534,15 @@
 
         public function getComments($pic_id){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'SELECT FELHASZNALONEV, MEGJEGYZES FROM BEJELENTKEZESI_ADATOK, HOZZASZOLASOK
-                        WHERE HOZZASZOLASOK.FELH_ID = BEJELENTKEZESI_ADATOK.FELH_ID
-                        AND HOZZASZOLASOK.KEP_ID = '.$pic_id;
+            $query = 'SELECT HOZZASZOLASOK.ID AS ID, FELH_ID, NEV, MEGJEGYZES, VALASZ_ID,
+                        TO_CHAR(IDOBELYEG, \'YYYY/MM/DD HH24:MI:SS\') AS IDOBELYEG
+                        FROM FELHASZNALOK, HOZZASZOLASOK
+                        WHERE HOZZASZOLASOK.FELH_ID = FELHASZNALOK.ID
+                        AND HOZZASZOLASOK.KEP_ID = :bv_picid ORDER BY IDOBELYEG ASC';
             $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_picid', $pic_id);
             oci_execute($stmt);
-            $comments=array();
+            $comments = array();
             $i = 0;
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)){
                 $comments[$i++] = $row;
@@ -531,20 +560,6 @@
                 $categories[$row['ID']] = $row['KATEGORIA'];
             }
             return $categories;
-        }
-
-        public function deletePictureById($id){
-            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'DELETE FROM KEPEK WHERE ID = ' . $id;
-            $stmt = oci_parse($con, $query);
-            return oci_execute($stmt);
-        }
-
-        public function deleteAlbumById($id){
-            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'DELETE FROM ALBUMOK WHERE ID = ' . $id;
-            $stmt = oci_parse($con, $query);
-            return oci_execute($stmt);
         }
 
         public function getCountries(){

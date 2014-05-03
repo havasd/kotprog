@@ -9,7 +9,6 @@
         $albumok = $controller->getAlbumsByUser();
         $categories = $controller->getCategories();
         if (isset($_FILES[0]) && isset($_POST)) {
-            $controller = new DaoDB();
             $place = $_POST['file_place'];
             $desc = $_POST['file_desc'];
             $album_id = $_POST['file_album'];
@@ -17,6 +16,18 @@
             $blob = base64_encode(file_get_contents($_FILES[0]['tmp_name']));
             //uploadPicture($blob,$title,$place,$desc,$albid)
             if ($controller->uploadPicture($blob,$place,$desc,$album_id,$category))
+                echo json_encode(array('create' => 'true'));
+            else
+                echo json_encode(array('create' => 'false'));
+        } else if ($_POST['id'] && isset($_POST['file_desc'])) {
+            // TODO: places
+            // $places ....
+            $id = $_POST['id'];
+            $desc = $_POST['file_desc'];
+            $album_id = $_POST['file_album'];
+            $category = $_POST['file_category'];
+
+            if ($controller->updatePicture($id, $desc, $album_id, $category))
                 echo json_encode(array('create' => 'true'));
             else
                 echo json_encode(array('create' => 'false'));
