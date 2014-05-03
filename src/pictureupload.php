@@ -22,7 +22,8 @@
                 echo json_encode(array('create' => 'false'));
         } else {
             $id = $_POST['id'];
-            $pic = $controller->getPictureById($id);
+            if ($id)
+                $pic = $controller->getPictureById($id);
             echo '<form id="f_new_pictures" style="margin: 5px 5px 5px 5px" data-id="' . $id . '">
                     <div class="grid fluid show-grid">
                         <div class="row" >
@@ -52,7 +53,7 @@
                             <label>Kategória</label>
                             <select name="file_category" id="in_file_category">';
                         foreach ($categories as $key => $value) {
-                            echo '<option value="' . $key . '"' . ($value == $pic->getCategory() ? 'selected' : '') . '>' . $value . '</option>';
+                            echo '<option value="' . $key . '"' . ((isset($pic) && $value == $pic->getCategory()) ? 'selected' : '') . '>' . $value . '</option>';
                         }
             echo '          </select>
                         </div>';

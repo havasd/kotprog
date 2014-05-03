@@ -276,19 +276,19 @@
         //Picture($id, $category, $desc, $time, $place, $data, $owner, $rating)
        public function getPicturesByUser($album_id){
             if (!$album_id){
-                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
+                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KATEGORIA,
                 TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
                 (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = KEPEK.ID) AS RATE
-                FROM FELHASZNALOK, KEPEK
-                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
+                FROM FELHASZNALOK, KEPEK, KATEGORIAK
+                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID AND KEPEK.KAT_ID = KATEGORIAK.ID
                 AND FELH_ID = ' . $_SESSION['userObject']->getId().' 
                 AND ALBUM_ID IS NULL';
             } else {
-                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
+                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KATEGORIA,
                 TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
                 (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = KEPEK.ID) AS RATE
-                FROM FELHASZNALOK, KEPEK
-                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
+                FROM FELHASZNALOK, KEPEK, KATEGORIAK
+                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID AND KEPEK.KAT_ID = KATEGORIAK.ID 
                 AND FELH_ID = ' . $_SESSION['userObject']->getId().' 
                 AND ALBUM_ID = ' . $album_id;
             }
@@ -300,12 +300,13 @@
                 if (is_object($row['KEPFAJL'])) {
                     $owner = $row['NEV'];
                     $id = $row['ID'];
+                    $category = $row['KATEGORIA'];
                     $desc = $row['LEIRAS'];
                     $place = $row['HELYSZIN'];
                     $time = $row['FELTOLTES_IDEJE'];
                     $blob = $row['KEPFAJL']->load();
                     $rating = (is_null($row['RATE']) ? 0 : $row['RATE']);
-                    $pics[$id] = new Picture($id, null , $desc, $time, $place, $blob, $owner, $rating);
+                    $pics[$id] = new Picture($id, $category , $desc, $time, $place, $blob, $owner, $rating);
                     $row['KEPFAJL']->free();
                 }
             }
@@ -320,11 +321,11 @@
                 $e = oci_error();
                 trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
             }
-           $query = 'SELECT NEV, LEIRAS, HELYSZIN, KEPFAJL, 
+           $query = 'SELECT NEV, KATEGORIA, LEIRAS, HELYSZIN, KEPFAJL, 
                 TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
                 (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = :pid) AS RATE
-                FROM FELHASZNALOK, KEPEK
-                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
+                FROM FELHASZNALOK, KEPEK, KATEGORIAK
+                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID AND KEPEK.KAT_ID = KATEGORIAK.ID
                 AND KEPEK.ID = :pid';
             $stmt = oci_parse($con, $query);
             oci_bind_by_name($stmt, ':pid', $picture_id);
@@ -332,12 +333,13 @@
             $row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS);
             if (is_object($row['KEPFAJL'])) {
                     $owner = $row['NEV'];
+                    $category = $row['KATEGORIA'];
                     $desc = $row['LEIRAS'];
                     $place = $row['HELYSZIN'];
                     $time = $row['FELTOLTES_IDEJE'];
                     $blob = $row['KEPFAJL']->load();
                     $rating = (is_null($row['RATE']) ? 0 : $row['RATE']);
-                    $pic = new Picture($picture_id, null, $desc, $time, $place, $blob, $owner, $rating);
+                    $pic = new Picture($picture_id, $category, $desc, $time, $place, $blob, $owner, $rating);
                     $row['KEPFAJL']->free();
             }
             $stmt = null;

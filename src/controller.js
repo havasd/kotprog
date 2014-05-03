@@ -552,7 +552,7 @@ function createPictureDialog(id){
             var curr_album = "0";
             if ($("#btn_album_back").attr("data-id"))
                 curr_album = $("#btn_album_back").attr("data-id");
-            alert(curr_album + " " + id);
+            
             $.post("pictureupload.php", 'id=' + id + '&curr_album=' + curr_album).done(function(data){
                 content.html(data)
                 $( "#in_file_country" ).autocomplete({

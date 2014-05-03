@@ -194,7 +194,7 @@
 	    	</div>
         </div>
             <div class="input-control text" data-role="input-control">
-                <textarea id="new_comment" type="text" placeholder="Hozzászólás írásához kattints ide..."></textarea>
+                <textarea id="new_comment" type="text" placeholder="Hozzászólás írásához kattints ide..." style="resize: none"></textarea>
                 <button class="btn-clear" tabindex="-1"></button>
         	</div>
         	<p><button id="btn_comment_send">Elküldés</button></p>
