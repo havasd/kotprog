@@ -2,13 +2,11 @@
 	require_once('model/Picture.php');
 	require_once('dal/DaoDB.php');
 	session_start();
-	if(isset($_SESSION['userObject'])){
-		$usr = $_SESSION['userObject'];
-	}
-	
+
+	$usr = isset($_SESSION['userObject']) ? $_SESSION['userObject'] : null;
 	$controller = new DaoDB();
-	$pic_id = $_POST['img_id'];
-	$picture = $controller->getPictureById($pic_id);
+	$pic_id = isset($_POST['img_id']) ? $_POST['img_id'] : null;
+	$picture = is_null($pic_id) ? null : $controller->getPictureById($pic_id);
 
 	if (isset($_POST["rate"])) {
 		rate();
@@ -16,8 +14,6 @@
 	}
 
 	if (isset($_POST["new_comment"])){
-		global $controller;
-		global $pic_id;
 		$user_id = $_SESSION['userObject']->getId();
 		$comment = $_POST["new_comment"];
 
@@ -25,6 +21,17 @@
 			echo json_encode(array("result" => "true"));
 		} else {
 			echo json_encode(array("result" => "false"));
+		}
+		exit();
+	}
+
+	if (isset($_POST["delete_comment"])){
+		$comment_id = $_POST["delete_comment"];
+
+		if ($controller->deleteComment($comment_id)) {
+			echo json_encode(array("res" => "true"));
+		} else {
+			echo json_encode(array("res" => "false"));
 		}
 		exit();
 	}
@@ -184,9 +191,11 @@
 		foreach ($comments as $value) {
 			echo '<a id="com_' . $value['ID'] . '" class="list">
 	                    <div class="list-content">
-	                        <span class="list-title">'. $value['NEV'] . (($usr->getId() == $value['FELH_ID']) ? '<i class="btn_comm_delete icon-cancel-2 place-right" style="font-size: 15px"></i>' : '')  . '</span>
+	                        <span class="list-title">'. $value['NEV'] . (($usr->getId() == $value['FELH_ID']) ? 
+	                        	'<i class="btn_comm_delete icon-cancel-2 place-right" style="padding-left:5px;font-size: 15px;color:grey" title="Hozzászólás törlése"></i>
+	                        	<i class="btn_comm_edit icon-wrench place-right" style="font-size: 15px;color:grey" title="Hozzászólás szerkesztése"></i>' : '')  . '</span>
 	                        <span class="list-subtitle">' . $value['IDOBELYEG'] . '</span>
-	                        <span class="list-remark">' . $value['MEGJEGYZES'] .'</span>
+	                        <span class="list-remark" contenteditable="false">' . $value['MEGJEGYZES'] .'</span>
 	                    </div>
 	                </a>';
 	}

@@ -353,6 +353,7 @@
             oci_bind_by_name($stmt, ':pid', $picture_id);
             oci_execute($stmt);
             $row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS);
+            $pic = null;
             if (is_object($row['KEPFAJL'])) {
                     $owner = $row['NEV'];
                     $category = $row['KATEGORIA'];
@@ -520,6 +521,14 @@
             oci_execute($stmt);
             oci_close($con);
             return true;
+        }
+
+        public function deleteComment($comment_id){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'DELETE FROM HOZZASZOLASOK WHERE ID = :bv_comm_id';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_comm_id', $comment_id);
+            return oci_execute($stmt);
         }
 
         public function getComments($pic_id){

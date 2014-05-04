@@ -278,9 +278,22 @@ $(document).on("click", ".picture", function(){
                     }
                 }); 
             });
+            // delete selected comment
             $(".btn_comm_delete").on("click", function(){
-                //var commid = $(this).parentsUntil("a");
-                alert("click delete comment ");
+                var comm = $(this).parent().parent().parent(); // span div a
+                //alert("click delete comment " + $(comm).attr('id').substr(4));
+                $.post("picture_zoom.php", 'delete_comment=' + $(comm).attr('id').substr(4), function(data){
+                    if (data.res == "true"){
+                        $(comm).remove();
+                    } else {
+                        alert("delete comm fail");
+                    }
+                }, "json");
+            });
+            $(".btn_comm_edit").on("click", function(){
+                var text = $(this).parent().next().next();
+                alert("edit";
+                $(text).attr('contenteditable', "true");
             });
         } 
     });
