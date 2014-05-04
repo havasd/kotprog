@@ -292,8 +292,9 @@ $(document).on("click", ".picture", function(){
             });
             $(".btn_comm_edit").on("click", function(){
                 var text = $(this).parent().next().next();
-                alert("edit";
+                alert("edit");
                 $(text).attr('contenteditable', "true");
+                $(text).focus();
             });
         } 
     });
