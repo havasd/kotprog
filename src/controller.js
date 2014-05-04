@@ -296,6 +296,9 @@ $(document).on("click", ".picture", function(){
                 $(text).attr('contenteditable', "true");
                 $(text).focus();
             });
+            $(".list-remark").on("focusout", function(){
+                $(this).attr('contenteditable', "false");
+            });
         } 
     });
 });
