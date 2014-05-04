@@ -82,11 +82,5 @@
             $avatar_resized = ob_get_clean();
 			$this->m_avatar = base64_encode($avatar_resized);
 		}
-
-		
-
-		
-
-		
 	}
 ?>

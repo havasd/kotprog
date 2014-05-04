@@ -37,7 +37,7 @@
         } else {
             $current_album = $controller->getAlbumById($albumid);
             echo '<nav class="horizontal-menu">
-                    <a id="btn_album_back" style="color: black;" href="#"><i class="icon-arrow-left-3"></i></a>
+                    <a id="btn_album_back" style="color: black;" href="#" data-id="' . $albumid . '"><i class="icon-arrow-left-3"></i></a>
                     <a style="color: black;" >' . $current_album->getName() . '</a>
                     <a class="dropdown-toggle place-right" style="color: black;" href="#"><i class="icon-new" style="color: black;"></i>Új</a>
                     <ul class="dropdown-menu place-right" data-role="dropdown">

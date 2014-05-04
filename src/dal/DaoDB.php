@@ -79,6 +79,28 @@
             return $ok;
         }
 
+        public function updateAvatar($blob){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'UPDATE FELHASZNALOK
+                    SET AVATAR = EMPTY_BLOB()
+                    WHERE ID = :id
+                    RETURNING AVATAR INTO :myblob';
+            $stmt = oci_parse($con, $query);
+            $dlob = oci_new_descriptor($con, OCI_D_LOB);
+            oci_bind_by_name($stmt, ':myblob', $dlob, -1, OCI_B_BLOB);
+            oci_bind_by_name($stmt, ':id', $_SESSION['userObject']->getId());
+            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
+            if ($dlob->save($blob)) {
+                oci_commit($con);
+                oci_close($con);
+                $_SESSION['userObject']->setAvatar($blob);
+                return true;
+            } else {
+                oci_close($con);
+                return false;
+            }
+        }
+
         public function getUserPassword() {
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'SELECT JELSZO FROM BEJELENTKEZESI_ADATOK WHERE FELH_ID=:bv_felh_id';
@@ -276,19 +298,19 @@
         //Picture($id, $category, $desc, $time, $place, $data, $owner, $rating)
        public function getPicturesByUser($album_id){
             if (!$album_id){
-                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
+                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KATEGORIA,
                 TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
                 (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = KEPEK.ID) AS RATE
-                FROM FELHASZNALOK, KEPEK
-                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
+                FROM FELHASZNALOK, KEPEK, KATEGORIAK
+                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID AND KEPEK.KAT_ID = KATEGORIAK.ID
                 AND FELH_ID = ' . $_SESSION['userObject']->getId().' 
                 AND ALBUM_ID IS NULL';
             } else {
-                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
+                $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KATEGORIA,
                 TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
                 (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = KEPEK.ID) AS RATE
-                FROM FELHASZNALOK, KEPEK
-                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
+                FROM FELHASZNALOK, KEPEK, KATEGORIAK
+                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID AND KEPEK.KAT_ID = KATEGORIAK.ID 
                 AND FELH_ID = ' . $_SESSION['userObject']->getId().' 
                 AND ALBUM_ID = ' . $album_id;
             }
@@ -300,12 +322,13 @@
                 if (is_object($row['KEPFAJL'])) {
                     $owner = $row['NEV'];
                     $id = $row['ID'];
+                    $category = $row['KATEGORIA'];
                     $desc = $row['LEIRAS'];
                     $place = $row['HELYSZIN'];
                     $time = $row['FELTOLTES_IDEJE'];
                     $blob = $row['KEPFAJL']->load();
                     $rating = (is_null($row['RATE']) ? 0 : $row['RATE']);
-                    $pics[$id] = new Picture($id, null , $desc, $time, $place, $blob, $owner, $rating);
+                    $pics[$id] = new Picture($id, $category , $desc, $time, $place, $blob, $owner, $rating);
                     $row['KEPFAJL']->free();
                 }
             }
@@ -320,11 +343,11 @@
                 $e = oci_error();
                 trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
             }
-           $query = 'SELECT NEV, LEIRAS, HELYSZIN, KEPFAJL, 
+           $query = 'SELECT NEV, KATEGORIA, LEIRAS, HELYSZIN, KEPFAJL, 
                 TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
                 (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = :pid) AS RATE
-                FROM FELHASZNALOK, KEPEK
-                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID 
+                FROM FELHASZNALOK, KEPEK, KATEGORIAK
+                WHERE FELHASZNALOK.ID = KEPEK.FELH_ID AND KEPEK.KAT_ID = KATEGORIAK.ID
                 AND KEPEK.ID = :pid';
             $stmt = oci_parse($con, $query);
             oci_bind_by_name($stmt, ':pid', $picture_id);
@@ -332,12 +355,13 @@
             $row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS);
             if (is_object($row['KEPFAJL'])) {
                     $owner = $row['NEV'];
+                    $category = $row['KATEGORIA'];
                     $desc = $row['LEIRAS'];
                     $place = $row['HELYSZIN'];
                     $time = $row['FELTOLTES_IDEJE'];
                     $blob = $row['KEPFAJL']->load();
                     $rating = (is_null($row['RATE']) ? 0 : $row['RATE']);
-                    $pic = new Picture($picture_id, null, $desc, $time, $place, $blob, $owner, $rating);
+                    $pic = new Picture($picture_id, $category, $desc, $time, $place, $blob, $owner, $rating);
                     $row['KEPFAJL']->free();
             }
             $stmt = null;
@@ -370,6 +394,42 @@
             return base64_encode($picture_tile);
         }
 
+        public function deletePictureById($id){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'DELETE FROM KEPEK WHERE ID = ' . $id;
+            $stmt = oci_parse($con, $query);
+            return oci_execute($stmt);
+        }
+
+        public function updatePicture($id, $desc, $alb_id, $cat_id, $place = 0){
+            if ($alb_id = "null")
+                $alb_id = null;
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'UPDATE KEPEK SET LEIRAS = :bv_desc, ALBUM_ID = :bv_albid, KAT_ID = :bv_catid WHERE ID = :bv_id';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_id', $id);
+            oci_bind_by_name($stmt, ':bv_desc', $desc);
+            oci_bind_by_name($stmt, ':bv_albid', $alb_id);
+            oci_bind_by_name($stmt, ':bv_catid', $cat_id);
+            // oci_bind_by_name($stmt, ':bv_place', $place); // TODO
+            return oci_execute($stmt);
+        }
+
+        public function deleteAlbumById($id){
+            $query = 'DELETE FROM ALBUMOK WHERE ID = ' . $id;
+            $stmt = oci_parse($con, $query);
+            return oci_execute($stmt);
+        }
+
+        public function updateAlbum($id, $name, $desc){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'UPDATE ALBUMOK SET NEV=:bv_name, LEIRAS=:bv_leiras WHERE ID=:bv_id';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_name', $name);
+            oci_bind_by_name($stmt, ':bv_leiras', $desc);
+            oci_bind_by_name($stmt, ':bv_id', $id);
+            return oci_execute($stmt);;
+        }
 
         public function createAlbum($name, $desc){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
@@ -437,29 +497,6 @@
             return $album;
         }
 
-
-        public function updateAvatar($blob){
-            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'UPDATE FELHASZNALOK
-                    SET AVATAR = EMPTY_BLOB()
-                    WHERE ID = :id
-                    RETURNING AVATAR INTO :myblob';
-            $stmt = oci_parse($con, $query);
-            $dlob = oci_new_descriptor($con, OCI_D_LOB);
-            oci_bind_by_name($stmt, ':myblob', $dlob, -1, OCI_B_BLOB);
-            oci_bind_by_name($stmt, ':id', $_SESSION['userObject']->getId());
-            oci_execute($stmt, OCI_NO_AUTO_COMMIT);
-            if ($dlob->save($blob)) {
-                oci_commit($con);
-                oci_close($con);
-                $_SESSION['userObject']->setAvatar($blob);
-                return true;
-            } else {
-                oci_close($con);
-                return false;
-            }
-        }
-
         public function ratePicture($pic_id, $rate){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'DELETE FROM ERTEKELESEK WHERE KEP_ID=:kepid AND FELH_ID=:felhid';
@@ -498,13 +535,17 @@
 
         public function getComments($pic_id){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'SELECT FELHASZNALONEV, MEGJEGYZES FROM BEJELENTKEZESI_ADATOK, HOZZASZOLASOK
-                        WHERE HOZZASZOLASOK.FELH_ID = BEJELENTKEZESI_ADATOK.FELH_ID
-                        AND HOZZASZOLASOK.KEP_ID = '.$pic_id;
+            $query = 'SELECT HOZZASZOLASOK.ID AS ID, FELH_ID, NEV, MEGJEGYZES, VALASZ_ID,
+                        TO_CHAR(IDOBELYEG, \'YYYY/MM/DD HH24:MI:SS\') AS IDOBELYEG
+                        FROM FELHASZNALOK, HOZZASZOLASOK
+                        WHERE HOZZASZOLASOK.FELH_ID = FELHASZNALOK.ID
+                        AND HOZZASZOLASOK.KEP_ID = :bv_picid ORDER BY IDOBELYEG ASC';
             $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_picid', $pic_id);
             oci_execute($stmt);
             oci_close($con);
             $comments=array();
+            $comments = array();
             $i = 0;
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)){
                 $comments[$i++] = $row;

@@ -202,11 +202,15 @@ $(document).on("click", "#home_btn", function(){
 --------------------------------------------------------------
 */
 
-
-
 //image zoom
 $(document).on("click", ".picture", function(){
+    var image_id = $(this).attr('id').substr(4);    
     
+    if (editMode){
+        createPictureDialog(image_id);
+        return false;
+    }
+
     if (deleteMode) {
         if ($(this).hasClass("selected")) {
             $(this).removeClass("selected");
@@ -215,7 +219,7 @@ $(document).on("click", ".picture", function(){
         }
         return false;
     }
-    var image_id = $(this).attr('id').substr(4);
+
     var next_image_id = $(this).next().attr('id');
     var prev_image_id = $(this).prev().attr('id');
     if (prev_image_id == undefined){
@@ -292,6 +296,10 @@ $(document).on("click", ".picture", function(){
                         }
                     }
                 }); 
+            });
+            $(".btn_comm_delete").on("click", function(){
+                //var commid = $(this).parentsUntil("a");
+                alert("click delete comment ";
             });
         } 
     });
@@ -414,7 +422,7 @@ $(document).on("submit", "#f_personaldata_change", function(){
         $.Notify.show("Nem történt adat módosítás.");
         return false;
     }
-    alert(form);
+    //alert(form);
 
 
     $.post("userdata.php", form, function(data) {
@@ -434,6 +442,7 @@ $(document).on("submit", "#f_personaldata_change", function(){
 $(document).on("click", ".element", function(){
     deleteMode = false;
     editMode = false;
+
     if (deleteNot != null) {
         deleteNot.close();
     }
@@ -445,13 +454,18 @@ $(document).on("click", ".element", function(){
 // edit mode
 $(document).on("click", "#b_edit", function(){
     if (editMode) {
-        alert("néger");
+        if (editNot != null)
+            editNot.close();
     } else {
         editNot = $.Notify({
             caption: "Szerkesztés",
-            content: "Szerkesztéshez válassz ki elemet.",
+            content: "Szerkesztéshez válassz ki egy képet vagy albumot.",
             timeout: 10000
         });
+        deleteMode = false;
+        if (deleteNot != null)
+            deleteNot.close();
+        $(".selected").removeClass("selected");
     }
 
     editMode = !editMode;
@@ -463,23 +477,23 @@ $(document).on("click", "#b_delete", function(){
         $(".selected").each(function(){
             var id = $(this).attr("id").substr(4);
             if ($(this).hasClass("picture")) {
-                $.post( "dal/DaoDB.php", 'deletePicture=' + id, function(data) {
-                    console.log(data);
-                });
+                $.post( "dal/DaoDB.php", 'deletePicture=' + id);
             } else {
-                $.post( "dal/DaoDB.php", 'deleteAlbum=' + id, function(data) {
-                    console.log(data);
-                });
+                $.post( "dal/DaoDB.php", 'deleteAlbum=' + id);
             }
         });
         $(".selected").remove();
-        deleteNot.close();
+        if (deleteNot != null)
+            deleteNot.close();
     } else if (!deleteMode) {
         deleteNot = $.Notify({
             caption: "Törlés",
             content: "Törléshez válassz ki elemeket majd kattints újra a törlés gombra.",
             timeout: 10000
         });
+        editMode = false;
+        if (editNot != null)
+            editNot.close();
     }
 
     deleteMode = !deleteMode;
@@ -496,8 +510,11 @@ $(document).on("click", "#mypictures_btn", function(){
     });
 });
 
-// new album click
-$(document).on("click", "#btn_new_album", function(){
+function createAlbumDialog(id){
+    if (id === undefined) 
+        id = 0;
+
+    //alert(id);
     $.Dialog({
         height: 250,
         width: 300,
@@ -505,32 +522,64 @@ $(document).on("click", "#btn_new_album", function(){
         shadow: true,
         flat: true,
         icon: '',
-        title: 'Új album létrehozása',
+        title: id ? 'Album módosítása' : 'Új album létrehozása',
         content: '',
         onShow: function(_dialog){
             var content = _dialog.children('.content');
-            $(content).load("NewAlbumPage.php");
+            $.post("albumdialog.php", 'id=' + id).done(function(data){
+                content.html(data);
+            });
         }
     });
-});
+}
 
 // picture upload click
 
 $(document).on("click", "#btn_new_picture", function(){
+var countrylist;
+var citylist;
+function createPictureDialog(id){
+    if (id == undefined)
+        id = 0;
+
+    $.ajax({
+        url: 'dal/DaoDB.php',
+        type: 'POST',
+        data: 'getCountries=1',
+        dataType: 'json',
+        success : function(data){
+            countrylist= data;
+        }
+    });
+
+    $.ajax({
+        url: 'dal/DaoDB.php',
+        type: 'POST',
+        data: 'getCities=1',
+        dataType: 'json',
+        success : function(data){
+            citylist= data;
+        }
+    });
+
     var content;
     $.Dialog({
-        height: 550,
+        height: 600,
         width: 300,
         overlay: true,
         shadow: true,
         flat: true,
         icon: '',
-        title: 'Új képek feltöltése',
+        title: id ? 'Kép adatainak módosítása' : 'Új képek feltöltése',
         content: '',
         onShow: function(_dialog){
-            content = _dialog.children('.content');
-            $.post("pictureupload.php", "").done(function(data){
-                content.html(data);
+            content = _dialog.children('.content');                
+            var curr_album = "0";
+            if ($("#btn_album_back").attr("data-id"))
+                curr_album = $("#btn_album_back").attr("data-id");
+            
+            $.post("pictureupload.php", 'id=' + id + '&curr_album=' + curr_album).done(function(data){
+                content.html(data)
                 $("#in_file_country").autocomplete({
                     source: countrylist,
                     appendTo: content
@@ -551,30 +600,94 @@ $(document).on("click", "#btn_new_picture", function(){
         $("#in_file_country").autoComplete({source :countrylist});
         $("#in_file_city").autoComplete({source: citylist});
     })*/
+}
 
-    
+// new album click
+$(document).on("click", "#btn_new_album", function(){
+    createAlbumDialog();
+});
+
+// picture upload click
+$(document).on("click", "#btn_new_picture", function(){
+    createPictureDialog();
+});
+
+// form album create
+$(document).on("submit", "#f_new_album", function(){
+    event.stopPropagation(); // Stop stuff happening
+    event.preventDefault(); // Totally stop stuff happening
+    var form = $("#f_new_album").serialize();
+    form += '&id=' + $(this).attr('data-id');
+    jQuery.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "albumdialog.php",
+        data:  form,
+        success: function(result){
+            if (result.create == "true"){
+                    $.Dialog.close();
+                    if ($(this).attr('data-id') == "0")
+                        $.Notify.show("Album sikeresen létrehozva.");
+                    else
+                        $.Notify.show("Album sikeresen módosítva.");
+
+                    $.post("mypictures.php", "header=0").done(function(data){
+                        $("#content").html(data);
+                        initThumbs();
+                    });
+            }
+        },
+        error: function(jqXHR, exception) {
+            if (jqXHR.status === 0) {
+                alert('Not connect.\n Verify Network.');
+            } else if (jqXHR.status == 404) {
+                alert('Requested page not found. [404]');
+            } else if (jqXHR.status == 500) {
+                alert('Internal Server Error [500].');
+            } else if (exception === 'parsererror') {
+                alert(jqXHR.responseText);
+            } else if (exception === 'timeout') {
+                alert('Time out error.');
+            } else if (exception === 'abort') {
+                alert('Ajax request aborted.');
+            } else {
+                alert('Uncaught Error.\n' + jqXHR.responseText);
+            }
+        }
+    });
+    return false;
 });
 
 //picture upload prepare
 $(document).on("change", "#in_file_picture", function(){
     files = event.target.files;
 });
+
+
+
 // picture upload
 $(document).on("submit", "#f_new_pictures", function(){
     event.stopPropagation(); // Stop stuff happening
     event.preventDefault(); // Totally stop stuff happening
     var data = new FormData();
-    $.each(files, function(key, value){
-        data.append(key, value);
-    });
+    var picid = $(this).attr('data-id');
+    if (picid == "0") {
+        $.each(files, function(key, value){
+            data.append(key, value);
+        });
+    }
+
     data.append('file_desc', $("#in_file_desc").val());
     data.append('file_album', $("#in_file_album").val());
     data.append('file_category', $("#in_file_category").val());
+    data.append('id', picid);
+
     var country = $("#in_file_country").val();
     var city = $("#in_file_city").val();
     var place = $("#in_file_place").val();
     var city_id;
-    $.post("dal/DaoDB.php", 'getCityId='+city+'&country='+country).done(function(result){
+
+     $.post("dal/DaoDB.php", 'getCityId='+city+'&country='+country).done(function(result){
             alert(result);
             if (result == ""){
                 $.post("dal/DaoDB.php", 'addCity='+city+'&country='+country).done(function(result){
@@ -589,7 +702,11 @@ $(document).on("submit", "#f_new_pictures", function(){
     
 });
 
+
 function uploadpicture(data){
+
+    alert("id: " + picid + " desc: " + $("#in_file_desc").val() +  " albumid:" +  $("#in_file_album").val() + " catid:" + $("#in_file_category").val());
+
     $.ajax({
         url: 'pictureupload.php',
         type: 'POST',
@@ -602,7 +719,8 @@ function uploadpicture(data){
         {
             if (data.create == "true"){
                     $.Dialog.close();
-                    $.Notify.show("Fényképek feltöltése sikeres.");
+                    if (picid == "0")
+                        $.Notify.show("Fényképek feltöltése sikeres.");
                     $.post("mypictures.php", "header=1").done(function(data){
                         $("#content-header").html(data);
                     });
@@ -643,6 +761,7 @@ $(document).on("click", "#btn_album_back", function(){
         $("#content").html(data);
         initThumbs();
     });
+
     deleteMode = false;
     editMode = false;
     if (deleteNot != null) {
@@ -656,6 +775,12 @@ $(document).on("click", "#btn_album_back", function(){
 // album navigation
 $(document).on("click", ".album", function(){
     $(this).trigger('mouseleave');
+
+    if (editMode) {
+        var id = $(this).attr("id").substr(4);
+        createAlbumDialog(id);
+        return false;
+    }
     if (deleteMode) {
         if ($(this).hasClass("selected")) {
             $(this).removeClass("selected");
@@ -664,6 +789,7 @@ $(document).on("click", ".album", function(){
         }
         return false;
     }
+
     $.post("mypictures.php", "header=1&alb=" + $(this).attr('id')).done(function(data){
         console.log(data);
         $("#content-header").html(data);
@@ -676,49 +802,6 @@ $(document).on("click", ".album", function(){
     
 });
 
-// form album create
-$(document).on("submit", "#f_new_album", function(){
-    event.stopPropagation(); // Stop stuff happening
-    event.preventDefault(); // Totally stop stuff happening
-    var form = $("#f_new_album").serialize();
-    jQuery.ajax({
-        type: "POST",
-        dataType: "json",
-        url: "NewAlbumPage.php",
-        data:  form,
-        success: function(result){
-            if (result.create == "true"){
-                    $.Dialog.close();
-                    $.Notify.show("Album sikeresen létrehozva.");
-                    $.post("mypictures.php", "header=1").done(function(data){
-                        $("#content-header").html(data);
-                    });
-                    $.post("mypictures.php", "header=0").done(function(data){
-                        $("#content").html(data);
-                        initThumbs();
-                    });
-            }
-        },
-        error: function(jqXHR, exception) {
-            if (jqXHR.status === 0) {
-                alert('Not connect.\n Verify Network.');
-            } else if (jqXHR.status == 404) {
-                alert('Requested page not found. [404]');
-            } else if (jqXHR.status == 500) {
-                alert('Internal Server Error [500].');
-            } else if (exception === 'parsererror') {
-                alert(jqXHR.responseText);
-            } else if (exception === 'timeout') {
-                alert('Time out error.');
-            } else if (exception === 'abort') {
-                alert('Ajax request aborted.');
-            } else {
-                alert('Uncaught Error.\n' + jqXHR.responseText);
-            }
-        }
-    });
-    return false;
-});
 /*
 --------------------------------------------------------------
 --------------------- Saját képek end ------------------------
