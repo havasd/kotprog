@@ -28,7 +28,7 @@
 
 	function generateContent(){
 		global $controller;
-    echo  '<div id="previous_picture" 
+    echo  '<div id="previous_picture_home" 
             style=" display: inline-block;
               float: left;
               width: 25px;
@@ -52,7 +52,7 @@
       }
       echo '</div>
             </div>';
-      echo  '<div id="next_picture" 
+      echo  '<div id="next_picture_home" 
         style=" display: inline-block;
             float: left;
             width: 25px;

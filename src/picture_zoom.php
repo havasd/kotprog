@@ -6,7 +6,7 @@
 	$usr = isset($_SESSION['userObject']) ? $_SESSION['userObject'] : null;
 	$controller = new DaoDB();
 	$pic_id = isset($_POST['img_id']) ? $_POST['img_id'] : null;
-	$picture = $controller->getPictureById($pic_id);
+	$picture = isset($pic_id) ? $controller->getPictureById($pic_id) : null;
 
 	if (isset($_POST["rate"])) {
 		rate();
