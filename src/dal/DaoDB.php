@@ -394,12 +394,6 @@
             return base64_encode($picture_tile);
         }
 
-        public function deletePictureById($id){
-            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'DELETE FROM KEPEK WHERE ID = ' . $id;
-            $stmt = oci_parse($con, $query);
-            return oci_execute($stmt);
-        }
 
         public function updatePicture($id, $desc, $alb_id, $cat_id, $place = 0){
             if ($alb_id = "null")
@@ -415,11 +409,6 @@
             return oci_execute($stmt);
         }
 
-        public function deleteAlbumById($id){
-            $query = 'DELETE FROM ALBUMOK WHERE ID = ' . $id;
-            $stmt = oci_parse($con, $query);
-            return oci_execute($stmt);
-        }
 
         public function updateAlbum($id, $name, $desc){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');

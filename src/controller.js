@@ -1,24 +1,5 @@
 $(document).ready(function(){
-	$.ajax({
-            url: "dal/DaoDB.php",
-            type: "POST",
-            data: "getCountries=1",
-            dataType: "json",
-            success : function(data){
-                countrylist = data;
-                
-            }
-    });
-    $.ajax({
-            url: "dal/DaoDB.php",
-            type: "POST",
-            data: "getCities=1",
-            dataType: "json",
-            success : function(data){
-                console.log(data);
-                citylist = data;
-            }
-    });
+	
 });
 var countrylist;
 var citylist;
@@ -299,7 +280,7 @@ $(document).on("click", ".picture", function(){
             });
             $(".btn_comm_delete").on("click", function(){
                 //var commid = $(this).parentsUntil("a");
-                alert("click delete comment ";
+                alert("click delete comment ");
             });
         } 
     });
@@ -533,11 +514,6 @@ function createAlbumDialog(id){
     });
 }
 
-// picture upload click
-
-$(document).on("click", "#btn_new_picture", function(){
-var countrylist;
-var citylist;
 function createPictureDialog(id){
     if (id == undefined)
         id = 0;
@@ -592,15 +568,14 @@ function createPictureDialog(id){
             });
         }
     });
-
-
-    /*$.post("pictureupload.php","").done(function(data){
-        content.html(data);
-        
-        $("#in_file_country").autoComplete({source :countrylist});
-        $("#in_file_city").autoComplete({source: citylist});
-    })*/
 }
+// picture upload click
+
+$(document).on("click", "#btn_new_picture", function(){
+var countrylist;
+var citylist;
+createPictureDialog(0);
+});
 
 // new album click
 $(document).on("click", "#btn_new_album", function(){
