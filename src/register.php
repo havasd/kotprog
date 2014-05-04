@@ -51,30 +51,53 @@
 						width: 30em;
 					}
 			  	</style>
-				<form id="registration">
-			    	<label>Felhasználónév : (minimum 6 karakter, csak betűk és számok)</label>
-			    	<input name="username" type="text" required>
-		            
-		        	<label>Jelszó :</label>
-		        	<input name="password" type="password" required>
-			        
-		        	<label>Jelszó megerősítése:</label>
-		        	<input name="password_2" type="password" required>
-			        
-		        	<label>Név :</label>
-		        	<input name="name" type="text" required>
-		        	
-		        	<label>E-mail cím :</label>
-		        	<input name="email" type="text" required>
-		        	
-		        	<label>Ország :</label>
-		        	<input name="country" type="text" required>
-		        	
-		        	<label>Város :</label>
-		        	<input name="city" type="text" required>
-		        	<br>
+				<form id="registration" style="width:30em">
+				<fieldset>
+					<label for="t_user">Felhasználónév (minimum 6 karakter, csak betűk és számok)</label>
+					<div class="input-control text">
+			    		<input id="t_user" name="username" type="text" required>
+		            <button class="btn-clear"></button>
+                    </div>
+
+                    <label for="t_pass">Jelszó</label>
+		            <div class="input-control password">
+		        		<input id="t_pass" name="password" type="password" required>
+					<button class="btn-reveal"></button>
+                    </div>
+
+                    <label for="t_pass_2">Jelszó megerősítése</label>
+			        <div class="input-control password">
+		        		<input id="t_pass_2" name="password_2" type="password" required>
+			        <button class="btn-reveal"></button>
+                    </div>
+
+					<label for="t_name">Név</label>
+			        <div class="input-control text">
+		        		<input id="t_name" name="name" type="text" required>
+		        	<button class="btn-clear"></button>
+                    </div>
+
+                    <label for="t_email">E-mail cím</label>
+		        	<div class="input-control text">
+		        		<input id="t_email" name="email" type="text" required>
+		        	<button class="btn-clear"></button>
+                    </div>
+
+                    <label for="t_country">Ország</label>
+		        	<div class="input-control text">
+		        		<input id="t_country" name="country" type="text" required>
+		        	<button class="btn-clear"></button>
+                    </div>
+
+                    <label for="t_city">Város</label>
+		        	<div class="input-control text">
+		        		<input id="t_city" name="city" type="text" required>
+					<button class="btn-clear"></button>
+                    </div>
+
 		        	<button id="submit_reg">Regisztráció</button>
-		        	<div id="reg_error"></div>
+		        	
+		        	</fieldset>
 				</form>');
 	} 
 ?>

@@ -37,9 +37,9 @@ require_once('model/User.php');
                     <div class="input-control password">
     				    <input id="login2_pwd" name="password" type="password" required>
                     <button class="btn-reveal"></button></div>
+
     				<button id="submit_login">Bejelentkezés</button>
                     </fieldset>
-                    </div>
 				</form>';
 	}
 ?>
