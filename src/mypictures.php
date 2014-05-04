@@ -65,6 +65,7 @@
                 $pics = $controller->getPicturesByUser($val->getId());
                 $sides = array('250px', '-250px', '0', '250px');
                 $i = 0;
+
                 if (count($pics) > 1) {
                     foreach ($pics as $key => $value) {
                         echo    '<div class="tile-content image" style="left:' . $sides[$i++] . ';">
