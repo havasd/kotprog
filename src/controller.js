@@ -244,13 +244,6 @@ $(document).on("click","#btn_city_back",function(){
 --------------------------------------------------------------
 */
 
-function commChange(elem){
-    var comm = $(elem).parent().parent().attr('id').substr(4); // div a
-    var text = $(elem).text();
-    //alert(comm + ' ' + text);
-    $.post("picture_zoom.php", 'edit_comment=' + comm + '&edit_text=' + text);
-}
-
 //image zoom
 $(document).on("click", ".picture", function(){
     var image_id = $(this).attr('id').substr(4);    
@@ -314,11 +307,12 @@ $(document).on("click", ".picture", function(){
             });
             $("#btn_comment_send").on('click', function(){
                 var comment = $("#new_comment").val();
+                //alert(image_id + " " + comment + " " + $(this).attr('data-answer'));
                 jQuery.ajax({
                     type: "POST",
                     dataType: "json",
                     url: "picture_zoom.php",
-                    data: "img_id=" + image_id + "&new_comment=" + comment,
+                    data: "img_id=" + image_id + "&new_comment=" + comment + "&answer=" + $(this).attr('data-answer'),
                     success: function(data){
                         if (data.result == 'true'){
                             $("#pic_"+image_id).click();
@@ -363,8 +357,24 @@ $(document).on("click", ".picture", function(){
                 $(text).attr('contenteditable', "true");
                 $(text).focus();
             });
+            $(".comment-el").on("click", function(){
+                if (!$(this).hasClass('active')) {
+                    $('#btn_comment_send').text('Válasz');
+                    $('#btn_comment_send').attr('data-answer', $(this).attr('data-answer-id'));
+                    $('#new_comment').attr('placeholder', $('#new_comment').attr('placeholder').replace('Hozzászólás', 'Válasz'));
+                    $('#new_comment').focus();
+                } else {
+                    $('#btn_comment_send').text('Elküldés');
+                    $('#btn_comment_send').attr('data-answer', "null");
+                    $('#new_comment').attr('placeholder', $('#new_comment').attr('placeholder').replace('Válasz', 'Hozzászólás'));
+                }
+                //alert($('#btn_comment_send').text() + " " + $('#btn_comment_send').attr('data-answer'));
+            });
             $(".list-remark").on("focusout", function(){
-                commChange(this);
+                var comm = $(this).parent().parent().attr('id').substr(4); // div a
+                var text = $(this).text();
+                //alert(comm + ' ' + text);
+                $.post("picture_zoom.php", 'edit_comment=' + comm + '&edit_text=' + text);
                 $(this).attr('contenteditable', "false");
             });
             $(".list-remark").keypress(function(e) {

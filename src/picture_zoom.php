@@ -16,8 +16,9 @@
 	if (isset($_POST["new_comment"])){
 		$user_id = $_SESSION['userObject']->getId();
 		$comment = $_POST["new_comment"];
+		$answer = $_POST["answer"] == "null" ? null : $_POST["answer"];
 
-		if ($controller->commentPicture($pic_id, $user_id, $comment)){
+		if ($controller->commentPicture($pic_id, $user_id, $comment, $answer)){
 			echo json_encode(array("result" => "true"));
 		} else {
 			echo json_encode(array("result" => "false"));
@@ -197,25 +198,37 @@
 		//hozzászólások betöltése
 		$comments = $controller->getComments($pic_id);
 		foreach ($comments as $value) {
-			echo '<a id="com_' . $value['ID'] . '" class="list">
+			echo '<a id="com_' . $value['ID'] . '" class="list comment-el" data-answer-id="' . $value['ID'] . '">
 	                    <div class="list-content" style="overflow-wrap: break-word;">
 	                        <span class="list-title">'. $value['NEV'] . (($usr->getId() == $value['FELH_ID']) ? 
-	                        	'<i class="btn_comm_delete icon-cancel-2 place-right" style="padding-left:5px;font-size: 15px;color:grey" title="Hozzászólás törlése"></i>
-	                        	<i class="btn_comm_edit icon-wrench place-right" style="font-size: 15px;color:grey" title="Hozzászólás szerkesztése"></i>' : '')  . '</span>
+	                        	'<i class="btn_comm_delete icon-cancel-2 place-right fg-lightBlue" style="padding-left:5px;font-size: 15px;" title="Hozzászólás törlése"></i>
+	                        	<i class="btn_comm_edit icon-wrench place-right fg-lightBlue" style="font-size: 15px;" title="Hozzászólás szerkesztése"></i>' : '')  . '</span>
 	                        <span class="list-subtitle">' . $value['IDOBELYEG'] . '</span>
 	                        <span class="list-remark" style="overflow-wrap: break-word; word-wrap: break-word; overflow: initial; white-space: normal; text-overflow: initial;" contenteditable="false" >' . $value['MEGJEGYZES'] .'</span>
 	                    </div>
 	                </a>';
-	}
+	        $answers = $controller->getAnswersForComment($value['ID']);
+        	foreach ($answers as $ans) {
+				echo '<a id="com_' . $ans['ID'] . '" class="list comment-el marked" data-answer-id="' . $value['ID'] . '">
+                    <div class="list-content" style="overflow-wrap: break-word;">
+                        <span class="list-title">'. $ans['NEV'] . (($usr->getId() == $ans['FELH_ID']) ? 
+                        	'<i class="btn_comm_delete icon-cancel-2 place-right fg-lightBlue" style="padding-left:5px;font-size: 15px;" title="Hozzászólás törlése"></i>
+                        	<i class="btn_comm_edit icon-wrench place-right fg-lightBlue" style="font-size: 15px;" title="Hozzászólás szerkesztése"></i>' : '')  . '</span>
+                        <span class="list-subtitle">' . $ans['IDOBELYEG'] . '</span>
+                        <span class="list-remark" style="overflow-wrap: break-word; word-wrap: break-word; overflow: initial; white-space: normal; text-overflow: initial;" contenteditable="false" >' . $ans['MEGJEGYZES'] .'</span>
+                    </div>
+                </a>';
+            }
+		}
                
-	echo  '		</div>
+		echo  '		</div>
 	    	</div>
         </div>
             <div class="input-control text" data-role="input-control">
                 <textarea id="new_comment" type="text" placeholder="Hozzászólás írásához kattints ide..." style="resize: none"></textarea>
                 <button class="btn-clear" tabindex="-1"></button>
         	</div>
-        	<p><button id="btn_comment_send">Elküldés</button></p>
+        	<p><button id="btn_comment_send" data-answer="null">Elküldés</button></p>
 		</div>
 	</div>';
     }
