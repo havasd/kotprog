@@ -229,6 +229,90 @@
             return $pics;
         }
 
+        public function getNumOfPicsByCategory(){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT KATEGORIAK.KATEGORIA AS KATEGORIA, COUNT(KEPEK.ID) AS NUM
+            FROM KATEGORIAK, KEPEK 
+            WHERE KATEGORIAK.ID = KEPEK.KAT_ID
+            GROUP BY KATEGORIAK.KATEGORIA';
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $count = array();
+            $i = 0;
+            while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
+                $count[$i++] = $row;
+            }
+            return $count;
+        }
+
+        public function getNumOfPicsByUser(){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT * FROM (SELECT FELHASZNALOK.ID AS ID, FELHASZNALOK.NEV AS NEV, COUNT(KEPEK.ID) AS PICNUM
+            FROM FELHASZNALOK, KEPEK
+            WHERE FELHASZNALOK.ID = KEPEK.FELH_ID
+            GROUP BY FELHASZNALOK.ID, FELHASZNALOK.NEV ORDER BY PICNUM DESC)
+            WHERE ROWNUM <= 10';
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $count = array();
+            $i = 0;
+            while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
+                $count[$i++] = $row;
+            }
+            return $count;
+        }
+
+        public function getUserPictureRating($usr_id){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT AVG(ERTEKELESEK.ERTEKELES) AS ERTEK
+                FROM ERTEKELESEK 
+                WHERE KEP_ID IN (SELECT KEPEK.ID FROM KEPEK WHERE FELH_ID = :bv_usrid)';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_usrid', $usr_id);
+            oci_execute($stmt);
+            $row = oci_fetch_array($stmt);
+            return is_null($row['ERTEK']) ? '0' : $row['ERTEK'];
+        }
+
+        public function getNumOfTable($table){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT COUNT(*) FROM ' . $table;
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $row = oci_fetch_array($stmt);
+            return $row['COUNT(*)'];
+        }
+        
+        public function getNumOfAlbumsByUserId($usr_id){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT COUNT(ALBUMOK.ID) AS ALBNUM FROM ALBUMOK WHERE FELH_ID = :bv_usrid';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_usrid', $usr_id);
+            oci_execute($stmt);
+            $row = oci_fetch_array($stmt);
+            return $row['ALBNUM'];
+        }
+
+        public function getNumOfPicsByCities(){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT * FROM (SELECT VAROSOK.VAROS as VAROS, VAROSOK.ORSZAG as ORSZAG, COUNT(VAROS_ID) as KEPEK_SZAMA 
+                        FROM (
+                        SELECT  REGEXP_SUBSTR(HELYSZIN,\'[^_]+\',1,1) AS VAROS_ID FROM KEPEK
+                        ),VAROSOK
+                        WHERE VAROS_ID = VAROSOK.ID
+                        group by VAROS_ID, VAROSOK.VAROS, VAROSOK.ORSZAG
+                        order by KEPEK_SZAMA DESC)
+                        WHERE ROWNUM <= 10';
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $count = array();
+            $i = 0;
+            while ($row = oci_fetch_array($stmt,  OCI_ASSOC + OCI_RETURN_NULLS)) {
+                $count[$i++] = $row;
+            }
+            return $count;
+        }
+
         public function getNumOfPictures($category_id){
             $query = 'SELECT COUNT(*) FROM KEPEK '.(!is_null($category_id) ? 'WHERE KAT_ID = '.$category_id : "");
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
