@@ -36,6 +36,14 @@
 		exit();
 	}
 
+	if (isset($_POST["edit_comment"])){
+		$comment_id = $_POST["edit_comment"];
+		$text = $_POST["edit_text"];
+
+		$controller->updateComment($comment_id, $text);
+		exit();	
+	}
+
 	function rate(){
 		global $controller;
 		$res = $controller->ratePicture($_POST["img_id"], $_POST["rate"]);
@@ -76,7 +84,7 @@
 
 			#comment_list {
 				height: 210px;
-				overflow: scroll;
+				overflow-y: scroll;
 			}
 
 			#info .panel-header{
@@ -190,12 +198,12 @@
 		$comments = $controller->getComments($pic_id);
 		foreach ($comments as $value) {
 			echo '<a id="com_' . $value['ID'] . '" class="list">
-	                    <div class="list-content">
+	                    <div class="list-content" style="overflow-wrap: break-word;">
 	                        <span class="list-title">'. $value['NEV'] . (($usr->getId() == $value['FELH_ID']) ? 
 	                        	'<i class="btn_comm_delete icon-cancel-2 place-right" style="padding-left:5px;font-size: 15px;color:grey" title="Hozzászólás törlése"></i>
 	                        	<i class="btn_comm_edit icon-wrench place-right" style="font-size: 15px;color:grey" title="Hozzászólás szerkesztése"></i>' : '')  . '</span>
 	                        <span class="list-subtitle">' . $value['IDOBELYEG'] . '</span>
-	                        <span class="list-remark" contenteditable="false">' . $value['MEGJEGYZES'] .'</span>
+	                        <span class="list-remark" style="overflow-wrap: break-word; word-wrap: break-word; overflow: initial; white-space: normal; text-overflow: initial;" contenteditable="false" >' . $value['MEGJEGYZES'] .'</span>
 	                    </div>
 	                </a>';
 	}

@@ -523,8 +523,17 @@
             return true;
         }
 
+        public function updateComment($comment_id, $text){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'UPDATE HOZZASZOLASOK SET MEGJEGYZES = :bv_text WHERE ID = :bv_comm_id';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_text', $text);
+            oci_bind_by_name($stmt, ':bv_comm_id', $comment_id);
+            return oci_execute($stmt);
+        }
+
         public function deleteComment($comment_id){
-            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'DELETE FROM HOZZASZOLASOK WHERE ID = :bv_comm_id';
             $stmt = oci_parse($con, $query);
             oci_bind_by_name($stmt, ':bv_comm_id', $comment_id);
