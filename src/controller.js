@@ -825,19 +825,19 @@ $(document).on("submit", "#f_new_pictures", function(){
             } else {
                 data.append('file_place', result+'_'+place);
             }
-            uploadpicture(data);
+            uploadpicture(data, picid);
     });
     
 });
 
-function uploadpicture(data){
+function uploadpicture(updata, picid){
 
     //alert("id: " + data.id + " desc: " + $("#in_file_desc").val() +  " albumid:" +  $("#in_file_album").val() + " catid:" + $("#in_file_category").val());
 
     $.ajax({
         url: 'pictureupload.php',
         type: 'POST',
-        data: data,
+        data: updata,
         cache: false,
         dataType: 'json',
         processData: false, // Don't process the files
@@ -846,8 +846,8 @@ function uploadpicture(data){
         {
             if (data.create == "true"){
                     $.Dialog.close();
-                    if (data.picid == "0")
-                        $.Notify.show("Fényképek feltöltése sikeres.");
+                    if (picid == "0")
+                        $.Notify.show("Fénykép feltöltése sikeres.");
                     $.post("mypictures.php", "header=1").done(function(data){
                         $("#content-header").html(data);
                     });
