@@ -381,7 +381,7 @@
             return $result;
         }
 
-         public function getPopularDestinations(){
+        public function getPopularDestinations(){
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = '  SELECT VAROS_ID as ID,VAROSOK.VAROS as VAROS, VAROSOK.ORSZAG as ORSZAG, COUNT(VAROS_ID) as KEPEK_SZAMA 
                         FROM (
@@ -456,7 +456,7 @@
         }
 
         //Picture($id, $category, $desc, $time, $place, $data, $owner, $rating)
-       public function getPicturesByUser($album_id){
+        public function getPicturesByUser($album_id){
             if (!$album_id){
                 $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KATEGORIA,
                 TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
@@ -498,7 +498,7 @@
         }
 
         public function getPictureById($picture_id){
-             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             if (!$con) {
                 $e = oci_error();
                 trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
@@ -626,7 +626,7 @@
         }
 
         public function getAlbumById($album_id){
-             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             if (!$con) {
                 $e = oci_error();
                 trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
@@ -643,7 +643,17 @@
             $desc = $row["LEIRAS"];
             $date = $row["LETREHOZAS_IDEJE"];
             $numofpics = $row["NUMPICS"];
-            $album = new Album($id, $name, $desc, $date, $numofpics);
+
+            $query = "SELECT ID FROM KEPEK WHERE ALBUM_ID LIKE '".$album_id."'";
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $pics=array();
+            $i=0;
+            while ($row = oci_fetch_array($stmt)){
+                $pics[$i] = $row['ID'];
+                $i++;
+            }
+            $album = new Album($id, $name, $desc, $date, $pics, $numofpics);
             oci_close($con);
             return $album;
         }
@@ -670,8 +680,7 @@
             return $succed;
         }
 
-        public function commentPicture($pic_id, $user_id, $comment, $answer)
-        {
+        public function commentPicture($pic_id, $user_id, $comment, $answer){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'INSERT INTO HOZZASZOLASOK (ID, MEGJEGYZES,IDOBELYEG, FELH_ID, KEP_ID, VALASZ_ID) 
                         VALUES (comment_seq.nextval, :comment_bi, CURRENT_DATE , :usr_bi, :pic_bi, :bv_answer)';
@@ -826,6 +835,32 @@
             $tmp = oci_fetch_array($stmt);
             return $tmp['ID'];
             oci_close($con);
+        }
+
+        public function search($keyword){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = "SELECT ID FROM KEPEK WHERE LEIRAS LIKE '%".$keyword."%' OR HELYSZIN LIKE '%".$keyword."%'";
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $result=array();
+            $result['kepek']=array();
+            $i = 0;
+            while ($row = oci_fetch_array($stmt)){
+                $result['kepek'][$i]=$row['ID'];
+                $i++;
+            }
+            //albumok
+            $query = "SELECT ID FROM ALBUMOK WHERE NEV LIKE '%".$keyword."%' OR LEIRAS LIKE '%".$keyword."%'";
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $i = 0;
+            $result['albumok']=array();
+            while ($row = oci_fetch_array($stmt)){
+                $result['albumok'][$i]=$row['ID'];
+
+                $i++;
+            }
+            return $result;
         }
     }
 

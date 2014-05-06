@@ -6,13 +6,15 @@
         private $m_desc;
         private $m_numofpics;
         private $m_createdate;
+        private $m_picture_id_list;
 
-        public function Album($_id, $_name, $_desc, $_createdate, $_numofpics = 0){
+        public function Album($_id, $_name, $_desc, $_createdate, $pictureidlist, $_numofpics = 0){
             $this->m_id = $_id;
             $this->m_name = $_name;
             $this->m_desc = $_desc;
             $this->m_numofpics = $_numofpics;
             $this->m_createdate = $_createdate;
+            $this->m_picture_id_list =$pictureidlist;
         }
 
         public function getId(){
@@ -37,6 +39,10 @@
 
         public function getCreateDate(){
             return $this->m_createdate;
+        }
+
+        public function getPictureIdList(){
+            return $this->m_picture_id_list;
         }
 
         public function toString(){
