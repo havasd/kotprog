@@ -41,7 +41,7 @@
 		}
 
 		public function setCountry($country){
-			$this->m_country = $county;
+			$this->m_country = $country;
 		}
 
 		public function getCountry(){
