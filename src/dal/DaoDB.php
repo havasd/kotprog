@@ -586,15 +586,16 @@
             return $succed;
         }
 
-        public function commentPicture($pic_id, $user_id, $comment)
+        public function commentPicture($pic_id, $user_id, $comment, $answer)
         {
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'INSERT INTO HOZZASZOLASOK (ID, MEGJEGYZES,IDOBELYEG, FELH_ID, KEP_ID) 
-                        VALUES (comment_seq.nextval, :comment_bi, CURRENT_DATE , :usr_bi, :pic_bi)';
+            $query = 'INSERT INTO HOZZASZOLASOK (ID, MEGJEGYZES,IDOBELYEG, FELH_ID, KEP_ID, VALASZ_ID) 
+                        VALUES (comment_seq.nextval, :comment_bi, CURRENT_DATE , :usr_bi, :pic_bi, :bv_answer)';
             $stmt = oci_parse($con, $query);
             oci_bind_by_name($stmt, ':comment_bi', $comment);
             oci_bind_by_name($stmt, ':usr_bi', $user_id);
             oci_bind_by_name($stmt, ':pic_bi', $pic_id);
+            oci_bind_by_name($stmt, ':bv_answer', $answer);
             oci_execute($stmt);
             oci_close($con);
             return true;
@@ -617,18 +618,36 @@
             return oci_execute($stmt);
         }
 
-        public function getComments($pic_id){
+        public function getAnswersForComment($comment_id){
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = 'SELECT HOZZASZOLASOK.ID AS ID, FELH_ID, NEV, MEGJEGYZES, VALASZ_ID,
+            $query = 'SELECT HOZZASZOLASOK.ID AS ID, NEV, MEGJEGYZES, FELH_ID,
                         TO_CHAR(IDOBELYEG, \'YYYY/MM/DD HH24:MI:SS\') AS IDOBELYEG
                         FROM FELHASZNALOK, HOZZASZOLASOK
                         WHERE HOZZASZOLASOK.FELH_ID = FELHASZNALOK.ID
+                        AND HOZZASZOLASOK.VALASZ_ID = :bv_commid ORDER BY IDOBELYEG ASC';
+            $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':bv_commid', $comment_id);
+            oci_execute($stmt);
+            oci_close($con);
+            $comments = array();
+            $i = 0;
+            while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)){
+                $comments[$i++] = $row;
+            }
+            return $comments;
+        }
+
+        public function getComments($pic_id){
+            $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = 'SELECT HOZZASZOLASOK.ID AS ID, NEV, MEGJEGYZES, FELH_ID,
+                        TO_CHAR(IDOBELYEG, \'YYYY/MM/DD HH24:MI:SS\') AS IDOBELYEG
+                        FROM FELHASZNALOK, HOZZASZOLASOK
+                        WHERE HOZZASZOLASOK.FELH_ID = FELHASZNALOK.ID AND HOZZASZOLASOK.VALASZ_ID IS NULL
                         AND HOZZASZOLASOK.KEP_ID = :bv_picid ORDER BY IDOBELYEG ASC';
             $stmt = oci_parse($con, $query);
             oci_bind_by_name($stmt, ':bv_picid', $pic_id);
             oci_execute($stmt);
             oci_close($con);
-            $comments=array();
             $comments = array();
             $i = 0;
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)){
