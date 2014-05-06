@@ -3,7 +3,12 @@ require_once('dal/DaoDB.php');
 $controller = new DaoDB();
 if (isset($_POST['city'])){
 	if (isset($_POST['header'])){
-		generateCityHeader($_POST['city']);
+		if (isset($_POST['favdest'])){
+			generateCityHeader($_POST['city'],true);
+		}
+		else {
+			generateCityHeader($_POST['city']);
+		}
 	}
 	else {
 		if (isset($_POST['populardests'])){
@@ -56,9 +61,13 @@ function generateCityAlbums($favdest = false){
 	}
 }  
 
-function generateCityHeader($city_id){
-	if (!is_null($city_id)){
-		global $controller;
+function generateCityHeader($city_id, $favdest = false){
+	global $controller;
+	if ($favdest){
+		echo '<nav class="horizontal-menu">
+                    <a id="btn_favdest_back" style="color: black;" href="#"><i class="icon-arrow-left-3"></i></a>
+                    <a style="color: black;" >' . $controller->getCityById($city_id) . '</a>';	
+	} else {
 		echo '<nav class="horizontal-menu">
                     <a id="btn_city_back" style="color: black;" href="#"><i class="icon-arrow-left-3"></i></a>
                     <a style="color: black;" >' . $controller->getCityById($city_id) . '</a>';	

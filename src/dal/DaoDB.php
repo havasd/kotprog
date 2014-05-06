@@ -305,7 +305,7 @@
 
                             SELECT  REGEXP_SUBSTR(HELYSZIN,\'[^_]+\',1,1) AS VAROS_ID FROM KEPEK,FELHASZNALOK
                             WHERE KEPEK.FELH_ID = FELHASZNALOK.ID
-                            AND FELHASZNALOK.VAROS_ID != VAROS_ID
+                            AND FELHASZNALOK.VAROS_ID != REGEXP_SUBSTR(HELYSZIN,\'[^_]+\',1,1)
 
                         ),VAROSOK
                         WHERE VAROS_ID = VAROSOK.ID
