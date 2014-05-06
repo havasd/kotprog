@@ -9,6 +9,12 @@ var deleteNot = null;
 var editMode = false;
 var editNot = null;
 
+// statistics
+$(document).on("click", "#stats_btn", function(){
+    $("#content-header").html("Statisztikák");
+    $("#content").load("statistics.php");
+});
+
 //bejelelentkezés form betöltése
 $(document).on("click", "#login_btn", function(){
 	$("#content-header").html("Bejelelentkezés");
