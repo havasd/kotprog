@@ -615,13 +615,12 @@
             $lines = oci_execute($stmt);
             $albumok = array();
             while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-                
                 $id = $row["ID"];
                 $name = $row["NEV"];
                 $desc = $row["LEIRAS"];
                 $date = $row["LETREHOZAS_IDEJE"];
                 $numofpics = $row["NUMOFPICS"];
-                $albumok[$id] = new Album($id, $name, $desc, $date, $numofpics);
+                $albumok[$id] = new Album($id, $name, $desc, $date, null, $numofpics);
             }
             oci_close($con);
             return $albumok;
