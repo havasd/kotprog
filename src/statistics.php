@@ -34,7 +34,7 @@
                 foreach ($usr as $key => $value) {
                     echo '<tr>
                         <td>' . $value['NEV'] . '</td><td>' . $value['PICNUM'] . '</td>
-                        <td>' . $dal->getNumOfAlbumsByUserId($value['ID']) . '</td> <td>' . $dal->getUserPictureRating($value['ID']) . '</td>
+                        <td>' . $dal->getNumOfAlbumsByUserId($value['ID']) . '</td> <td>' . round($dal->getUserPictureRating($value['ID'])) . '</td>
                     </tr>';
                 }
     echo '</tbody>
