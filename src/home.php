@@ -32,7 +32,7 @@
     echo '	<div id="picture_tiles" class="grid" style="margin-left: 1%; margin-right: 1%">
               <div class="row" style=" display: inline-block;">';
    	if (isset($_POST['category']) && isset($_POST['orderby'])){
-   		$pics = $controller->getPictures(0,12,$_POST['category'],null,$_POST['orderby']);
+   		$pics = $controller->getPictures(0,999,$_POST['category'],null,$_POST['orderby']);
       $i=0;
       while (isset($pics[$i])){
         echo '<div id="pic_' . $pics[$i]->getId() . '" class="tile double picture">
@@ -45,29 +45,6 @@
       }
       echo '</div>
             </div>';
-
-      echo  '<div>
-      <div id="previous_picture_home" 
-            style=" display: inline-block;
-              float: left;
-              width: 25px;
-              height: 25px;
-              ">
-            <a style="color: black;" href="#"><i class="icon-arrow-left-3 on-left"></i></a>
-          </div>
-          <div id="page">
-          1
-          </div>';      
-      echo  '<div id="next_picture_home" 
-        style=" display: inline-block;
-            float: left;
-            width: 25px;
-            height: 25px;
-            ">
-          <a style="color: black;" href="#"><i class="icon-arrow-right-3 on-left"></i></a>
-          </div>
-          </div>';
-      //echo $controller->getNumOfPictures(null);
    	} 
   } 
 ?>
