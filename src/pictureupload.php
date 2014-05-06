@@ -10,10 +10,18 @@
         $albumok = $controller->getAlbumsByUser();
         $categories = $controller->getCategories();
         if (isset($_FILES[0]) && isset($_POST)) {
-            $place = $_POST['file_place'];
-            $desc = $_POST['file_desc'];
-            $album_id = $_POST['file_album'];
-            $category = $_POST['file_category'];
+            $place = null; 
+            $desc = null; 
+            $album_id=null;
+            $category=null;
+            if(isset($_POST['file_place']))
+                $place = $_POST['file_place'];
+            if(isset($_POST['file_desc']))
+                $desc = $_POST['file_desc'];
+            if(isset($_POST['file_album']))    
+                $album_id = $_POST['file_album'];
+            if(isset($_POST['file_category']))
+                $category = $_POST['file_category'];
             $blob = base64_encode(file_get_contents($_FILES[0]['tmp_name']));
             //uploadPicture($blob,$title,$place,$desc,$albid)
             if ($controller->uploadPicture($blob,$place,$desc,$album_id,$category))
