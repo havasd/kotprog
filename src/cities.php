@@ -6,17 +6,32 @@ if (isset($_POST['city'])){
 		generateCityHeader($_POST['city']);
 	}
 	else {
-		generatePicturesOfCity($_POST['city']);
+		if (isset($_POST['populardests'])){
+			generatePicturesOfCity($_POST['city'],true);
+		}
+		else {
+			generatePicturesOfCity($_POST['city']);
+		}
+	}
+}
+else {
+	if (isset($_POST['favdest'])){
+		generateCityAlbums(true);	
+	}
+	else {
+		generateCityAlbums();
 	}
 	
 }
-else {
-	generateCityAlbums();
-}
 
-function generateCityAlbums(){
+function generateCityAlbums($favdest = false){
 	global $controller;
-	$cities = $controller->getCityAlbums();
+	if ($favdest){
+		$cities = $controller->getPopularDestinations();
+	} else {
+		$cities = $controller->getCityAlbums();
+	}
+	
 	echo '<div class="grid" style="margin-left: 30px; margin-right: 30px">
                     <div class="row">';
 	foreach ($cities as $city) {
@@ -51,11 +66,11 @@ function generateCityHeader($city_id){
 	
 }
 
-function generatePicturesOfCity($city_id){
+function generatePicturesOfCity($city_id,$populardests = false){
 	global $controller;
 	echo '<div class="grid" style="margin-left: 30px; margin-right: 30px">
             <div class="row">';
-	 		$pics = $controller->getPictures(0, 20, "all", $city_id, "FELTOLTES_IDEJE DESC");
+	 		$pics = $controller->getPictures(0, 20, "all", $city_id, "FELTOLTES_IDEJE DESC",($populardests ? true : false));
             foreach ($pics as $val) {
                 echo '<div id="pic_' . $val->getId() . '" class="tile double picture">
                         <div class="tile-content image">

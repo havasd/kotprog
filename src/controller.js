@@ -214,6 +214,30 @@ $(document).on("click",".cityalbum", function(){
 $(document).on("click","#btn_city_back",function(){
     $("#cities-btn").click();
 });
+
+//Legnépszerűbb úticélok
+$(document).on("click","#favourite_destinations_btn", function(){
+    $("#content-header").html("Legnépszerűbb úticélok");
+    $.post("cities.php","favdest=1").done(function(data){
+        $("#content").html(data);
+        initCityThumbs();
+    });
+});
+
+$(document).on("click",".cityalbum", function(){
+    var city_id = $(this).attr("id").substr(5);
+    $.post("cities.php","city="+city_id+"&header=1").done(function(data){
+        $("#content-header").html(data);
+    });
+    $.post("cities.php","city="+city_id).done(function(data){
+        $("#content").html(data);
+        initThumbs();
+    });
+});
+
+$(document).on("click","#btn_city_back",function(){
+    $("#cities-btn").click();
+});
 /*
 --------------------------------------------------------------
 --------------------- Image zoom begin -----------------------

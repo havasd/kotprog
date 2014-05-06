@@ -222,7 +222,7 @@
     else {
     	echo '<div id="comments_panel" class="panel">
 			    <div id="comments_title" class="panel-header bg-lightBlue fg-white">
-			        A hozzászólások megtekintéséhez jelenetkezz be!
+			        A hozzászólások megtekintéséhez jelentkezz be!
 			    </div>
 			    <div  id="comments" class="panel-content">
 			    </div>

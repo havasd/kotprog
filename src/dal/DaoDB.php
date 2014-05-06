@@ -179,7 +179,7 @@
             }
         }
 
-        public function getPictures($from_index, $to_index, $category_id, $city_id, $orderby){
+        public function getPictures($from_index, $to_index, $category_id, $city_id, $orderby, $populardests = false){
             $query = '
                 SELECT * FROM (   
                     SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
@@ -189,6 +189,7 @@
                     WHERE FELHASZNALOK.ID = KEPEK.FELH_ID'.
                     (($category_id != "all") && ($category_id) ? ' AND KAT_ID = :category_id_bi ' : ''). 
                     (!is_null($city_id) ? " AND HELYSZIN LIKE '" . $city_id. "\\_%' escape '\\'" : '').
+                    ($populardests ? " AND FELHASZNALOK.VAROS_ID NOT LIKE '" . $city_id. "\\_%' escape '\\'" : '').
                     ' ORDER BY ' .$orderby.' )
                  
                 WHERE ROWNUM >= :from_index_bi 
@@ -271,6 +272,41 @@
             $query = '  SELECT VAROS_ID as ID,VAROSOK.VAROS as VAROS, VAROSOK.ORSZAG as ORSZAG, COUNT(VAROS_ID) as KEPEK_SZAMA 
                         FROM (
                         SELECT  REGEXP_SUBSTR(HELYSZIN,\'[^_]+\',1,1) AS VAROS_ID FROM KEPEK
+                        ),VAROSOK
+                        WHERE VAROS_ID = VAROSOK.ID
+                        group by VAROS_ID, VAROSOK.VAROS, VAROSOK.ORSZAG
+                        having COUNT(*) > 1
+                        order by KEPEK_SZAMA DESC ';
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $result=array();
+            $i=0;//LIKE '7835\_%' escape '\'
+            while ($row = oci_fetch_array($stmt)){
+                $result[$i]['ID'] = $row['ID'];
+                $result[$i]['VAROS'] = $row['VAROS'];
+                $result[$i]['ORSZAG'] = $row['ORSZAG'];
+                $result[$i]['KEPEK_SZAMA'] = $row['KEPEK_SZAMA'];
+                $query = "SELECT ID FROM KEPEK WHERE HELYSZIN LIKE '" . $row['ID']. "\\_%' escape '\\'";
+                $stmt2 = oci_parse($con, $query);
+                oci_execute($stmt2);
+                oci_fetch_all($stmt2, $pics);
+                $result[$i]['KEPEK'] = $pics;
+                $i++;
+            }
+            oci_close($con);
+            return $result;
+        }
+
+         public function getPopularDestinations(){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = '  SELECT VAROS_ID as ID,VAROSOK.VAROS as VAROS, VAROSOK.ORSZAG as ORSZAG, COUNT(VAROS_ID) as KEPEK_SZAMA 
+                        FROM (
+
+
+                            SELECT  REGEXP_SUBSTR(HELYSZIN,\'[^_]+\',1,1) AS VAROS_ID FROM KEPEK,FELHASZNALOK
+                            WHERE KEPEK.FELH_ID = FELHASZNALOK.ID
+                            AND FELHASZNALOK.VAROS_ID != VAROS_ID
+
                         ),VAROSOK
                         WHERE VAROS_ID = VAROSOK.ID
                         group by VAROS_ID, VAROSOK.VAROS, VAROSOK.ORSZAG
