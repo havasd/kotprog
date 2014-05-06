@@ -162,6 +162,18 @@ function initCityThumbs(){
     });
 }
 
+function initAlbums(){
+    $(".result_album_picture").each(function(){
+            var pic = $(this);
+            var pic_id = $(this).attr("id").substr(4);
+            $.post( "dal/DaoDB.php", 'getThumb='+pic_id)
+             .done(function(data) {
+                 pic.attr("src", data);
+                 pic.show();
+            });
+    });
+}
+
 //HOME
 $(document).on("click", "#home_btn", function(){
 	$.post( "home.php", 'header=1')
@@ -237,6 +249,41 @@ $(document).on("click",".cityalbum", function(){
 $(document).on("click","#btn_favdest_back",function(){
     $("#favourite_destinations_btn").click();
 });
+
+// keresés
+var lastsearch;
+$(document).on("click", "#search-btn",function(){
+    var keyword = $("#search").val();
+    lastsearch = keyword;
+    $.post("search.php","search="+keyword).done(function(data){
+        $("#content-header").html("Keresés: "+keyword);
+        $("#content").html(data);
+        initAlbums();
+        initThumbs();
+    });
+    return false;
+});
+
+$(document).on("click",".result_album",function(){
+    $.post("search.php", "result_album_header="+$(this).attr("id").substr(4)).done(function(data){
+        $("#content-header").html(data);
+    });
+    $.post("search.php", "result_album="+$(this).attr("id").substr(4)).done(function(data){
+        $("#content").html(data);
+        initThumbs();
+    });
+});
+
+$(document).on("click", "#btn_search_back", function(){
+    $.post("search.php","search="+lastsearch).done(function(data){
+        $("#content-header").html("Keresés: "+lastsearch);
+        $("#content").html(data);
+        initAlbums();
+        initThumbs();
+    });
+})
+
+
 /*
 --------------------------------------------------------------
 --------------------- Image zoom begin -----------------------

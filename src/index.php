@@ -35,7 +35,7 @@ require_once 'model/User.php';
 		                	<div class="ui-widget">
 		                    <input id="search" type="text" placeholder="Keresés...">
 		                	</div>
-		                    <button class="btn-search"></button>
+		                    <button id="search-btn"class="btn-search"></button>
 		                </div>
 		            </form>
 		        </div>
