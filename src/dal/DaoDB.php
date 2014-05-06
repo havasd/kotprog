@@ -234,7 +234,7 @@
             $query = 'SELECT KATEGORIAK.KATEGORIA AS KATEGORIA, COUNT(KEPEK.ID) AS NUM
             FROM KATEGORIAK, KEPEK 
             WHERE KATEGORIAK.ID = KEPEK.KAT_ID
-            GROUP BY KATEGORIAK.KATEGORIA';
+            GROUP BY KATEGORIAK.KATEGORIA ORDER BY NUM DESC';
             $stmt = oci_parse($con, $query);
             oci_execute($stmt);
             $count = array();
