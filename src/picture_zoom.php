@@ -51,6 +51,15 @@
 		echo json_encode(array("result" => $res, "rate" => $controller->getPictureById($_POST["img_id"])->getRating()));
 	}
 
+	$city_country;
+	$place = $picture->getPlace();
+	$place = explode("_",$place);
+	if(sizeof($place)== 2){
+		$full_place = $controller->getCityById($place[0])."  ".$place[1];
+	} else {
+		$full_place = $place[0];
+	}
+	
 	echo '<style>
 
 			#picture{
@@ -126,9 +135,10 @@
 						width: 300px;">
 		<div id="picture_data" class="panel">
 		    <div id="picture_title" class="panel-header bg-lightBlue fg-white">
-		        Helyszín:'.$picture->getPlace().'
+		        Info
 		    </div>
 		    <div id="picture_info" class="panel-content">
+		    	Helyszín:'.$full_place.'<br>
 		        Készítette: '.$picture->getOwner().'<br>
 		        Feltöltés ideje: '.$picture->getUploadTime().'<br>
 		        Leírás: '.$picture->getDescription().'<br>

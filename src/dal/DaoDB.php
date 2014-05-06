@@ -418,12 +418,14 @@
 
         public function getCityById($city_id){
             $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
-            $query = "SELECT VAROS,ORSZAG FROM VAROSOK WHERE ID = ".$city_id;
+            $query = "SELECT VAROS,ORSZAG FROM VAROSOK WHERE ID = :varos";
             $stmt = oci_parse($con, $query);
+            oci_bind_by_name($stmt, ':varos', $city_id);
             oci_execute($stmt);
             $city = oci_fetch_array($stmt);
             oci_close($con);
-            return $city['VAROS'].", ".$city['ORSZAG'];
+            //return $city['VAROS'].", ".$city['ORSZAG'];
+            return $city['VAROS'];
         }
 
         public function getPicturesByCategory($cid){
