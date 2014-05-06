@@ -18,7 +18,7 @@
             $this->m_place = $place;
             $this->m_data = $data;
             $this->m_owner = $owner;
-            $this->m_rating = $rating;
+            $this->m_rating = round($rating);
         }
 
         public function getId() {
