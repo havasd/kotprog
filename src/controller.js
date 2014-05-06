@@ -1,6 +1,7 @@
 $(document).ready(function(){
-	
+    $('#home_btn').click();    
 });
+
 var countrylist;
 var citylist;
 var deleteMode = false;
@@ -342,9 +343,16 @@ $(document).on("click", ".picture", function(){
             // delete selected comment
             $(".btn_comm_delete").on("click", function(){
                 var comm = $(this).parent().parent().parent(); // span div a
+                event.stopImmediatePropagation();
                 //alert("click delete comment " + $(comm).attr('id').substr(4));
                 $.post("picture_zoom.php", 'delete_comment=' + $(comm).attr('id').substr(4), function(data){
                     if (data.res == "true"){
+                        if (!$(comm).hasClass('marked')){
+                            $('.marked').each(function(){
+                                if ($(this).attr('data-answer-id') == $(comm).attr('id').substr(4))
+                                    $(this).remove();
+                            });
+                        }
                         $(comm).remove();
                     } else {
                         alert("delete comm fail");
@@ -353,6 +361,7 @@ $(document).on("click", ".picture", function(){
             });
             $(".btn_comm_edit").on("click", function(){
                 var text = $(this).parent().next().next();
+                event.stopImmediatePropagation();
                 $(text).attr('contenteditable', "true");
                 $(text).focus();
             });
