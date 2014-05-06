@@ -149,6 +149,7 @@ function initThumbs(){
     });
 }
 
+
 function initCityThumbs(){
     $(".cityalbum img").each(function(){
             var pic = $(this);
@@ -160,6 +161,7 @@ function initCityThumbs(){
             });
     });
 }
+
 //HOME
 $(document).on("click", "#home_btn", function(){
 	$.post( "home.php", 'header=1')
@@ -217,6 +219,13 @@ $(document).on("click","#btn_city_back",function(){
 --------------------- Image zoom begin -----------------------
 --------------------------------------------------------------
 */
+
+function commChange(elem){
+    var comm = $(elem).parent().parent().attr('id').substr(4); // div a
+    var text = $(elem).text();
+    //alert(comm + ' ' + text);
+    $.post("picture_zoom.php", 'edit_comment=' + comm + '&edit_text=' + text);
+}
 
 //image zoom
 $(document).on("click", ".picture", function(){
@@ -327,12 +336,18 @@ $(document).on("click", ".picture", function(){
             });
             $(".btn_comm_edit").on("click", function(){
                 var text = $(this).parent().next().next();
-                alert("edit");
                 $(text).attr('contenteditable', "true");
                 $(text).focus();
             });
             $(".list-remark").on("focusout", function(){
+                commChange(this);
                 $(this).attr('contenteditable', "false");
+            });
+            $(".list-remark").keypress(function(e) {
+                if (e.which == 13) {
+                    $(this).attr('contenteditable', "false");
+                    return false;
+                }
             });
         } 
     });
