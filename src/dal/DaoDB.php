@@ -179,7 +179,7 @@
             }
         }
 
-        public function getPictures($from_index, $to_index, $category_id, $orderby){
+        public function getPictures($from_index, $to_index, $category_id, $city_id, $orderby){
             $query = '
                 SELECT * FROM (   
                     SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
@@ -188,6 +188,7 @@
                     FROM FELHASZNALOK, KEPEK
                     WHERE FELHASZNALOK.ID = KEPEK.FELH_ID'.
                     (($category_id != "all") && ($category_id) ? ' AND KAT_ID = :category_id_bi ' : ''). 
+                    (!is_null($city_id) ? " AND HELYSZIN LIKE '" . $city_id. "\\_%' escape '\\'" : '').
                     ' ORDER BY ' .$orderby.' )
                  
                 WHERE ROWNUM >= :from_index_bi 
@@ -236,7 +237,7 @@
             return $count['COUNT(*)'];
         }
 
-        public function getAllPictures(){
+        /*public function getAllPictures(){
             $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL, KAT_ID,
             TO_CHAR(FELTOLTES_IDEJE, \'YYYY/MM/DD HH24:MI:SS\') AS FELTOLTES_IDEJE,
             (SELECT AVG(ERTEKELES) FROM ERTEKELESEK WHERE KEP_ID = KEPEK.ID) AS RATE
@@ -262,9 +263,48 @@
             $stmt = null;
             oci_close($con);
             return $pics;
+        }*/
+
+        //városok arcai
+        public function getCityAlbums(){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = '  SELECT VAROS_ID as ID,VAROSOK.VAROS as VAROS, VAROSOK.ORSZAG as ORSZAG, COUNT(VAROS_ID) as KEPEK_SZAMA 
+                        FROM (
+                        SELECT  REGEXP_SUBSTR(HELYSZIN,\'[^_]+\',1,1) AS VAROS_ID FROM KEPEK
+                        ),VAROSOK
+                        WHERE VAROS_ID = VAROSOK.ID
+                        group by VAROS_ID, VAROSOK.VAROS, VAROSOK.ORSZAG
+                        having COUNT(*) > 1
+                        order by KEPEK_SZAMA DESC ';
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $result=array();
+            $i=0;//LIKE '7835\_%' escape '\'
+            while ($row = oci_fetch_array($stmt)){
+                $result[$i]['ID'] = $row['ID'];
+                $result[$i]['VAROS'] = $row['VAROS'];
+                $result[$i]['ORSZAG'] = $row['ORSZAG'];
+                $result[$i]['KEPEK_SZAMA'] = $row['KEPEK_SZAMA'];
+                $query = "SELECT ID FROM KEPEK WHERE HELYSZIN LIKE '" . $row['ID']. "\\_%' escape '\\'";
+                $stmt2 = oci_parse($con, $query);
+                oci_execute($stmt2);
+                oci_fetch_all($stmt2, $pics);
+                $result[$i]['KEPEK'] = $pics;
+                $i++;
+            }
+            oci_close($con);
+            return $result;
         }
 
-
+        public function getCityById($city_id){
+            $con = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
+            $query = "SELECT VAROS,ORSZAG FROM VAROSOK WHERE ID = ".$city_id;
+            $stmt = oci_parse($con, $query);
+            oci_execute($stmt);
+            $city = oci_fetch_array($stmt);
+            oci_close($con);
+            return $city['VAROS'].", ".$city['ORSZAG'];
+        }
 
         public function getPicturesByCategory($cid){
             $query = 'SELECT NEV, KEPEK.ID, LEIRAS, HELYSZIN, KEPFAJL,
@@ -399,6 +439,7 @@
         public function updatePicture($id, $desc, $alb_id, $cat_id, $place = 0){
             if ($alb_id = "null")
                 $alb_id = null;
+            echo "id: ".$id."  leiras: ".$desc."  albid:  ". $alb_id."  catid:". $cat_id." place: ". $place;
             $con  = oci_connect(constant('DB_USER'), constant('DB_PW'), 'localhost/XE','AL32UTF8');
             $query = 'UPDATE KEPEK SET LEIRAS = :bv_desc, ALBUM_ID = :bv_albid, KAT_ID = :bv_catid WHERE ID = :bv_id';
             $stmt = oci_parse($con, $query);

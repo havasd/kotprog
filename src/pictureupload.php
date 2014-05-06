@@ -37,7 +37,7 @@
             if ($id)
                 $pic = $controller->getPictureById($id);
 
-            echo '      <form id="f_new_pictures" style="margin: 5px 5px 5px 5px">
+            echo '      <form id="f_new_pictures" style="margin: 5px 5px 5px 5px" data-id="' . $id . '">
                     <div class="grid">
                             <div class="row">                                   
                                       <label for="in_file_country">Ország: </label>
@@ -72,11 +72,13 @@
                             };
             echo '                  </select>';
             echo '                  <label>Képfájl</label>
+                                    <input type="file" name="file_picture" id="in_file_picture"/><br>
+                                    
+                                    <input type="submit" id="btn_upload_picture" value="' . ($id == 0 ? 'Feltöltés' : 'Módosítás') . '">
                             </div>
-                            <div class="row">
-                                <input type="submit" id="btn_upload_picture" value="' . ($id == 0 ? 'Feltöltés' : 'Módosítás') . '">
-                            </div>
-                </form>';
+                         </form>
+                            </div>';
+                            
         }
     }
 ?>

@@ -39,7 +39,7 @@
     echo '	<div id="picture_tiles" class="grid" style="margin-left: 30px; margin-right: 30px">
               <div class="row" style=" display: inline-block;">';
    	if (isset($_POST['category']) && isset($_POST['orderby'])){
-   		$pics = $controller->getPictures(0,12,$_POST['category'],$_POST['orderby']);
+   		$pics = $controller->getPictures(0,12,$_POST['category'],null,$_POST['orderby']);
       $i=0;
       while (isset($pics[$i])){
         echo '<div id="pic_' . $pics[$i]->getId() . '" class="tile double picture">

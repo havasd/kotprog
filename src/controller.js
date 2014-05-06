@@ -148,6 +148,18 @@ function initThumbs(){
             });
     });
 }
+
+function initCityThumbs(){
+    $(".cityalbum img").each(function(){
+            var pic = $(this);
+            var pic_id = $(this).attr("id").substr(4);
+            $.post( "dal/DaoDB.php", 'getThumb='+pic_id)
+             .done(function(data) {
+                 pic.attr("src", data);
+                 pic.show();
+            });
+    });
+}
 //HOME
 $(document).on("click", "#home_btn", function(){
 	$.post( "home.php", 'header=1')
@@ -177,6 +189,29 @@ $(document).on("click", "#home_btn", function(){
     });
 });
 
+//Városok arcai
+$(document).on("click","#cities-btn", function(){
+    $("#content-header").html("Városok arcai");
+    $.post("cities.php","").done(function(data){
+        $("#content").html(data);
+        initCityThumbs();
+    });
+});
+
+$(document).on("click",".cityalbum", function(){
+    var city_id = $(this).attr("id").substr(5);
+    $.post("cities.php","city="+city_id+"&header=1").done(function(data){
+        $("#content-header").html(data);
+    });
+    $.post("cities.php","city="+city_id).done(function(data){
+        $("#content").html(data);
+        initThumbs();
+    });
+});
+
+$(document).on("click","#btn_city_back",function(){
+    $("#cities-btn").click();
+});
 /*
 --------------------------------------------------------------
 --------------------- Image zoom begin -----------------------
@@ -586,14 +621,6 @@ function createPictureDialog(id){
         }
     });
 }
-// picture upload click
-
-$(document).on("click", "#btn_new_picture", function(){
-var countrylist;
-var citylist;
-createPictureDialog(0);
-});
-
 // new album click
 $(document).on("click", "#btn_new_album", function(){
     createAlbumDialog();
@@ -680,7 +707,7 @@ $(document).on("submit", "#f_new_pictures", function(){
     var city_id;
 
      $.post("dal/DaoDB.php", 'getCityId='+city+'&country='+country).done(function(result){
-            alert(result);
+            //alert(result);
             if (result == ""){
                 $.post("dal/DaoDB.php", 'addCity='+city+'&country='+country).done(function(result){
                     data.append('file_place', result+'_'+place);
@@ -688,16 +715,14 @@ $(document).on("submit", "#f_new_pictures", function(){
             } else {
                 data.append('file_place', result+'_'+place);
             }
-            
             uploadpicture(data);
     });
     
 });
 
-
 function uploadpicture(data){
 
-    alert("id: " + picid + " desc: " + $("#in_file_desc").val() +  " albumid:" +  $("#in_file_album").val() + " catid:" + $("#in_file_category").val());
+    //alert("id: " + data.id + " desc: " + $("#in_file_desc").val() +  " albumid:" +  $("#in_file_album").val() + " catid:" + $("#in_file_category").val());
 
     $.ajax({
         url: 'pictureupload.php',
@@ -711,7 +736,7 @@ function uploadpicture(data){
         {
             if (data.create == "true"){
                     $.Dialog.close();
-                    if (picid == "0")
+                    if (data.picid == "0")
                         $.Notify.show("Fényképek feltöltése sikeres.");
                     $.post("mypictures.php", "header=1").done(function(data){
                         $("#content-header").html(data);
