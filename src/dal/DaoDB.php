@@ -271,7 +271,7 @@
             oci_bind_by_name($stmt, ':bv_usrid', $usr_id);
             oci_execute($stmt);
             $row = oci_fetch_array($stmt);
-            return is_null($row['ERTEK']) ? '0' : $row['ERTEK'];
+            return is_null($row['ERTEK']) ? 0 : $row['ERTEK'];
         }
 
         public function getNumOfTable($table){
