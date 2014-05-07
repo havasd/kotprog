@@ -1,5 +1,24 @@
 $(document).ready(function(){
-    $('#home_btn').click();    
+    $('#home_btn').click();   
+    $.ajax({
+        url: 'dal/DaoDB.php',
+        type: 'POST',
+        data: 'getCountries=1',
+        dataType: 'json',
+        success : function(data){
+            countrylist= data;
+        }
+    });
+
+    $.ajax({
+        url: 'dal/DaoDB.php',
+        type: 'POST',
+        data: 'getCities=1',
+        dataType: 'json',
+        success : function(data){
+            citylist= data;
+        }
+    }); 
 });
 
 var countrylist;
@@ -79,8 +98,21 @@ $(document).on("click", "#logout_btn", function(){
 
 //regisztráció form betöltése
 $(document).on("click", "#register_btn", function(){
-	$("#content-header").html("Regisztráció");
-	$("#content").load("register.php");
+    $("#content-header").html("Regisztráció");
+	$.post("register.php", "getform=true").done(function(data){
+        alert("asd");
+        $("#content").html(data);
+        /*$("#in_file_country").autocomplete({
+            source: countrylist,
+            appendTo: content
+        });
+        $("#in_file_city").autocomplete({
+            minlenght: 3,
+            source: citylist,
+            appendTo: content
+        });*/
+    });
+    
 });
 
 //regisztráció
@@ -680,25 +712,7 @@ function createPictureDialog(id){
     if (id == undefined)
         id = 0;
 
-    $.ajax({
-        url: 'dal/DaoDB.php',
-        type: 'POST',
-        data: 'getCountries=1',
-        dataType: 'json',
-        success : function(data){
-            countrylist= data;
-        }
-    });
-
-    $.ajax({
-        url: 'dal/DaoDB.php',
-        type: 'POST',
-        data: 'getCities=1',
-        dataType: 'json',
-        success : function(data){
-            citylist= data;
-        }
-    });
+    
 
     var content;
     $.Dialog({

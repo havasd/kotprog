@@ -3,7 +3,7 @@
 	require_once('dal/DaoDB.php');
 
 
-	if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' and isset($_POST['username'])){
+	if (isset($_POST['username'])){
 		$controller = new DaoDB();
 		$results = Array();
 		// form check
@@ -45,12 +45,14 @@
 		}
 
 		echo (json_encode($results));
-	} else {
-		echo(  '<style>
+	} 
+	if(isset($_POST['getform'])) {
+		echo  '<style>
 					#registration input {
 						width: 30em;
 					}
 			  	</style>
+			  	
 				<form id="registration" style="width:30em">
 				<fieldset>
 					<label for="t_user">Felhasználónév (minimum 6 karakter, csak betűk és számok)</label>
@@ -85,19 +87,26 @@
 
                     <label for="t_country">Ország</label>
 		        	<div class="input-control text">
+		        		<div class="ui-widget">
 		        		<input id="t_country" name="country" type="text" required>
+		        		</div>
 		        	<button class="btn-clear"></button>
                     </div>
 
                     <label for="t_city">Város</label>
 		        	<div class="input-control text">
+		        		<div class="ui-widget">
 		        		<input id="t_city" name="city" type="text" required>
+		        		</div>
 					<button class="btn-clear"></button>
                     </div>
 
 		        	<button id="submit_reg">Regisztráció</button>
 		        	
 		        	</fieldset>
-				</form>');
-	} 
+				</form>';
+				
+	}
+	
+
 ?>
